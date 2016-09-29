@@ -37,7 +37,7 @@ void elementOscilator::setup(){
     infoVec_preMod.resize(indexCount_Param);
 }
 
-void elementOscilator::computeFunc(float *infoVec, float phasor){
+void elementOscilator::computeFunc(float *infoVec, float phasor, float phase){
     for (int i = 0; i < indexCount_Param ; i++){
         
         int index = i;
@@ -91,7 +91,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor){
         //k *= invert_Param;
         k *=  freq_Param * indexQuant_Param; //Index Modifiers
         
-        
+        k+= (phase*2*PI);
         float linPhase = fmod(w+k, 2*PI) / (2*PI);
         float val = 0;
         switch (static_cast<oscTypes>(waveSelect_Param.get()+1)) {
@@ -160,6 +160,10 @@ void elementOscilator::computeFunc(float *infoVec, float phasor){
         infoVec[i] = val;
         prevIndex = index;
     }
+}
+
+void elementOscilator::computeFunc(float *infoVec, float phasor){
+    computeFunc(infoVec, phasor, 0);
 }
 
 void elementOscilator::computeMultiplyMod(float *value){

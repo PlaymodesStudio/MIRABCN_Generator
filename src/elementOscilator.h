@@ -30,6 +30,7 @@ public:
     void setup();
     
     void computeFunc(float *infoVec, float phasor);
+    void computeFunc(float *infoVec, float phasor, float phase);
     void computeMultiplyMod(float* value);
     
     void setIndexCount(int val){indexCount_Param = val;};

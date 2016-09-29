@@ -18,7 +18,8 @@ public:
     
     void setup(int width, int height);
     int computeFunc(int index);
-    void applyDelayToTexture(ofFbo &fbo, vector<float> infoVec, float bpm, float phasor);
+    vector<vector<float>> computeWave(ofFbo &waveTex, float phasor);
+    void computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos);
     
     void setIndexCount(int indexCount){indexCount_Param = indexCount;};
     

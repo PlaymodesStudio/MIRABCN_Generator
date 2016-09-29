@@ -58,47 +58,42 @@ int Wave2DControl::computeFunc(int index){
 }
 
 
-void Wave2DControl::applyDelayToTexture(ofFbo &fbo, vector<float> infoVec, float bpm, float phasor){
-    
-//    //Fill the buffer with the new info of the current frame
-//    infoVecBuffer.push_front(infoVec);
-//    
-//    //Use the fbo to paint on it
-//    fbo.begin();
-//    
-//    //first color to black, for fixing isues
-//    int delay_frames_sixteenth = ((((float)delay_sixteenth/4)/bpm*60))*40;
-//    cout<<delay_frames_sixteenth<< endl;
-//    ofSetColor(0);
-//    for(int j = 0 ; j < fbo.getHeight() ; j++){
-//        //compute the index where there is the info we are interested
-//        int delayIndex = (delay_frames+delay_frames_sixteenth)*(computeFunc(j));
-//        
-//        //If we want to acces a position that is not existing, get the last position
-//        if(infoVecBuffer.size() <= delayIndex) delayIndex = 0;
-//        
-//        //Paint the square for each column
-//        for (int i = 0; i < fbo.getWidth() ; i++){
-//            ofSetColor(infoVecBuffer[delayIndex][i] * 255);
-//            ofDrawRectangle(i, j, 1, 1);
-//        }
-//    }
-//    fbo.end();
-//    
-//    
-//    //If we have values that we will not use anymore, they are too far away, remove them
-//    while(infoVecBuffer.size() > (delay_frames+delay_frames_sixteenth)*fbo.getHeight())
-//        infoVecBuffer.pop_back();
-    
-    
+vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
     //Use the fbo to paint on it
-    fbo.begin();
+    waveTex.begin();
     ofSetColor(0);
     for(auto point : barInfo_Pos){
-        //ofSetColor(point.second);
-        float z = -cos(1*sqrt(pow(point.first.x-width/2,2)+pow(point.first.y-height/2+0.5,2))-(2*PI*phasor));
+        float z= point.second/255;
+        int t;
+        //t = (2*PI*phasor);
+        t = 0;
+//        float z = -cos(3*sqrt(pow(point.first.x-width/2,2)+pow(point.first.y-height/2+0.5,2))-t);
+        grid[point.first.y][point.first.x] = z;
+        point.second = z;
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
     }
-    fbo.end();
+    waveTex.end();
+    return grid;
 }
+
+void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos){
+    outTex.begin();
+    for(int i=0 ; i < barInfo_Pos.size() ; i++){
+        auto &point = barInfo_Pos[i];
+        if(point.first.x == pos.x && point.first.y == pos.y){
+            for(int j = 0; j < infoVec.size(); j++){
+//                ofSetColor(infoVec[j]*255);
+//                ofDrawRectangle(j,2*i, 1, 1);
+//                ofSetColor((1-infoVec[j])*255);
+//                ofDrawRectangle(j,2*i+1, 1, 1);
+                ofSetColor(infoVec[j]*255);
+                ofDrawRectangle(i,j, 1, 1);
+                ofSetColor((infoVec[infoVec.size()-j])*255);
+                ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
+            }
+        }
+    }
+    outTex.end();
+}
+

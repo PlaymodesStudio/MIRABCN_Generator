@@ -26,10 +26,10 @@ void ofApp::setup(){
     infoVec.resize(pixelNum, 0);
     
     //Initlize our syphon and specify the name
-    syphonServer.setName("DGTL Generator_test");
+    syphonServer.setName("MIRABCN_Generator");
     
     //Allocation of the texture, and modify to show correctly the discrete pixels
-    pixelContent.allocate(PIXEL_X_BAR, NUM_BARS, GL_RGB);
+    pixelContent.allocate(NUM_BARS, PIXEL_X_BAR, GL_RGB);
     pixelContent.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
     waveGrid.allocate(COL_BARS, ROW_BARS, GL_RGB);
@@ -54,13 +54,18 @@ void ofApp::update(){
     
     //Phasor updates automatically at audio rate
     
-    //Calculation of the oscilators for each element, with phasor info
-    singleGenerator.computeFunc(infoVec.data(), phasor.getPhasor());
+    vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, phasor.getPhasor());
     
-    waveControl.applyDelayToTexture(waveGrid, infoVec, 120, phasor.getPhasor());
+    for(int i = 0; i < COL_BARS ; i++){
+        for (int j = 0; j < ROW_BARS ; j++){
+            //Calculation of the oscilators for each element, with phasor info
+            singleGenerator.computeFunc(infoVec.data(), phasor.getPhasor(), phase_offset[j][i]);
+            waveControl.computeOutTex(pixelContent, infoVec, ofVec2f(i, j));
+        }
+    }
     
     //Fill the fbo with the information in infoVec, and delaying it and modifing with it's controls
-    delayControler.applyDelayToTexture(pixelContent, infoVec, phasor.getParameterGroup().getFloat("BPM"));
+    //delayControler.applyDelayToTexture(pixelContent, infoVec, phasor.getParameterGroup().getFloat("BPM"));
     
     //Pass texture to syphon
     syphonServer.publishTexture(&pixelContent.getTexture());
@@ -72,11 +77,12 @@ void ofApp::draw(){
     
     int contentWidth = ofGetWidth()-guiWidth;
     //Draw the fbo
-    ofPushMatrix();
-    ofTranslate(guiWidth,5*ofGetHeight()/11);
-    ofRotate(-90);
-    pixelContent.draw(0,0, 5*ofGetHeight()/11, contentWidth/2);
-    ofPopMatrix();
+//    ofPushMatrix();
+//    ofTranslate(guiWidth,5*ofGetHeight()/11);
+//    ofRotate(-90);
+//    pixelContent.draw(0,0, 5*ofGetHeight()/11, contentWidth/2);
+//    ofPopMatrix();
+    pixelContent.draw(guiWidth, 0, contentWidth/2, 5*ofGetHeight()/11);
     
     waveGrid.draw(guiWidth+(contentWidth/2), 0, contentWidth/2, 5*ofGetHeight()/11);
     
