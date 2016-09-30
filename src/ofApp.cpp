@@ -73,34 +73,33 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    
+}
+
+void ofApp::drawSecondWindow(ofEventArgs &args){
+    ofBackground(0);
     ofSetColor(255);
-    
-    int contentWidth = ofGetWidth()-guiWidth;
+    int contentWidth = ofGetWidth();
     //Draw the fbo
-//    ofPushMatrix();
-//    ofTranslate(guiWidth,5*ofGetHeight()/11);
-//    ofRotate(-90);
-//    pixelContent.draw(0,0, 5*ofGetHeight()/11, contentWidth/2);
-//    ofPopMatrix();
-    pixelContent.draw(guiWidth, 0, contentWidth/2, 5*ofGetHeight()/11);
+    pixelContent.getTexture().draw(0, 0, contentWidth/2, 5*ofGetHeight()/11);
     
-    waveGrid.draw(guiWidth+(contentWidth/2), 0, contentWidth/2, 5*ofGetHeight()/11);
+    waveGrid.getTexture().draw((contentWidth/2), 0, contentWidth/2, 5*ofGetHeight()/11);
     
     //Draw the Bars
     float wid = (float)contentWidth/pixelNum;
     float hei = 5*ofGetHeight()/11;
     for(int i = 0; i < pixelNum; i++)
-        ofDrawRectangle(guiWidth+(i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
+        ofDrawRectangle((i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
     
     
     //draw the phasor evolution
-    ofDrawTriangle(guiWidth, ofGetHeight(), ofGetWidth(), ofGetHeight(), ofGetWidth(), 10*ofGetHeight()/11);
+    ofDrawTriangle(0, ofGetHeight(), ofGetWidth(), ofGetHeight(), ofGetWidth(), 10*ofGetHeight()/11);
     ofSetColor(127);
-    ofDrawRectangle(((float)contentWidth * phasor.getPhasor())+guiWidth, 10*ofGetHeight()/11, 5, ofGetHeight()/11);
+    ofDrawRectangle(((float)contentWidth * phasor.getPhasor()), 10*ofGetHeight()/11, 5, ofGetHeight()/11);
     
     //Draw the framerate
     ofSetColor(255, 0,0);
-    ofDrawBitmapString(ofToString(ofGetFrameRate()), guiWidth+20, ofGetHeight()-20);
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
 }
 
 //--------------------------------------------------------------
