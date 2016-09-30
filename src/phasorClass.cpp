@@ -15,8 +15,7 @@ phasorClass::phasorClass()
 }
 
 void phasorClass::setup(){
-    soundStream.setDeviceID(1);
-    soundStream.setup(0, 2, 44100, 512, 4);
+    soundStream.setup(0,2, 44100, 512, 4);
     soundStream.setInput(this);
     
     

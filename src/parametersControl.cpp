@@ -105,18 +105,10 @@ void parametersControl::setup(){
     random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
     for(auto randomPreset : randomPresetsArrange)
         cout<<randomPreset<< " ";
-    
-    //Beat Detector
-    beatTracker.setup();
-    bpmTracker = false;
-    datGui->addToggle("BPM Tracker");
 }
 
 
 void parametersControl::update(){
-    if(bpmTracker)
-        phasorParams.getFloat(0) = beatTracker.getBpm();
-    
     while(oscReceiver.hasWaitingMessages()){
         ofxOscMessage m;
         oscReceiver.getNextMessage(m);
@@ -352,8 +344,6 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
         autoPreset = e.target->getChecked();
         presetChangedTimeStamp = ofGetElapsedTimef();
     }
-    if(e.target->getName() == "BPM Tracker")
-        bpmTracker = e.target->getChecked();
     
 }
 

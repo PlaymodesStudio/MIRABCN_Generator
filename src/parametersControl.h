@@ -13,7 +13,6 @@
 #include "ofxOsc.h"
 #include "ofxDatGui.h"
 #include "ofxMidi.h"
-#include "bpmControl.h"
 
 static const int NUM_PRESETS = 40;
 
@@ -57,7 +56,6 @@ private:
     
     ofParameter<bool> autoPreset;
     ofParameter<float> presetChangeBeatsPeriod;
-    ofParameter<bool>   bpmTracker;
     
     ofxOscReceiver oscReceiver;
     
@@ -73,9 +71,6 @@ private:
     
     vector<int> randomPresetsArrange;
     int presetChangeCounter;
-    
-    //BPM Detect
-    bpmControl beatTracker;
 };
 
 

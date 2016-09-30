@@ -38,7 +38,6 @@
 		99713A77173E6C750326219F /* parametersControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 087D8883A39116874A1FC5E8 /* parametersControl.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
 		9F0E21E51D5E03EC00933C50 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F0E21E41D5E03EC00933C50 /* aubio.framework */; };
-		9F0E21E81D5E04A100933C50 /* bpmControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0E21E61D5E04A100933C50 /* bpmControl.cpp */; };
 		9F646E7F1D9C187D0021A6B7 /* Wave2DControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F646E7D1D9C187D0021A6B7 /* Wave2DControl.cpp */; };
 		ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD194746185E2DA11468377 /* IpEndpointName.cpp */; };
 		BCC8D420CBA9217E437D2D76 /* ofxRtMidiIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634AA6CA2E3C60F3B87B59A /* ofxRtMidiIn.cpp */; };
@@ -151,8 +150,6 @@
 		9D2C29B96659EBB7A0C5672F /* ofxAubioPitch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAubioPitch.h; path = ../../../addons/ofxAubio/src/ofxAubioPitch.h; sourceTree = SOURCE_ROOT; };
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
 		9F0E21E41D5E03EC00933C50 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = aubio.framework; sourceTree = "<group>"; };
-		9F0E21E61D5E04A100933C50 /* bpmControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bpmControl.cpp; sourceTree = "<group>"; };
-		9F0E21E71D5E04A100933C50 /* bpmControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bpmControl.h; sourceTree = "<group>"; };
 		9F646E7D1D9C187D0021A6B7 /* Wave2DControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wave2DControl.cpp; sourceTree = "<group>"; };
 		9F646E7E1D9C187D0021A6B7 /* Wave2DControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wave2DControl.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
@@ -551,8 +548,6 @@
 				403CE90DAC5E9DE5F17A4208 /* parametersControl.h */,
 				B1C695924411304E7DB8FC7B /* phasorClass.cpp */,
 				79D948FF04EC3F4CCE2FF14F /* phasorClass.h */,
-				9F0E21E61D5E04A100933C50 /* bpmControl.cpp */,
-				9F0E21E71D5E04A100933C50 /* bpmControl.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -731,7 +726,6 @@
 				0BFC9C20FD7E3C8D5873AA97 /* ofxMidiIn.cpp in Sources */,
 				C6FE64F74F1EA1D98C8F9847 /* ofxMidiMessage.cpp in Sources */,
 				83D9F930112E0944444124EE /* ofxMidiOut.cpp in Sources */,
-				9F0E21E81D5E04A100933C50 /* bpmControl.cpp in Sources */,
 				63D0FD8734D5760B8080C901 /* RtMidi.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,
 				5864AD82E20F15536D054EA3 /* ofxOscMessage.cpp in Sources */,
