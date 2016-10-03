@@ -20,6 +20,7 @@ class ofApp : public ofBaseApp{
 		void draw();
     
     void drawSecondWindow(ofEventArgs & args);
+    void keyPressedOnSecondWindow(ofKeyEventArgs & args);
     
     void audioIn(float * input, int bufferSize, int nChannels);
 
@@ -46,7 +47,7 @@ private:
     
     ofxSyphonServer syphonServer;
     
-    phasorClass phasor;
+    vector<phasorClass> phasors;
     elementOscilator singleGenerator;
     Wave2DControl   waveControl;
     

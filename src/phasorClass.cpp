@@ -14,8 +14,8 @@ phasorClass::phasorClass()
 
 }
 
-void phasorClass::setup(){
-    parameters.setName("phasor");
+void phasorClass::setup(int index){
+    parameters.setName("phasor " + ofToString(index));
     parameters.add(bpm_Param.set("BPM", 120, 30, 180));
     parameters.add(beatsDiv_Param.set("Beats Div", 1, 1, 12));
     parameters.add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
@@ -24,12 +24,14 @@ void phasorClass::setup(){
     parameters.add(resetPhase_Param.set("Reset Phase", false));
     parameters.add(loop_Param.set("Loop", true));
     parameters.add(bounce_Param.set("Bounce", false));
+    parameters.add(phasorMonitor.set("Phasor Monitor", 0));
     
     resetPhase_Param.addListener(this, &phasorClass::resetPhasor);
 }
 
 
 float phasorClass::getPhasor(){
+    phasorMonitor = phasorMod;
     return phasorMod;
 }
 
@@ -72,6 +74,5 @@ void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
         phasorMod = (int)(phasorMod*quant_Param);
         phasorMod /= quant_Param;
     }
-    
 }
 

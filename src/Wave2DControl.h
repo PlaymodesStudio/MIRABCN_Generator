@@ -23,6 +23,8 @@ public:
     
     void setIndexCount(int indexCount){indexCount_Param = indexCount;};
     
+    void setPreviewTexture(bool b){previewTex = b;};
+    void togglePreviewTexture(){previewTex = !previewTex;};
     
     ofParameterGroup getParameterGroup(){return parameters;};
     
@@ -39,6 +41,8 @@ private:
     
     int width;
     int height;
+    
+    bool previewTex = true;
     
     vector<vector<float>> grid;
     vector<pair<ofVec2f, float>> barInfo_Pos;

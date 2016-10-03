@@ -17,7 +17,7 @@ class phasorClass{
 public:
     phasorClass();
     ~phasorClass(){};
-    void setup();
+    void setup(int index = 0);
     
     float getPhasor();
     void resetPhasor(bool &reset);
@@ -38,6 +38,7 @@ private:
     ofParameter<bool>   loop_Param;
     ofParameter<bool>   bounce_Param;
     ofParameter<bool>   resetPhase_Param;
+    ofParameter<float>  phasorMonitor;
 };
 
 

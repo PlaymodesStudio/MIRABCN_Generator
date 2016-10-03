@@ -16,8 +16,8 @@ elementOscilator::elementOscilator(){
     symmetry_Param = 0;
 }
 
-void elementOscilator::setup(){
-    parameters.setName("oscillator");
+void elementOscilator::setup(int index){
+    parameters.setName("oscillator " + ofToString(index));
     parameters.add(freq_Param.set("n Waves", 1, 0, indexCount_Param/20));
     parameters.add(phaseOffset_Param.set("Phase offset", 0, 0, 1));
     parameters.add(invert_Param.set("Invert", false));
@@ -32,7 +32,12 @@ void elementOscilator::setup(){
     parameters.add(offset_Param.set("Offset", 0, -.5, .5));
     parameters.add(pow_Param.set("Pow", 1, -40, 40));
     parameters.add(pwm_Param.set("Square PWM", 0.5, 0, 1));
-    parameters.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
+    waveDropDown.setName("Wave Select");
+    ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
+    waveDropDown.add(tempStrParam);
+    waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
+    parameters.add(waveDropDown);
+    //parameters.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     
     infoVec_preMod.resize(indexCount_Param);
 }

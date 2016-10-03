@@ -27,7 +27,7 @@ public:
     elementOscilator();
     ~elementOscilator(){};
     
-    void setup();
+    void setup(int index = 0);
     
     void computeFunc(float *infoVec, float phasor);
     void computeFunc(float *infoVec, float phasor, float phase);
@@ -57,6 +57,7 @@ private:
     ofParameter<int>    modulo_Param;
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
+    ofParameterGroup    waveDropDown;
     
     vector<float> infoVec_preMod;
     

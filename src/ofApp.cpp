@@ -12,7 +12,8 @@ void ofApp::setup(){
     
     //Setup the generator of waves and pass it the numbers of items it will have
     singleGenerator.setIndexCount(pixelNum);
-    singleGenerator.setup();
+    singleGenerator.setup(1);
+    
     
     waveControl.setup(COL_BARS, ROW_BARS);
     
@@ -31,15 +32,16 @@ void ofApp::setup(){
     waveGrid.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
     //Setup of the phasor, wich controls the oscilator generator
-    phasor.setup();
+    phasors.resize(2);
+    phasors[0].setup(1);
+    phasors[1].setup(2);
     
+    paramsControl.createGuiFromParams(phasors[0].getParameterGroup());
+    paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
+    paramsControl.createGuiFromParams(singleGenerator.getParameterGroup());
     
-    //Paramters binding
-    paramsControl.bindPhasorParams(phasor.getParameterGroup());
-    paramsControl.bindOscilatorParams(singleGenerator.getParameterGroup());
+
     paramsControl.setup();
-    
-    guiWidth = paramsControl.getGuiWidth();
     
     ofSoundStreamSetup(0, 2, 44100, 512, 4);
 }
@@ -50,17 +52,16 @@ void ofApp::update(){
     
     //Phasor updates automatically at audio rate
     
-    vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, phasor.getPhasor());
+    vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, phasors[1].getPhasor());
     
     for(int i = 0; i < COL_BARS ; i++){
         for (int j = 0; j < ROW_BARS ; j++){
             //Calculation of the oscilators for each element, with phasor info
-            singleGenerator.computeFunc(infoVec.data(), phasor.getPhasor(), phase_offset[j][i]);
+            singleGenerator.computeFunc(infoVec.data(), phasors[0].getPhasor(), phase_offset[j][i]);
             waveControl.computeOutTex(pixelContent, infoVec, ofVec2f(i, j));
         }
     }
 
-    
     //Pass texture to syphon
     syphonServer.publishTexture(&pixelContent.getTexture());
 }
@@ -89,16 +90,22 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     //draw the phasor evolution
     ofDrawTriangle(0, ofGetHeight(), ofGetWidth(), ofGetHeight(), ofGetWidth(), 10*ofGetHeight()/11);
     ofSetColor(127);
-    ofDrawRectangle(((float)contentWidth * phasor.getPhasor()), 10*ofGetHeight()/11, 5, ofGetHeight()/11);
+    ofDrawRectangle(((float)contentWidth * phasors[0].getPhasor()), 10*ofGetHeight()/11, 5, ofGetHeight()/11);
     
     //Draw the framerate
     ofSetColor(255, 0,0);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
 }
 
+void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
+    if(args.key == ' ')
+        waveControl.togglePreviewTexture();
+}
+
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    phasor.audioIn(input, bufferSize, nChannels);
+    for(auto phasor : phasors)
+        phasor.audioIn(input, bufferSize, nChannels);
 }
 
 //--------------------------------------------------------------

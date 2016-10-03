@@ -23,9 +23,11 @@ public:
     parametersControl(){};
     ~parametersControl(){};
     
-    void bindPhasorParams(ofParameterGroup paramGroup){phasorParams = paramGroup;};
-    void bindOscilatorParams(ofParameterGroup paramGroup){oscilatorParams = paramGroup;};
-    void bindDelayParams(ofParameterGroup paramGroup){delayParams = paramGroup;};
+    void bindPhasorParams(ofParameterGroup paramGroup);
+    void bindOscilatorParams(ofParameterGroup paramGroup);
+    void bindDelayParams(ofParameterGroup paramGroup);
+    
+    void createGuiFromParams(ofParameterGroup paramGroup);
     
     void setup();
     void update();
@@ -53,6 +55,9 @@ private:
     
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;
+    
+    vector<ofxDatGui*> datGuis;
+    vector<ofParameterGroup> parameterGroups;
     
     ofParameter<bool> autoPreset;
     ofParameter<float> presetChangeBeatsPeriod;

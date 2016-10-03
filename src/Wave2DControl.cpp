@@ -70,6 +70,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
 //        float z = -cos(3*sqrt(pow(point.first.x-width/2,2)+pow(point.first.y-height/2+0.5,2))-t);
         grid[point.first.y][point.first.x] = z;
         point.second = z;
+        ofClamp(z, 0, 1);
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
     }
@@ -83,14 +84,18 @@ void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f 
         auto &point = barInfo_Pos[i];
         if(point.first.x == pos.x && point.first.y == pos.y){
             for(int j = 0; j < infoVec.size(); j++){
-//                ofSetColor(infoVec[j]*255);
-//                ofDrawRectangle(j,2*i, 1, 1);
-//                ofSetColor((1-infoVec[j])*255);
-//                ofDrawRectangle(j,2*i+1, 1, 1);
-                ofSetColor(infoVec[j]*255);
-                ofDrawRectangle(i,j, 1, 1);
-                ofSetColor((infoVec[infoVec.size()-j])*255);
-                ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
+                //TODO: Change the inversion type, forula and dropdown
+                if(previewTex){
+                    ofSetColor(ofClamp(infoVec[j]*255, 0, 255));
+                    ofDrawRectangle(i,j, 1, 1);
+                    ofSetColor(ofClamp((infoVec[infoVec.size()-j])*255, 0, 255));
+                    ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
+                }else{
+                    ofSetColor(infoVec[j]*255);
+                    ofDrawRectangle(2*i, j,1, 1);
+                    ofSetColor((infoVec[infoVec.size()-j])*255);
+                    ofDrawRectangle(2*i+1, j,1, 1);
+                }
             }
         }
     }
