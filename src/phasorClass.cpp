@@ -15,10 +15,6 @@ phasorClass::phasorClass()
 }
 
 void phasorClass::setup(){
-    soundStream.setup(0,2, 44100, 512, 4);
-    soundStream.setInput(this);
-    
-    
     parameters.setName("phasor");
     parameters.add(bpm_Param.set("BPM", 120, 30, 180));
     parameters.add(beatsDiv_Param.set("Beats Div", 1, 1, 12));

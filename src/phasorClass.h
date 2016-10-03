@@ -13,7 +13,7 @@
 
 #include "ofMain.h"
 
-class phasorClass: public ofBaseSoundInput{
+class phasorClass{
 public:
     phasorClass();
     ~phasorClass(){};
@@ -38,8 +38,6 @@ private:
     ofParameter<bool>   loop_Param;
     ofParameter<bool>   bounce_Param;
     ofParameter<bool>   resetPhase_Param;
-    
-    ofSoundStream soundStream;
 };
 
 

@@ -5,7 +5,6 @@
 #include "ofxSyphon.h"
 #include "elementOscilator.h"
 #include "Wave2DControl.h"
-#include "delayControl.h"
 #include "parametersControl.h"
 
 static const int NUM_BARS = 24;
@@ -21,6 +20,8 @@ class ofApp : public ofBaseApp{
 		void draw();
     
     void drawSecondWindow(ofEventArgs & args);
+    
+    void audioIn(float * input, int bufferSize, int nChannels);
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -47,7 +48,6 @@ private:
     
     phasorClass phasor;
     elementOscilator singleGenerator;
-    delayControl     delayControler;
     Wave2DControl   waveControl;
     
     parametersControl paramsControl;

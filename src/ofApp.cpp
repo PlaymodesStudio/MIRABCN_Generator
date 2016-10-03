@@ -17,11 +17,6 @@ void ofApp::setup(){
     waveControl.setup(COL_BARS, ROW_BARS);
     
     
-    //Initialize the calculator of index modifications in delaying the info calulated by the singleGenerator
-    delayControler.setIndexCount(NUM_BARS);
-    delayControler.setup();
-    
-    
     //Initialize our vector that stores the information of the oscilators
     infoVec.resize(pixelNum, 0);
     
@@ -42,10 +37,11 @@ void ofApp::setup(){
     //Paramters binding
     paramsControl.bindPhasorParams(phasor.getParameterGroup());
     paramsControl.bindOscilatorParams(singleGenerator.getParameterGroup());
-    paramsControl.bindDelayParams(delayControler.getParameterGroup());
     paramsControl.setup();
     
     guiWidth = paramsControl.getGuiWidth();
+    
+    ofSoundStreamSetup(0, 2, 44100, 512, 4);
 }
 
 //--------------------------------------------------------------
@@ -63,9 +59,7 @@ void ofApp::update(){
             waveControl.computeOutTex(pixelContent, infoVec, ofVec2f(i, j));
         }
     }
-    
-    //Fill the fbo with the information in infoVec, and delaying it and modifing with it's controls
-    //delayControler.applyDelayToTexture(pixelContent, infoVec, phasor.getParameterGroup().getFloat("BPM"));
+
     
     //Pass texture to syphon
     syphonServer.publishTexture(&pixelContent.getTexture());
@@ -100,6 +94,11 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     //Draw the framerate
     ofSetColor(255, 0,0);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
+}
+
+//--------------------------------------------------------------
+void ofApp::audioIn(float * input, int bufferSize, int nChannels){
+    phasor.audioIn(input, bufferSize, nChannels);
 }
 
 //--------------------------------------------------------------

@@ -51,14 +51,14 @@ void parametersControl::setup(){
     datGui->addDropdown("Wave Select", {"sin", "cos", "tri", "square", "saw", "inverted saw", "rand1", "rand2"});
     
     
-    //DELAY
-    datGui->addBreak();
-    datGui->addLabel("Delay");
-    datGui->addSlider(delayParams.getInt("Delay"));
-    datGui->addToggle("Invert Delay")->setChecked(false);
-    datGui->addSlider(delayParams.getInt("Symmetry"));
-    datGui->addSlider(delayParams.getFloat("Combination"));
-    datGui->addSlider(delayParams.getInt("Delay Sixteenth"));
+//    //DELAY
+//    datGui->addBreak();
+//    datGui->addLabel("Delay");
+//    datGui->addSlider(delayParams.getInt("Delay"));
+//    datGui->addToggle("Invert Delay")->setChecked(false);
+//    datGui->addSlider(delayParams.getInt("Symmetry"));
+//    datGui->addSlider(delayParams.getFloat("Combination"));
+//    datGui->addSlider(delayParams.getInt("Delay Sixteenth"));
 
     //Gui Events
     datGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
