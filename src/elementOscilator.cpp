@@ -55,6 +55,9 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float phase){
         
         int newNumOfPixels = indexCount_Param/indexQuant_Param;
         
+        while(symmetry_Param > newNumOfPixels-1)
+            symmetry_Param--;
+        
         bool odd = false;
         if((int)((index)/(newNumOfPixels/(symmetry_Param+1)))%2 == 1 ) odd = true;
         
