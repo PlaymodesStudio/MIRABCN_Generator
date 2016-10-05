@@ -54,5 +54,7 @@ private:
     parametersControl paramsControl;
     
     int guiWidth;
+    
+    ofSoundStream soundStream;
 		
 };

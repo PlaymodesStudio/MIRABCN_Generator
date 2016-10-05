@@ -13,7 +13,8 @@ int main( ){
     
     ofGLFWWindowSettings mainSettings;
     mainSettings.width = 1440;
-    mainSettings.height = 850;
+    mainSettings.height = 450;
+    mainSettings.setPosition(ofVec2f(0,0));
     mainSettings.windowMode = OF_WINDOW;
     mainSettings.resizable = true;
     shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(mainSettings);
@@ -21,6 +22,7 @@ int main( ){
     ofGLFWWindowSettings prevSettings;
     prevSettings.width = 300;
     prevSettings.height = 250;
+    prevSettings.setPosition(ofVec2f(0, mainSettings.height));
     prevSettings.windowMode = OF_WINDOW;
     prevSettings.resizable = true;
     prevSettings.shareContextWith = mainWindow;

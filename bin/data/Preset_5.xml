@@ -1,6 +1,17 @@
 <PRESET>
 	<phasor_1>
 		<BPM>120</BPM>
+		<Beats_Div>4</Beats_Div>
+		<Beats_Mult>1</Beats_Mult>
+		<Quantization>40</Quantization>
+		<Initial_phase>0</Initial_phase>
+		<Reset_Phase>0</Reset_Phase>
+		<Loop>1</Loop>
+		<Bounce>0</Bounce>
+		<Phasor_Monitor>0.499229</Phasor_Monitor>
+	</phasor_1>
+	<phasor_2>
+		<BPM>120</BPM>
 		<Beats_Div>1</Beats_Div>
 		<Beats_Mult>1</Beats_Mult>
 		<Quantization>40</Quantization>
@@ -8,12 +19,13 @@
 		<Reset_Phase>0</Reset_Phase>
 		<Loop>1</Loop>
 		<Bounce>0</Bounce>
-	</phasor_1>
+		<Phasor_Monitor>0.766345</Phasor_Monitor>
+	</phasor_2>
 	<oscillator_1>
-		<n_Waves>2</n_Waves>
+		<n_Waves>1</n_Waves>
 		<Phase_offset>0</Phase_offset>
 		<Invert>0</Invert>
-		<Symmetry>5</Symmetry>
+		<Symmetry>1</Symmetry>
 		<Index_Offset>0</Index_Offset>
 		<Index_Quantization>1</Index_Quantization>
 		<Combination>0</Combination>
@@ -22,8 +34,8 @@
 		<Quantization>0</Quantization>
 		<Scale>1</Scale>
 		<Offset>0</Offset>
-		<Pow>24</Pow>
-		<Square_PWM>0.8</Square_PWM>
-		<Wave_Select>3</Wave_Select>
+		<Pow>33</Pow>
+		<Square_PWM>0.5</Square_PWM>
+		<Wave_Select>0</Wave_Select>
 	</oscillator_1>
 </PRESET>

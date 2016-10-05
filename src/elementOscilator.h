@@ -57,9 +57,8 @@ private:
     ofParameter<int>    modulo_Param;
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
-    ofParameterGroup    waveDropDown;
     
-    vector<float> infoVec_preMod;
+    vector<float>       infoVec_preMod;
     
     float               oldPhasor;
     int                 prevIndex;

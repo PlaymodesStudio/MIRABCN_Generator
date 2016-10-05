@@ -16,12 +16,9 @@ public:
     Wave2DControl(){};
     ~Wave2DControl(){};
     
-    void setup(int width, int height);
-    int computeFunc(int index);
+    void setup(int width, int height, int index = 0);
     vector<vector<float>> computeWave(ofFbo &waveTex, float phasor);
     void computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos);
-    
-    void setIndexCount(int indexCount){indexCount_Param = indexCount;};
     
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
@@ -32,12 +29,14 @@ private:
     
     //Parameters
     ofParameterGroup    parameters;
-    ofParameter<int>    indexCount_Param; //The max number you will get from index
     ofParameter<bool>   invert_Param;
-    ofParameter<int>    symmetry_Param;
+    ofParameter<int>    symmetryX_Param;
+    ofParameter<int>    symmetryY_Param;
     ofParameter<float>  comb_Param;
-    ofParameter<int>    delay_frames;
-    ofParameter<int>    delay_sixteenth;
+    ofParameter<float>  phaseScale_Param;
+    ofParameter<string> waveFormula_Param;
+    ofParameter<int>    formulaChooser_Param;
+    vector<string>      formulasToChoose;
     
     int width;
     int height;

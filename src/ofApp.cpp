@@ -15,7 +15,7 @@ void ofApp::setup(){
     singleGenerator.setup(1);
     
     
-    waveControl.setup(COL_BARS, ROW_BARS);
+    waveControl.setup(COL_BARS, ROW_BARS, 1);
     
     
     //Initialize our vector that stores the information of the oscilators
@@ -31,19 +31,20 @@ void ofApp::setup(){
     waveGrid.allocate(COL_BARS, ROW_BARS, GL_RGB);
     waveGrid.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
-    //Setup of the phasor, wich controls the oscilator generator
+    //Setup of the phasors, wich controls the oscilator generator and other parameters
     phasors.resize(2);
-    phasors[0].setup(1);
-    phasors[1].setup(2);
+    for(int i=0; i<phasors.size(); i++)
+        phasors[i].setup(i+1);
     
     paramsControl.createGuiFromParams(phasors[0].getParameterGroup());
     paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
     paramsControl.createGuiFromParams(singleGenerator.getParameterGroup());
+    paramsControl.createGuiFromParams(waveControl.getParameterGroup());
     
 
     paramsControl.setup();
     
-    ofSoundStreamSetup(0, 2, 44100, 512, 4);
+    soundStream.setup(this, 0, 2, 44100, 512, 4);
 }
 
 //--------------------------------------------------------------

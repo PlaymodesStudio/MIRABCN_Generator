@@ -40,8 +40,14 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
             tempDatGui->addSlider(paramGroup.getInt(i));
         else if(absParam.type() == typeid(ofParameter<bool>).name())
             tempDatGui->addToggle(paramGroup.getName(i))->setChecked(paramGroup.getBool(i).get());
+        else if(absParam.type() == typeid(ofParameter<string>).name()){
+            if(ofSplitString(absParam.getName(), "_").size() > 1)
+                tempDatGui->addLabel(ofSplitString(absParam.getName(), "_")[0]);
+            else
+                tempDatGui->addTextInput(absParam.getName())->setText(absParam.cast<string>());
+        }
         else{
-            vector<string> dropStrings;
+            tempDatGui->addLabel(paramGroup.getGroup(i).getName());
             tempDatGui->addDropdown(paramGroup.getGroup(i).getName(), ofSplitString(paramGroup.getGroup(i).getString(0), "-|-"))->select(paramGroup.getGroup(i).getInt(1));
         }
     }
