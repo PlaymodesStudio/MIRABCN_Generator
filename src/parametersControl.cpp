@@ -91,6 +91,7 @@ void parametersControl::setup(){
         gui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
         gui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
         gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
+        gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
     }
     
     //OF PARAMETERS LISTERENRS
@@ -363,6 +364,13 @@ void parametersControl::onGuiSliderEvent(ofxDatGuiSliderEvent e){
         periodTime = e.value / phasorParams.getFloat(0) * 60.;
 }
 
+void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
+    for (int i=0; i < datGuis.size() ; i++){
+        if(datGuis[i]->getTextInput(e.target->getName()) == e.target)
+            parameterGroups[i].getString(e.target->getName()) = e.text;
+    }
+}
+
 
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;
@@ -422,7 +430,16 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         //Update to datGui
         datGui->getToggle(castedParam.getName())->setChecked(normalizedVal);
     }
-    midiOut.sendControlChange(1, position, normalizedVal);
+    else if(e.type() == typeid(ofParameter<string>).name()){
+        ofParameter<string> castedParam = e.cast<string>();
+        position = -1;
+        
+        datGuis[parentIndex]->getTextInput(castedParam.getName())->setText(castedParam);
+    }
+    
+    
+    if(position != -1)
+        midiOut.sendControlChange(1, position, normalizedVal);
     
 //    cout<<"Para Change: "<< e.getName() << " |pos: " << position << " |val: " << e  << " |MIDI: " << normalizedVal << endl;
 }

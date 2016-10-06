@@ -23,10 +23,13 @@ void Wave2DControl::setup(int _width, int _height, int index){
     ofParameterGroup formulaDropdown;
     formulaDropdown.setName("Wave Formula Select");
     //TODO: CHange values
-    ofParameter<string> tempStrParam("Options2", "Manual-|-sinus-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
+    ofParameter<string> tempStrParam("Options2", "Manual-|-sin(x)-|-cos(x)-|-sin(x+y)-|--cos(3*sqrt(pow(x,2)+pow(y,2))-t)-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
     formulaDropdown.add(tempStrParam);
     formulaDropdown.add(formulaChooser_Param.set("Wave Forumula Select", 0, 0, ofSplitString(tempStrParam, "-|-").size()));
     parameters.add(formulaDropdown);
+    
+    formulaChooser_Param.addListener(this, &Wave2DControl::newFuncSelected);
+    waveFormula_Param.addListener(this, &Wave2DControl::newFuncEntered);
     
     formulasToChoose = ofSplitString(tempStrParam, "-|-");
     
@@ -41,6 +44,12 @@ void Wave2DControl::setup(int _width, int _height, int index){
             barInfo_Pos.push_back(tempPair);
         }
     }
+    
+    expression_parser.addSymbol("x", x);
+    expression_parser.addSymbol("y", y);
+    expression_parser.addSymbol("t", t);
+    expression_parser.registerSymbols();
+    expression_parser.compileExpression(waveFormula_Param);
 }
 
 vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
@@ -56,10 +65,13 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
                 z-=1;
             
         }else{
-            float t = 2*PI*phasor;
-            float x = point.first.x-width/2;
-            float y = point.first.y-height/2+0.5;
-            float z = -cos(3*sqrt(pow(x,2)+pow(y,2))-t);
+            t = 2*PI*phasor;
+            x = point.first.x-width/2;
+            y = point.first.y-height/2+0.5;
+//            z = -cos(3*sqrt(pow(x,2)+pow(y,2))-t);
+            z = expression_parser.evaluateExpression();
+            ofMap(z, -1, 1, 0, 1, true);
+            cout<<z<< " ";
         }
 
         grid[point.first.y][point.first.x] = z;
@@ -68,6 +80,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
     }
+    cout<<endl;
     waveTex.end();
     return grid;
 }
@@ -94,5 +107,17 @@ void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f 
         }
     }
     outTex.end();
+}
+
+void Wave2DControl::newFuncSelected(int &val){
+    if(formulasToChoose[formulaChooser_Param] != "Manual"){
+        waveFormula_Param = formulasToChoose[val];
+    }
+}
+
+void Wave2DControl::newFuncEntered(string &str){
+    if(formulasToChoose[formulaChooser_Param] != "Manual"){
+        expression_parser.compileExpression(str);
+    }
 }
 

@@ -10,6 +10,7 @@
 #define Wave2DControl_h
 
 #include "ofMain.h"
+#include "ofxExprtk.h"
 
 class Wave2DControl{
 public:
@@ -19,6 +20,9 @@ public:
     void setup(int width, int height, int index = 0);
     vector<vector<float>> computeWave(ofFbo &waveTex, float phasor);
     void computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos);
+    
+    void newFuncSelected(int &val);
+    void newFuncEntered(string &str);
     
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
@@ -48,6 +52,10 @@ private:
     
     //Buffer of intoVec, we use deque to be able to create a circular buffer, erase the old values
     deque<vector<float>> infoVecBuffer;
+    
+    //Function variables
+    ofxExprtk expression_parser;
+    float x, y, t;
 };
 
 
