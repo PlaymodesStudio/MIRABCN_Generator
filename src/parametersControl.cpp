@@ -21,10 +21,15 @@ void parametersControl::bindDelayParams(ofParameterGroup paramGroup){
 }
 
 void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
+    
+    ofxDatGuiLog::quiet();
+    ofxDatGui::setAssetPath("");
+    
     //Put parameterGroup into vector
     parameterGroups.push_back(paramGroup);
         
     ofxDatGui* tempDatGui = new ofxDatGui();
+//    tempDatGui->setAssetPath("");
     tempDatGui->addHeader(paramGroup.getName());
     tempDatGui->addFooter();
     if(datGuis.size() == 0)
@@ -123,9 +128,11 @@ void parametersControl::update(){
         oscReceiver.getNextMessage(m);
         
         vector<string> splitAddress = ofSplitString(m.getAddress(), "/");
+        ofStringReplace(splitAddress[1], "_", " ");
         for(auto groupParam : parameterGroups){
+            cout<<groupParam.getName() << " " << splitAddress[1]<< " " << splitAddress[2] << endl;
             if(groupParam.getName() == splitAddress[1]){
-                ofAbstractParameter &absParam = phasorParams.get(splitAddress[2]);
+                ofAbstractParameter &absParam = groupParam.get(splitAddress[2]);
                 if(absParam.type() == typeid(ofParameter<float>).name())
                     groupParam.getFloat(splitAddress[2]) = m.getArgAsFloat(0);
                 else if(absParam.type() == typeid(ofParameter<int>).name())

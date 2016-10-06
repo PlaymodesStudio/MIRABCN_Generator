@@ -51,13 +51,15 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
         float z;
         if(formulasToChoose[formulaChooser_Param] == "Manual"){
             z = point.second;
+            z += phasor;
+            if(z > 1)
+                z-=1;
             
         }else{
-            int t = 2*PI*phasor;
-            int x = point.first.x-width/2;
-            int y = point.first.y-height/2+0.5;
+            float t = 2*PI*phasor;
+            float x = point.first.x-width/2;
+            float y = point.first.y-height/2+0.5;
             float z = -cos(3*sqrt(pow(x,2)+pow(y,2))-t);
-            
         }
 
         grid[point.first.y][point.first.x] = z;

@@ -55,13 +55,16 @@ void ofApp::update(){
     
     vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, phasors[1].getPhasor());
     
+    float update_Phasor = phasors[0].getPhasor();
     for(int i = 0; i < COL_BARS ; i++){
         for (int j = 0; j < ROW_BARS ; j++){
             //Calculation of the oscilators for each element, with phasor info
-            singleGenerator.computeFunc(infoVec.data(), phasors[0].getPhasor(), phase_offset[j][i]);
+            singleGenerator.computeFunc(infoVec.data(), update_Phasor, phase_offset[j][i]);
             waveControl.computeOutTex(pixelContent, infoVec, ofVec2f(i, j));
         }
     }
+    
+    singleGenerator.computeFunc(infoVec.data(), update_Phasor, 0);
 
     //Pass texture to syphon
     syphonServer.publishTexture(&pixelContent.getTexture());
