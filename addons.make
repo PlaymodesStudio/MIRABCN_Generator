@@ -1,5 +1,5 @@
-ofxAubio
 ofxDatGui_PM
+ofxExprtk
 ofxMidi
 ofxOsc
 ofxSyphon
