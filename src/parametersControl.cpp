@@ -259,6 +259,12 @@ void parametersControl::savePreset(int presetNum){
                 ofStringReplace(noSpaces, " ", "_");
                 xml.addValue(noSpaces, castedParam.get());
             }
+            else if(absParam.type() == typeid(ofParameter<string>).name()){
+                ofParameter<string> castedParam = absParam.cast<string>();
+                string noSpaces = castedParam.getName();
+                ofStringReplace(noSpaces, " ", "_");
+                xml.addValue(noSpaces, castedParam.get());
+            }
             else{
                 string noSpaces = groupParam.getGroup(j).getName();
                 ofStringReplace(noSpaces, " ", "_");
@@ -307,6 +313,12 @@ void parametersControl::loadPreset(int presetNum){
                 }
                 else if(absParam.type() == typeid(ofParameter<bool>).name()){
                     ofParameter<bool> castedParam = absParam.cast<bool>();
+                    string noSpaces = castedParam.getName();
+                    ofStringReplace(noSpaces, " ", "_");
+                    castedParam = xml.getValue(noSpaces, castedParam.get());
+                }
+                else if(absParam.type() == typeid(ofParameter<string>).name()){
+                    ofParameter<string> castedParam = absParam.cast<string>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
                     castedParam = xml.getValue(noSpaces, castedParam.get());

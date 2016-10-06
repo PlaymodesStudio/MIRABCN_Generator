@@ -12,7 +12,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     width = _width;
     height = _height;
     
-    parameters.setName("2Dwave");
+    parameters.setName("wave2D " + ofToString(index));
     parameters.add(invert_Param.set("Invert 2D", false));
     parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
     parameters.add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
@@ -48,6 +48,8 @@ void Wave2DControl::setup(int _width, int _height, int index){
     expression_parser.addSymbol("x", x);
     expression_parser.addSymbol("y", y);
     expression_parser.addSymbol("t", t);
+    expression_parser.addSymbol("cx", cx);
+    expression_parser.addSymbol("cy", cy);
     expression_parser.registerSymbols();
     expression_parser.compileExpression(waveFormula_Param);
 }
@@ -66,12 +68,14 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
             
         }else{
             t = 2*PI*phasor;
-            x = point.first.x-width/2;
-            y = point.first.y-height/2+0.5;
+            x = point.first.x;
+            y = point.first.y;
+            cx = point.first.x-width/2;
+            cy = point.first.y-height/2+0.5;
 //            z = -cos(3*sqrt(pow(x,2)+pow(y,2))-t);
             z = expression_parser.evaluateExpression();
             ofMap(z, -1, 1, 0, 1, true);
-            cout<<z<< " ";
+//            cout<<z<< " ";
         }
 
         grid[point.first.y][point.first.x] = z;
@@ -80,7 +84,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
     }
-    cout<<endl;
+//    cout<<endl;
     waveTex.end();
     return grid;
 }

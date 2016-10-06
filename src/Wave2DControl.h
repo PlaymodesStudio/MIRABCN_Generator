@@ -55,7 +55,7 @@ private:
     
     //Function variables
     ofxExprtk expression_parser;
-    float x, y, t;
+    float x, y, t, cx, cy;
 };
 
 
