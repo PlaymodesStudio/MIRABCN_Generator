@@ -38,13 +38,26 @@ void elementOscilator::setup(int index){
     waveDropDown.add(tempStrParam);
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters.add(waveDropDown);
+    
+    ofParameterGroup modulationDropDown;
+    modulationDropDown.setName("Modulation Select");
+    ofParameter<string> temp2StrParam("Options", "none-|-phase-|-multiply-|-n Waves-|-combination");
+    modulationDropDown.add(temp2StrParam);
+    modulationDropDown.add(modulatorSelect_Param.set("Modulation Select", 0, 0, 4));
+    parameters.add(modulationDropDown);
     //parameters.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     
     infoVec_preMod.resize(indexCount_Param);
 }
 
-void elementOscilator::computeFunc(float *infoVec, float phasor, float phase){
+void elementOscilator::computeFunc(float *infoVec, float phasor, float modulation){
     for (int i = 0; i < indexCount_Param ; i++){
+        
+        if(modulatorSelect_Param == 3 && modulation != -1)
+            freq_Param = ofMap(modulation, 0, 1, freq_Param.getMin(), freq_Param.getMax());
+        
+        if(modulatorSelect_Param == 4 && modulation != -1)
+            comb_Param = ofMap(modulation, 0, 1, comb_Param.getMin(), comb_Param.getMax());
         
         int index = i;
         
@@ -100,7 +113,9 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float phase){
         //k *= invert_Param;
         k *=  freq_Param * indexQuant_Param; //Index Modifiers
         
-        k+= (phase*2*PI);
+        if(modulatorSelect_Param == 1 && modulation != -1)
+           k+= (modulation*2*PI);
+        
         float linPhase = fmod(w+k, 2*PI) / (2*PI);
         float val = 0;
         switch (static_cast<oscTypes>(waveSelect_Param.get()+1)) {
@@ -160,6 +175,8 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float phase){
                 break;
         }
         
+        if(modulatorSelect_Param == 2 && modulation != -1)
+            val *= modulation;
         
         infoVec_preMod[i] = val;
         computeMultiplyMod(&val);
@@ -169,10 +186,6 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float phase){
         infoVec[i] = val;
         prevIndex = index;
     }
-}
-
-void elementOscilator::computeFunc(float *infoVec, float phasor){
-    computeFunc(infoVec, phasor, 0);
 }
 
 void elementOscilator::computeMultiplyMod(float *value){

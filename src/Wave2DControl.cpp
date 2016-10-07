@@ -12,6 +12,22 @@ void Wave2DControl::setup(int _width, int _height, int index){
     width = _width;
     height = _height;
     
+    
+    grid.resize(height);
+    for( auto &row : grid)
+        row.resize(width, 0);
+    for(int i=0 ; i<height ; i++){
+        for(int j=0; j<width; j++){
+            pair<ofVec2f, float> tempPair;
+            tempPair.first = ofVec2f(j, i);
+            tempPair.second = float((width*i)+j)/ float(height*width);
+            barInfo_Pos.push_back(tempPair);
+        }
+    }
+    
+    manualInput_int.resize(height*width, 0);
+    
+    
     parameters.setName("wave2D " + ofToString(index));
     parameters.add(invert_Param.set("Invert 2D", false));
     parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
@@ -28,22 +44,17 @@ void Wave2DControl::setup(int _width, int _height, int index){
     formulaDropdown.add(formulaChooser_Param.set("Wave Forumula Select", 0, 0, ofSplitString(tempStrParam, "-|-").size()));
     parameters.add(formulaDropdown);
     
+
+    ofParameter<string> label2("Insert Distribution_label", " ");
+    parameters.add(label2);
+    parameters.add(manualInput.set("Manual Input", "1-2-3-4-5-6-7-8-9-10-11-12"));
+    
     formulaChooser_Param.addListener(this, &Wave2DControl::newFuncSelected);
     waveFormula_Param.addListener(this, &Wave2DControl::newFuncEntered);
+    manualInput.addListener(this, &Wave2DControl::manualInputChanged);
     
     formulasToChoose = ofSplitString(tempStrParam, "-|-");
-    
-    grid.resize(height);
-    for( auto &row : grid)
-        row.resize(width, 0);
-    for(int i=0 ; i<height ; i++){
-        for(int j=0; j<width; j++){
-            pair<ofVec2f, float> tempPair;
-            tempPair.first = ofVec2f(j, i);
-            tempPair.second = float((width*i)+j)/ float(height*width);
-            barInfo_Pos.push_back(tempPair);
-        }
-    }
+
     
     expression_parser.addSymbol("x", x);
     expression_parser.addSymbol("y", y);
@@ -58,15 +69,16 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
     //Use the fbo to paint on it
     waveTex.begin();
     ofSetColor(0);
+    int i = 0;
     for(auto point : barInfo_Pos){
         float z;
         if(formulasToChoose[formulaChooser_Param] == "Manual"){
-            z = point.second;
+            z = manualInput_int[i];
+//            z = point.second;
             z += phasor;
             if(z > 1)
                 z-=1;
             ofClamp(z, 0, 1);
-            
         }else{
             t = 2*PI*phasor;
             x = point.first.x;
@@ -85,6 +97,8 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
         point.second = z;
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
+        
+        i++;
     }
     waveTex.end();
     return grid;
@@ -126,3 +140,17 @@ void Wave2DControl::newFuncEntered(string &str){
     }
 }
 
+void Wave2DControl::manualInputChanged(string &str){
+    int i=0;
+    for(auto num : ofSplitString(str, "-")){
+        manualInput_int[i] = ofToInt(num);
+        i++;
+    }
+    
+    int min = *min_element(manualInput_int.begin(), manualInput_int.end());
+    int max = *max_element(manualInput_int.begin(), manualInput_int.end());
+    
+    for(float &num : manualInput_int){
+        num = ofMap(num, min, max, 0, 1);
+    }
+}

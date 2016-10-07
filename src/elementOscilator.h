@@ -29,8 +29,7 @@ public:
     
     void setup(int index = 0);
     
-    void computeFunc(float *infoVec, float phasor);
-    void computeFunc(float *infoVec, float phasor, float phase);
+    void computeFunc(float *infoVec, float phasor, float modulation = -1);
     void computeMultiplyMod(float* value);
     
     void setIndexCount(int val){indexCount_Param = val;};
@@ -57,6 +56,7 @@ private:
     ofParameter<int>    modulo_Param;
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
+    ofParameter<int>    modulatorSelect_Param;
     
     vector<float>       infoVec_preMod;
     

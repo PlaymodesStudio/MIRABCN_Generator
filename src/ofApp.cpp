@@ -64,7 +64,7 @@ void ofApp::update(){
         }
     }
     
-    singleGenerator.computeFunc(infoVec.data(), update_Phasor, 0);
+    singleGenerator.computeFunc(infoVec.data(), update_Phasor);
 
     //Pass texture to syphon
     syphonServer.publishTexture(&pixelContent.getTexture());

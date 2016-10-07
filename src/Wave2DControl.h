@@ -23,6 +23,7 @@ public:
     
     void newFuncSelected(int &val);
     void newFuncEntered(string &str);
+    void manualInputChanged(string &str);
     
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
@@ -41,6 +42,9 @@ private:
     ofParameter<string> waveFormula_Param;
     ofParameter<int>    formulaChooser_Param;
     vector<string>      formulasToChoose;
+    ofParameter<string> manualInput;
+    
+    vector<float>        manualInput_int;
     
     int width;
     int height;
