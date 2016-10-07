@@ -65,6 +65,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
             z += phasor;
             if(z > 1)
                 z-=1;
+            ofClamp(z, 0, 1);
             
         }else{
             t = 2*PI*phasor;
@@ -72,19 +73,19 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
             y = point.first.y;
             cx = point.first.x-width/2;
             cy = point.first.y-height/2+0.5;
-//            z = -cos(3*sqrt(pow(x,2)+pow(y,2))-t);
             z = expression_parser.evaluateExpression();
             ofMap(z, -1, 1, 0, 1, true);
-//            cout<<z<< " ";
         }
-
-        grid[point.first.y][point.first.x] = z;
+        if(invert_Param){
+            z *= -1;
+            z += 1;
+        }
+        
+        grid[point.first.y][point.first.x] = z*phaseScale_Param;
         point.second = z;
-        ofClamp(z, 0, 1);
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
     }
-//    cout<<endl;
     waveTex.end();
     return grid;
 }
