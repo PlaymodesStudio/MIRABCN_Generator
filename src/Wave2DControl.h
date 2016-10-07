@@ -54,7 +54,7 @@ private:
     deque<vector<float>> infoVecBuffer;
     
     //Function variables
-    ofxExprtk expression_parser;
+    ofxExprtk<float> expression_parser;
     float x, y, t, cx, cy;
 };
 
