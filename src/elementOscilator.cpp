@@ -23,7 +23,7 @@ void elementOscilator::setup(int index){
     parameters.add(invert_Param.set("Invert", false));
     parameters.add(symmetry_Param.set("Symmetry", 0, 0, 10));
     parameters.add(indexOffset_Param.set("Index Offset", 0, -indexCount_Param/2, indexCount_Param/2));
-    parameters.add(indexQuant_Param.set("Index Quantization", 1, 1, indexCount_Param));
+    parameters.add(indexQuant_Param.set("Index Quantization", indexCount_Param, 1, indexCount_Param));
     parameters.add(comb_Param.set("Combination", 0, 0, 1));
     parameters.add(modulo_Param.set("Modulo", indexCount_Param, 1, indexCount_Param));
     parameters.add(randomAdd_Param.set("Random addition", 0, -.5, .5));
@@ -65,9 +65,10 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         float w = (phasor*2*PI);// + (phaseOffset_Param*2*PI);
         
         //QUANTIZE
-        index = ceil(index/indexQuant_Param);
+        int newNumOfPixels = indexQuant_Param;
         
-        int newNumOfPixels = indexCount_Param/indexQuant_Param;
+        index = floor(index/((float)indexCount_Param/(float)newNumOfPixels));
+        
         
         while(symmetry_Param > newNumOfPixels-1)
             symmetry_Param--;
@@ -111,7 +112,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         
         //invert it?
         //k *= invert_Param;
-        k *=  freq_Param * indexQuant_Param; //Index Modifiers
+        k *=  freq_Param * ((float)indexCount_Param/(float)indexQuant_Param); //Index Modifiers
         
         if(modulatorSelect_Param == 1 && modulation != -1)
            k+= (modulation*2*PI);
