@@ -95,7 +95,7 @@ void parametersControl::setup(){
         gui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
         gui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
         gui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
-        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
+//        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
         gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
     }
     

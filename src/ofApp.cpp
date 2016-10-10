@@ -31,6 +31,9 @@ void ofApp::setup(){
     waveGrid.allocate(COL_BARS, ROW_BARS, GL_RGB);
     waveGrid.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
+    waveLinear.allocate(COL_BARS*ROW_BARS, 255, GL_RGB);
+    waveLinear.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+    
     //Setup of the phasors, wich controls the oscilator generator and other parameters
     phasors.resize(2);
     for(int i=0; i<phasors.size(); i++)
@@ -40,6 +43,7 @@ void ofApp::setup(){
     paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
     paramsControl.createGuiFromParams(singleGenerator.getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getParameterGroup());
+    paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup());
     
 
     paramsControl.setup();
@@ -53,7 +57,7 @@ void ofApp::update(){
     
     //Phasor updates automatically at audio rate
     
-    vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, phasors[1].getPhasor());
+    vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, waveLinear, phasors[1].getPhasor());
     
     float update_Phasor = phasors[0].getPhasor();
     for(int i = 0; i < COL_BARS ; i++){
@@ -80,21 +84,19 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     ofSetColor(255);
     int contentWidth = ofGetWidth();
     //Draw the fbo
-    pixelContent.getTexture().draw(0, 0, contentWidth/2, 5*ofGetHeight()/11);
+    pixelContent.getTexture().draw(0, 0, contentWidth/2, ofGetHeight()/3);
     
-    waveGrid.getTexture().draw((contentWidth/2), 0, contentWidth/2, 5*ofGetHeight()/11);
+    waveGrid.getTexture().draw((contentWidth/2), 0, contentWidth/2, ofGetHeight()/3);
     
     //Draw the Bars
     float wid = (float)contentWidth/pixelNum;
-    float hei = 5*ofGetHeight()/11;
+    float hei = ofGetHeight()/3;
     for(int i = 0; i < pixelNum; i++)
         ofDrawRectangle((i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
     
+    //Draw the Bars2
+    waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, ofGetWidth(), ofGetHeight()/3);
     
-    //draw the phasor evolution
-    ofDrawTriangle(0, ofGetHeight(), ofGetWidth(), ofGetHeight(), ofGetWidth(), 10*ofGetHeight()/11);
-    ofSetColor(127);
-    ofDrawRectangle(((float)contentWidth * phasors[0].getPhasor()), 10*ofGetHeight()/11, 5, ofGetHeight()/11);
     
     //Draw the framerate
     ofSetColor(255, 0,0);

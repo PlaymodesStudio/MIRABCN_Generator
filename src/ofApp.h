@@ -43,6 +43,7 @@ private:
     vector<float> infoVec;
     ofFbo pixelContent;
     ofFbo waveGrid;
+    ofFbo waveLinear;
     
     
     ofxSyphonServer syphonServer;

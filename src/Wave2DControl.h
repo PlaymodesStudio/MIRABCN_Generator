@@ -11,6 +11,7 @@
 
 #include "ofMain.h"
 #include "ofxExprtk.h"
+#include "elementOscilator.h"
 
 class Wave2DControl{
 public:
@@ -18,18 +19,18 @@ public:
     ~Wave2DControl(){};
     
     void setup(int width, int height, int index = 0);
-    vector<vector<float>> computeWave(ofFbo &waveTex, float phasor);
+    vector<vector<float>> computeWave(ofFbo &waveTex, ofFbo &waveLin, float phasor);
     void computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos);
     
     void newFuncSelected(int &val);
     void newFuncEntered(string &str);
-    void manualInputChanged(string &str);
     void manualOrderChanged(string &str);
     
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
     
     ofParameterGroup getParameterGroup(){return parameters;};
+    ofParameterGroup getGeneratorParameterGroup(){return manualGenerator.getParameterGroup();};
     
 private:
     
@@ -43,10 +44,8 @@ private:
     ofParameter<string> waveFormula_Param;
     ofParameter<int>    formulaChooser_Param;
     vector<string>      formulasToChoose;
-    ofParameter<string> manualInput;
     ofParameter<string> manualOrder;
     
-    vector<float>       manualInput_int;
     vector<int>         manualOrder_int;
     
     int width;
@@ -63,6 +62,9 @@ private:
     //Function variables
     ofxExprtk<float> expression_parser;
     float x, y, t, cx, cy;
+    
+    
+    elementOscilator manualGenerator;
 };
 
 
