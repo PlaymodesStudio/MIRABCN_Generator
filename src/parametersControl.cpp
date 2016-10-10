@@ -69,6 +69,9 @@ void parametersControl::setup(){
     datGui->addHeader("Pressets Control");
     datGui->addFooter();
 
+    datGui->addButton("Global Reset Phase");
+    datGui->addSlider("Global BPM", 30, 180);
+    
     //Preset Control
     presetMatrix = datGui->addMatrix("Presets", NUM_PRESETS, true);
     presetMatrix->setRadioMode(true);
@@ -76,12 +79,14 @@ void parametersControl::setup(){
     
     presetMatrix->onMatrixEvent(this, &parametersControl::onGuiMatrixEvent);
     
+    
     datGui->addToggle("Automatic Preset");
     datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
     datGui->setPosition(ofxDatGuiAnchor::BOTTOM_LEFT);
     
     //ControlGui Events
+    datGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
     datGui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
     datGui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
 
@@ -345,9 +350,14 @@ void parametersControl::loadPreset(int presetNum){
 }
 
 void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
-        if(e.target->getName() == "Reset Phase")
-            phasorParams.getBool("Reset Phase") = true;
-    
+    if(datGui->getButton(e.target->getName())){
+        string nameNoGlobal = e.target->getName();
+        ofStringReplace(nameNoGlobal, "Global ", "");
+        for(auto groupParam : parameterGroups){
+            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
+            groupParam.getBool(nameNoGlobal) = 0;
+        }
+    }
 }
 void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
     for (int i=0; i < datGuis.size() ; i++){
@@ -374,6 +384,14 @@ void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
 }
 
 void parametersControl::onGuiSliderEvent(ofxDatGuiSliderEvent e){
+    if(datGui->getButton(e.target->getName())){
+        string nameNoGlobal = e.target->getName();
+        ofStringReplace(nameNoGlobal, "Global ", "");
+        for(auto groupParam : parameterGroups){
+            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
+            groupParam.getFloat(nameNoGlobal) = e.value;
+        }
+    }
     if(e.target->getName() == "Beats Period")
         periodTime = e.value / phasorParams.getFloat(0) * 60.;
 }
