@@ -27,7 +27,7 @@ void elementOscilator::setup(int index){
     parameters.add(comb_Param.set("Combination", 0, 0, 1));
     parameters.add(modulo_Param.set("Modulo", indexCount_Param, 1, indexCount_Param));
     parameters.add(randomAdd_Param.set("Random addition", 0, -.5, .5));
-    parameters.add(quant_Param.set("Quantization", 0, 0, 1));
+    parameters.add(quant_Param.set("Quantization", 255, 1, 255));
     parameters.add(scale_Param.set("Scale", 1, .5, 1.5));
     parameters.add(offset_Param.set("Offset", 0, -.5, .5));
     parameters.add(pow_Param.set("Pow", 1, -40, 40));
@@ -205,8 +205,8 @@ void elementOscilator::computeMultiplyMod(float *value){
     *value = ofClamp(*value, 0, 1);
     
     //Quantization
-    if(quant_Param)
-        *value = quant_Param*round(*value/quant_Param);
+    if(quant_Param < 255)
+        *value = (1/(float)quant_Param)*round(*value*quant_Param);
     
     *value = ofClamp(*value, 0, 1);
     

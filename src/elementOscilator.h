@@ -49,7 +49,7 @@ private:
     ofParameter<float>  phaseOffset_Param;
     ofParameter<int>    indexOffset_Param;
     ofParameter<int>    indexQuant_Param;
-    ofParameter<float>  quant_Param;
+    ofParameter<int>    quant_Param;
     ofParameter<float>  scale_Param;
     ofParameter<float>  offset_Param;
     ofParameter<float>  comb_Param;
