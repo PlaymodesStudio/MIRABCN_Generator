@@ -25,7 +25,8 @@ void Wave2DControl::setup(int _width, int _height, int index){
         }
     }
     
-    manualInput_int.resize(height*width, 0);
+    manualInput_int.resize((height*width), 0);
+    manualOrder_int.resize(height*width, 0);
     
     
     parameters.setName("wave2D " + ofToString(index));
@@ -45,13 +46,21 @@ void Wave2DControl::setup(int _width, int _height, int index){
     parameters.add(formulaDropdown);
     
 
-    ofParameter<string> label2("Insert Distribution_label", " ");
+    ofParameter<string> label2("Insert PseudoWave_label", " ");
     parameters.add(label2);
     parameters.add(manualInput.set("Manual Input", "1-2-3-4-5-6-7-8-9-10-11-12"));
+    
+    ofParameter<string> label3("Insert Order_label", " ");
+    parameters.add(label3);
+    parameters.add(manualOrder.set("Manual Order", "1-2-3-4-5-6-7-8-9-10-11-12"));
     
     formulaChooser_Param.addListener(this, &Wave2DControl::newFuncSelected);
     waveFormula_Param.addListener(this, &Wave2DControl::newFuncEntered);
     manualInput.addListener(this, &Wave2DControl::manualInputChanged);
+    manualOrder.addListener(this, &Wave2DControl::manualOrderChanged);
+    
+    manualInput.set("1-2-3-4-5-6-7-8-9-10-11-12");
+    manualOrder.set("1-2-3-4-5-6-7-8-9-10-11-12");
     
     formulasToChoose = ofSplitString(tempStrParam, "-|-");
 
@@ -69,13 +78,26 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
     //Use the fbo to paint on it
     waveTex.begin();
     ofSetColor(0);
-    int i = 0;
-    for(auto point : barInfo_Pos){
+    if(invert_Param) phasor = 1-phasor;
+    for(int i = 0; i < barInfo_Pos.size() ; i++){
+        auto point = barInfo_Pos[i];
         float z;
         if(formulasToChoose[formulaChooser_Param] == "Manual"){
-            z = manualInput_int[i];
-//            z = point.second;
-            z += phasor;
+            //Mean between before and after
+            int index = manualOrder_int[i];
+            int prevIndex = floor(index+(phasor*width*height));
+            if(prevIndex >= manualInput_int.size()) prevIndex -= manualInput_int.size();
+            float z1 = manualInput_int[prevIndex];
+            int nextIndex = ceil(index+(phasor*width*height));
+            if(nextIndex >= manualInput_int.size()) nextIndex -= manualInput_int.size();
+            float z2 = manualInput_int[nextIndex];
+            
+            if(z2 > z1)
+                z = ((z2-z1)*(phasor*width*height-int(phasor*width*height)))+z1;
+            else
+                z = ((z1-z2)*(phasor*width*height-int(phasor*width*height)))+z2;
+            if(z2 == 0 || z1 == 0) z = 0;
+            
             if(z > 1)
                 z-=1;
             ofClamp(z, 0, 1);
@@ -88,17 +110,11 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, float phasor){
             z = expression_parser.evaluateExpression();
             ofMap(z, -1, 1, 0, 1, true);
         }
-        if(invert_Param){
-            z *= -1;
-            z += 1;
-        }
         
         grid[point.first.y][point.first.x] = z*phaseScale_Param;
         point.second = z;
         ofSetColor(z*255);
         ofDrawRectangle(point.first.x, point.first.y, 1, 1);
-        
-        i++;
     }
     waveTex.end();
     return grid;
@@ -114,12 +130,12 @@ void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f 
                 if(previewTex){
                     ofSetColor(ofClamp(infoVec[j]*255, 0, 255));
                     ofDrawRectangle(i,j, 1, 1);
-                    ofSetColor(ofClamp((infoVec[infoVec.size()-1-j])*255, 0, 255));
+                    ofSetColor(ofClamp((infoVec[j])*255, 0, 255));
                     ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
                 }else{
                     ofSetColor(infoVec[j]*255);
                     ofDrawRectangle(2*i, j,1, 1);
-                    ofSetColor((infoVec[infoVec.size()-1-j])*255);
+                    ofSetColor((infoVec[j])*255);
                     ofDrawRectangle(2*i+1, j,1, 1);
                 }
             }
@@ -146,11 +162,18 @@ void Wave2DControl::manualInputChanged(string &str){
         manualInput_int[i] = ofToInt(num);
         i++;
     }
-    
     int min = *min_element(manualInput_int.begin(), manualInput_int.end());
     int max = *max_element(manualInput_int.begin(), manualInput_int.end());
     
     for(float &num : manualInput_int){
         num = ofMap(num, min, max, 0, 1);
+    }
+}
+
+void Wave2DControl::manualOrderChanged(string &str){
+    int i=0;
+    for(auto num : ofSplitString(str, "-")){
+        manualOrder_int[i] = ofToInt(num)-1;
+        i++;
     }
 }

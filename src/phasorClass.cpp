@@ -17,7 +17,7 @@ phasorClass::phasorClass()
 void phasorClass::setup(int index){
     parameters.setName("phasor " + ofToString(index));
     parameters.add(bpm_Param.set("BPM", 120, 30, 180));
-    parameters.add(beatsDiv_Param.set("Beats Div", 1, 1, 12));
+    parameters.add(beatsDiv_Param.set("Beats Div", 1, 1, 32));
     parameters.add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
     parameters.add(quant_Param.set("Quantization", 40, 1, 40));
     parameters.add(initPhase_Param.set("Initial phase", 0, 0, 1));

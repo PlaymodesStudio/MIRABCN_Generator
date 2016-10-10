@@ -144,8 +144,10 @@ void parametersControl::update(){
                     groupParam.getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
             }
         }
-        if(splitAddress[1] == "preset"){
+        if(splitAddress[1] == "presetLoad"){
             loadPreset(m.getArgAsInt(0));
+        }else if(splitAddress[1] == "presetSave"){
+            savePreset(m.getArgAsInt(0));
         }
     }
     

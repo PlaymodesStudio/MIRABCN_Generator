@@ -175,10 +175,11 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
                 break;
         }
         
+        infoVec_preMod[i] = val;
+        
         if(modulatorSelect_Param == 2 && modulation != -1)
             val *= modulation;
         
-        infoVec_preMod[i] = val;
         computeMultiplyMod(&val);
         if(i == indexCount_Param-1)
             oldPhasor = phasor;
@@ -189,12 +190,6 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
 }
 
 void elementOscilator::computeMultiplyMod(float *value){
-  
-    //SCALE
-    *value *= scale_Param;
-    
-    //OFFSETç
-    *value += offset_Param;
     
     //random Add
     if(randomAdd_Param)
@@ -214,6 +209,13 @@ void elementOscilator::computeMultiplyMod(float *value){
     
     *value = ofClamp(*value, 0, 1);
     
+    //SCALE
+    *value *= scale_Param;
+    
+    //OFFSETç
+    *value += offset_Param;
+    
+    *value = ofClamp(*value, 0, 1);
 }
 
 

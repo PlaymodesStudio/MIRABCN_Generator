@@ -24,6 +24,7 @@ public:
     void newFuncSelected(int &val);
     void newFuncEntered(string &str);
     void manualInputChanged(string &str);
+    void manualOrderChanged(string &str);
     
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
@@ -43,8 +44,10 @@ private:
     ofParameter<int>    formulaChooser_Param;
     vector<string>      formulasToChoose;
     ofParameter<string> manualInput;
+    ofParameter<string> manualOrder;
     
-    vector<float>        manualInput_int;
+    vector<float>       manualInput_int;
+    vector<int>         manualOrder_int;
     
     int width;
     int height;
