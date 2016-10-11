@@ -46,24 +46,26 @@ private:
     vector<string>      formulasToChoose;
     ofParameter<string> manualOrder;
     
-    vector<int>         manualOrder_int;
+    vector<int>         manualOrder_int; //the order we manually type but put in a vector to be easy to use it
     
     int width;
     int height;
     
-    bool previewTex = true;
+    bool previewTex = true; //Boolean for changing the way we see (it outputs) the output texture
     
+    //Here there is a odd thing, we have the same values but represented in diferent ways
+    //Grid way is more clarifying
     vector<vector<float>> grid;
+    //linear way is used to be able to fast get the columns in the order we first specyfied, the pair contains, first the position, then the value in this pos
     vector<pair<ofVec2f, float>> barInfo_Pos;
+
     
-    //Buffer of intoVec, we use deque to be able to create a circular buffer, erase the old values
-    deque<vector<float>> infoVecBuffer;
-    
-    //Function variables
+    //Variables for the function expression evaluator
     ofxExprtk<float> expression_parser;
     float x, y, t, cx, cy;
     
-    
+    //We insert a oscillator when we use the mode 2D for wave generation
+    //TODO: Find a better way, define the generator outside, and pass it as a variable. Or redo the computeFunc function so from outside can be called
     elementOscilator manualGenerator;
 };
 

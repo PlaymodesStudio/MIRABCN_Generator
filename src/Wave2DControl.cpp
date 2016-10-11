@@ -9,13 +9,16 @@
 #include "Wave2DControl.h"
 
 void Wave2DControl::setup(int _width, int _height, int index){
+    //Assign de size of the grid
     width = _width;
     height = _height;
     
+    //Create the wave Generator for the Wave in linear mode
     manualGenerator.setIndexCount(width*height);
     manualGenerator.setup(2);
     
     
+    //Resize height and barInfo_pos
     grid.resize(height);
     for( auto &row : grid)
         row.resize(width, 0);
@@ -28,9 +31,10 @@ void Wave2DControl::setup(int _width, int _height, int index){
         }
     }
     
+    //Resize the manualOrder vector to have as many values as elements
     manualOrder_int.resize(height*width, 0);
     
-    
+    //Add parameters in parameters group
     parameters.setName("wave2D " + ofToString(index));
     parameters.add(invert_Param.set("Invert 2D", false));
     parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
@@ -41,7 +45,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     parameters.add(waveFormula_Param.set("Formula", "sin(x)"));
     ofParameterGroup formulaDropdown;
     formulaDropdown.setName("Wave Formula Select");
-    //TODO: CHange values
+    //TODO: Change values
     ofParameter<string> tempStrParam("Options2", "Manual-|-sin(x)-|-cos(x)-|-sin(x+y)-|--cos(3*sqrt(pow(x,2)+pow(y,2))-t)-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
     formulaDropdown.add(tempStrParam);
     formulaDropdown.add(formulaChooser_Param.set("Wave Forumula Select", 0, 0, ofSplitString(tempStrParam, "-|-").size()));
@@ -51,15 +55,18 @@ void Wave2DControl::setup(int _width, int _height, int index){
     parameters.add(label3);
     parameters.add(manualOrder.set("Manual Order", "1-2-3-4-5-6-7-8-9-10-11-12"));
     
+    //Add listeners to parameters, becouse we have to compute some things when the parameter is changed
     formulaChooser_Param.addListener(this, &Wave2DControl::newFuncSelected);
     waveFormula_Param.addListener(this, &Wave2DControl::newFuncEntered);
     manualOrder.addListener(this, &Wave2DControl::manualOrderChanged);
     
+    //Set a default value
     manualOrder.set("1-2-3-4-5-6-7-8-9-10-11-12");
     
+    //Get the formulasToChoose, where the different options for formulas are in a easy accesible vector
     formulasToChoose = ofSplitString(tempStrParam, "-|-");
 
-    
+    //Add the simbols to the expression evaluator
     expression_parser.addSymbol("x", x);
     expression_parser.addSymbol("y", y);
     expression_parser.addSymbol("t", t);
@@ -77,7 +84,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
     
     manualGenerator.computeFunc(wave1d_values.data(), phasor);
 
-    //reorder;
+    //reorder the info with the manual Order, overwrite when the value is higher, keep when it's lower;
     vector<float> wave1d_values_copy;
     wave1d_values_copy.resize(height*width, 0);
     for ( int i = 0; i < manualOrder_int.size(); i++ ) {
@@ -86,6 +93,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
     }
     wave1d_values = wave1d_values_copy;
     
+    //iteate for all positions and calculate the function, or get the value
     for(int i = 0; i < barInfo_Pos.size() ; i++){
         auto &point = barInfo_Pos[i];
         float z;
@@ -105,6 +113,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
         point.second = z;
     }
     
+    //Draw info to the FBO's
     waveLin.begin();
     ofSetColor(0);
     ofDrawRectangle(0, 0, waveLin.getWidth(), waveLin.getHeight());
@@ -115,6 +124,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
     for(int i = 0; i < width*height; i++)
         ofDrawRectangle((i*wid), (1-barInfo_Pos[i].second)*hei, wid, barInfo_Pos[i].second*hei);
     waveLin.end();
+    
     
     waveTex.begin();
     ofSetColor(0);

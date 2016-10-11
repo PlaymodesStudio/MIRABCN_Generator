@@ -32,7 +32,7 @@ void phasorClass::setup(int index){
 
 float phasorClass::getPhasor(){
     phasorMonitor = phasorMod;
-    return phasorMod;
+    return (float)phasorMod;
 }
 
 void phasorClass::resetPhasor(bool &reset){
@@ -42,17 +42,18 @@ void phasorClass::resetPhasor(bool &reset){
 
 void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
     //tue phasor that goes from 0 to 1 at desired frequency
-    float freq = (float)bpm_Param/(float)60;
-    freq = freq * (float)beatsMult_Param;
-    freq = (float)freq / (float)beatsDiv_Param;
+    double freq = (double)bpm_Param/(double)60;
+    freq = freq * (double)beatsMult_Param;
+    //TODO: This is not working
+    freq = (double)freq / (double)beatsDiv_Param;
     
-    float increment = (1.0f/(float)(((float)44100/(float)512)/(float)freq));
+    double increment = (1.0f/(double)(((double)44100/(double)512)/(double)freq));
     
     // We want to use half speed with bounce param,
     // becouse we will make a triangle wave and it
     // will go and return with the same period
     // it we don't change it
-    if ( phasor < 1)
+    if ( phasor < 1.0)
         phasor = bounce_Param ? phasor + increment/2 : phasor + increment;
     else if ( phasor >= 1.0 && loop_Param) phasor -= 1.0;
     

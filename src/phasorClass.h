@@ -28,8 +28,8 @@ public:
     
 private:
     ofParameterGroup    parameters;
-    ofParameter<float>  phasor;
-    ofParameter<float>  phasorMod;
+    ofParameter<double>  phasor;
+    ofParameter<double>  phasorMod;
     ofParameter<float>  bpm_Param;
     ofParameter<int>    beatsMult_Param;
     ofParameter<int>    beatsDiv_Param;

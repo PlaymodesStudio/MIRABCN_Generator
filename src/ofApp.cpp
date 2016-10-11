@@ -14,9 +14,8 @@ void ofApp::setup(){
     singleGenerator.setIndexCount(pixelNum);
     singleGenerator.setup(1);
     
-    
+    //Function that generates the wave(2D Wave) that modifies the bank of oscillators
     waveControl.setup(COL_BARS, ROW_BARS, 1);
-    
     
     //Initialize our vector that stores the information of the oscilators
     infoVec.resize(pixelNum, 0);
@@ -24,13 +23,16 @@ void ofApp::setup(){
     //Initlize our syphon and specify the name
     syphonServer.setName("MIRABCN_Generator");
     
-    //Allocation of the texture, and modify to show correctly the discrete pixels
+    //Allocation of the fbo's, and modify the texture to show correctly the discrete pixels
+    //bank of oscillators
     pixelContent.allocate(NUM_BARS, PIXEL_X_BAR, GL_RGB);
     pixelContent.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
+    //2D wave in grid arrangement
     waveGrid.allocate(COL_BARS, ROW_BARS, GL_RGB);
     waveGrid.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
+    //2D Wave in linear arrangement
     waveLinear.allocate(COL_BARS*ROW_BARS, 255, GL_RGB);
     waveLinear.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
@@ -39,35 +41,49 @@ void ofApp::setup(){
     for(int i=0; i<phasors.size(); i++)
         phasors[i].setup(i+1);
     
+    //Take the parameter groups and pass them to create the gui.
+    //ParamsControl can handle a gui creation with a parameterGroup that has all the parameters needed to be modified
+    //Briefly what it does is:
+    // - ofParameter<int> and ofParameter<float> -> creates a slider
+    // - ofParameter<bool> -> creates a toogle
+    // - ofParameter<string> -> creates a textInputField;
+    // - ofParameter<string> whose name ends with "_label" -> creates a label
+    // - ofParameter<int> and ofParameter<string> inside a ofParameterGroup -> creates a dropdown list with elements in ofParameter<string> delimeted by "-|-"
     paramsControl.createGuiFromParams(phasors[0].getParameterGroup());
     paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
     paramsControl.createGuiFromParams(singleGenerator.getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup());
     
-
+    //Create main gui, and add listeners when all guis are created
     paramsControl.setup();
     
+    //Setup the soundStream so we can use the audio rate colled function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    //Update paramsControl, becouse it also handles osc and midi
     paramsControl.update();
     
-    //Phasor updates automatically at audio rate
-    
-    vector<vector<float>> phase_offset =  waveControl.computeWave(waveGrid, waveLinear, phasors[1].getPhasor());
-    
+    //Phasor updates automatically at audio rate, but we need to take the value for this update so the phasor is the same along all the time update is being called
     float update_Phasor = phasors[0].getPhasor();
+    
+    //We get the values that we will use to modulate our bank of oscillators, we get them as a matrix to get them clear so we understand it like the space it has to be installed
+    vector<vector<float>> modValues =  waveControl.computeWave(waveGrid, waveLinear, phasors[1].getPhasor());
+    
+    //We iterate for each column, and we compute it's value;
     for(int i = 0; i < COL_BARS ; i++){
         for (int j = 0; j < ROW_BARS ; j++){
-            //Calculation of the oscilators for each element, with phasor info
-            singleGenerator.computeFunc(infoVec.data(), update_Phasor, phase_offset[j][i]);
+            //Calculation of the oscilators for each element, with phasor info and modulation info
+            singleGenerator.computeFunc(infoVec.data(), update_Phasor, modValues[j][i]);
+            //We use this indo to fill the output texture
             waveControl.computeOutTex(pixelContent, infoVec, ofVec2f(i, j));
         }
     }
     
+    //We compute one more time without modifiers to have a representation what tha bank of oscillators originaly was
     singleGenerator.computeFunc(infoVec.data(), update_Phasor);
 
     //Pass texture to syphon
@@ -80,6 +96,8 @@ void ofApp::draw(){
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){
+    //This functions is the implementation of the draw event on second window (preview window)
+    
     ofBackground(0);
     ofSetColor(255);
     int contentWidth = ofGetWidth();
