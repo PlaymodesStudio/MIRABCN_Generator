@@ -50,8 +50,8 @@ void ofApp::setup(){
     // - ofParameter<string> whose name ends with "_label" -> creates a label
     // - ofParameter<int> and ofParameter<string> inside a ofParameterGroup -> creates a dropdown list with elements in ofParameter<string> delimeted by "-|-"
     paramsControl.createGuiFromParams(phasors[0].getParameterGroup());
-    paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
     paramsControl.createGuiFromParams(singleGenerator.getParameterGroup());
+    paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup());
     

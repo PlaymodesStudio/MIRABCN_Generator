@@ -57,6 +57,7 @@ private:
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
     ofParameter<int>    modulatorSelect_Param;
+    ofParameter<float>  masterFader_Param;
     
     vector<float>       infoVec_preMod;
     

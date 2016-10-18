@@ -23,6 +23,7 @@ public:
     void resetPhasor(bool &reset);
     
     void audioIn(float * input, int bufferSize, int nChannels);
+    void loopChanged(bool &val);
     
     ofParameterGroup getParameterGroup(){return parameters;};
     

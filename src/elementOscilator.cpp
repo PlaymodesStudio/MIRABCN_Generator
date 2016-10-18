@@ -32,6 +32,7 @@ void elementOscilator::setup(int index){
     parameters.add(offset_Param.set("Offset", 0, -.5, .5));
     parameters.add(pow_Param.set("Pow", 1, -40, 40));
     parameters.add(pwm_Param.set("Square PWM", 0.5, 0, 1));
+    parameters.add(masterFader_Param.set("Master Fader", 1, 0, 1));
     ofParameterGroup waveDropDown;
     waveDropDown.setName("Wave Select");
     ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
@@ -192,12 +193,21 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
 
 void elementOscilator::computeMultiplyMod(float *value){
     
+    
     //random Add
     if(randomAdd_Param)
         *value += randomAdd_Param*ofRandom(1);
     
     *value = ofClamp(*value, 0, 1);
     
+    //SCALE
+    *value *= scale_Param;
+    
+    //OFFSETç
+    *value += offset_Param;
+    
+    *value = ofClamp(*value, 0, 1);
+
     //pow
     if(pow_Param)
         *value = (pow_Param < 0) ? pow(*value, 1/(float)(-pow_Param)) : pow(*value, pow_Param);
@@ -210,13 +220,8 @@ void elementOscilator::computeMultiplyMod(float *value){
     
     *value = ofClamp(*value, 0, 1);
     
-    //SCALE
-    *value *= scale_Param;
+    *value *= masterFader_Param;
     
-    //OFFSETç
-    *value += offset_Param;
-    
-    *value = ofClamp(*value, 0, 1);
 }
 
 

@@ -27,6 +27,7 @@ void phasorClass::setup(int index){
     parameters.add(phasorMonitor.set("Phasor Monitor", 0));
     
     resetPhase_Param.addListener(this, &phasorClass::resetPhasor);
+    loop_Param.addListener(this, &phasorClass::loopChanged);
 }
 
 
@@ -52,7 +53,7 @@ void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
     // becouse we will make a triangle wave and it
     // will go and return with the same period
     // it we don't change it
-    if ( phasor < 1.0)
+    if ( phasor < 1.0 && loop_Param)
         phasor += increment;
     else if ( phasor >= 1.0) phasor -= 1.0;
     
@@ -80,5 +81,10 @@ void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
         phasorMod = (int)(phasorMod*quant_Param);
         phasorMod /= quant_Param;
     }
+}
+
+void phasorClass::loopChanged(bool &val){
+    if(!val)
+        phasor = 0;
 }
 
