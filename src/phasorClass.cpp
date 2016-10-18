@@ -43,9 +43,8 @@ void phasorClass::resetPhasor(bool &reset){
 void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
     //tue phasor that goes from 0 to 1 at desired frequency
     double freq = (double)bpm_Param/(double)60;
-    freq = freq * (double)beatsMult_Param;
-    //TODO: This is not working
-    freq = (double)freq / (double)beatsDiv_Param;
+    //We make the phasor to go very slow
+    freq = (double)freq / (double)beatsDiv_Param.getMax();
     
     double increment = (1.0f/(double)(((double)44100/(double)512)/(double)freq));
     
@@ -54,21 +53,27 @@ void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
     // will go and return with the same period
     // it we don't change it
     if ( phasor < 1.0)
-        phasor = bounce_Param ? phasor + increment/2 : phasor + increment;
-    else if ( phasor >= 1.0 && loop_Param) phasor -= 1.0;
+        phasor += increment;
+    else if ( phasor >= 1.0) phasor -= 1.0;
     
     //Assign a copy of the phasor to make some modifications
     phasorMod = phasor;
     
+
+
+    phasorMod *= (double)beatsMult_Param/(double)((double)beatsDiv_Param/(double)beatsDiv_Param.getMax());
+    if(bounce_Param) phasorMod /= 2;
+    phasorMod -= (int)phasorMod;
+    
     //We make a triangle Wave
     if(bounce_Param)
-        phasorMod = 1-(fabs((phasor * (-2))+ 1));
+        phasorMod = 1-(fabs((phasorMod * (-2))+ 1));
+
     
     //take the initPhase_Param as a phase offset param
     phasorMod += initPhase_Param;
     if(phasorMod >= 1.0)
         phasorMod -= 1.0;
-    
     
     //Quantization -- only get the values we are interested
     if(quant_Param != 40){
