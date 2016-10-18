@@ -100,20 +100,23 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     
     ofBackground(0);
     ofSetColor(255);
-    int contentWidth = ofGetWidth();
+    int contentWidth = 2*ofGetWidth()/3;
     //Draw the fbo
-    pixelContent.getTexture().draw(0, 0, contentWidth/2, ofGetHeight()/3);
+    pixelContent.getTexture().draw(0, 0, contentWidth, ofGetHeight()/3);
     
-    waveGrid.getTexture().draw((contentWidth/2), 0, contentWidth/2, ofGetHeight()/3);
+    waveGrid.getTexture().draw(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
     
     //Draw the Bars
-    float wid = (float)contentWidth/pixelNum;
+    float wid = (float)ofGetWidth()/pixelNum;
     float hei = ofGetHeight()/3;
     for(int i = 0; i < pixelNum; i++)
         ofDrawRectangle((i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
     
     //Draw the Bars2
-    waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, ofGetWidth(), ofGetHeight()/3);
+    waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
+    
+    //Draw another time the grid
+    waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
     
     
     //Draw the framerate

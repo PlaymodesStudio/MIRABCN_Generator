@@ -29,6 +29,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
     parameterGroups.push_back(paramGroup);
         
     ofxDatGui* tempDatGui = new ofxDatGui();
+    tempDatGui->setWidth(290);
 //    tempDatGui->setAssetPath("");
     tempDatGui->addHeader(paramGroup.getName());
     tempDatGui->addFooter();
@@ -66,6 +67,7 @@ void parametersControl::setup(){
     ofxDatGui::setAssetPath("");
     
     datGui = new ofxDatGui();
+    datGui->setWidth(290);
     datGui->addHeader("Pressets Control");
     datGui->addFooter();
 
