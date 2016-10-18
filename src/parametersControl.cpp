@@ -311,31 +311,35 @@ void parametersControl::loadPreset(int presetNum){
                     ofStringReplace(noSpaces, " ", "_");
                     
                     //get the value of that parameter if it's not bpm, we don't want to lose sync
-                    if(castedParam.getName() != "BPM")
+                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<int>).name()){
                     ofParameter<int> castedParam = absParam.cast<int>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    castedParam = xml.getValue(noSpaces, castedParam.get());
+                    if(xml.exists(noSpaces))
+                        castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<bool>).name()){
                     ofParameter<bool> castedParam = absParam.cast<bool>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    castedParam = xml.getValue(noSpaces, castedParam.get());
+                    if(xml.exists(noSpaces))
+                        castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<string>).name()){
                     ofParameter<string> castedParam = absParam.cast<string>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    castedParam = xml.getValue(noSpaces, castedParam.get());
+                    if(xml.exists(noSpaces))
+                        castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else{
                     string noSpaces = groupParam.getGroup(j).getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    groupParam.getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam.getGroup(j).getInt(1));
+                    if(xml.exists(noSpaces))
+                        groupParam.getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam.getGroup(j).getInt(1));
                 }
             }
             //Jump one label before in xml structure
