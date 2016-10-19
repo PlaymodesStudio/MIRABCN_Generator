@@ -333,7 +333,7 @@ void parametersControl::loadPreset(int presetNum){
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
                     if(xml.exists(noSpaces))
-                        castedParam = xml.getValue(noSpaces, castedParam.get());
+                        castedParam.set(xml.getValue(noSpaces, castedParam.get()));
                 }
                 else{
                     string noSpaces = groupParam.getGroup(j).getName();
