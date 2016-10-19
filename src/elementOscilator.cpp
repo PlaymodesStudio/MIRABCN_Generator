@@ -128,6 +128,8 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
             k+= (modulation*PI)-PI/2;
         
         float linPhase = fmod(w+k, 2*PI) / (2*PI);
+//        float linPhase = w+k / (2*PI);
+//        linPhase = linPhase - (int)linPhase;
         float val = 0;
         switch (static_cast<oscTypes>(waveSelect_Param.get()+1)) {
             case sinOsc:
@@ -188,10 +190,11 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         
         infoVec_preMod[i] = val;
         
+        computeMultiplyMod(&val);
+        
         if(modulatorSelect_Param == 2 && modulation != -1)
             val *= modulation;
         
-        computeMultiplyMod(&val);
         if(i == indexCount_Param-1)
             oldPhasor = phasor;
         
