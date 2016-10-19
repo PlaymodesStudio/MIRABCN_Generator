@@ -22,6 +22,7 @@ void elementOscilator::setup(int index){
     parameters.add(phaseOffset_Param.set("Phase offset", 0, 0, 1));
     parameters.add(invert_Param.set("Invert", false));
     parameters.add(symmetry_Param.set("Symmetry", 0, 0, 10));
+    parameters.add(indexRand_Param.set("Index Random", 0, 0, 1));
     parameters.add(indexOffset_Param.set("Index Offset", 0, -indexCount_Param/2, indexCount_Param/2));
     parameters.add(indexQuant_Param.set("Index Quantization", indexCount_Param, 1, indexCount_Param));
     parameters.add(comb_Param.set("Combination", 0, 0, 1));
@@ -48,7 +49,13 @@ void elementOscilator::setup(int index){
     parameters.add(modulationDropDown);
     //parameters.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     
+    indexRand_Param.addListener(this, &elementOscilator::indexRandChanged);
+    
     infoVec_preMod.resize(indexCount_Param);
+    indexRand.resize(indexCount_Param);
+    for(int i = 0; i < indexRand.size(); i++)
+        indexRand[i] = i;
+    indexRand_Param_previous = 0;
 }
 
 void elementOscilator::computeFunc(float *infoVec, float phasor, float modulation){
@@ -94,7 +101,9 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         if(invert_Param)
             index = ((float)indexCount_Param-(float)index);
         
-        
+        index += indexRand[i]*indexRand_Param;
+        if(index > indexCount_Param)
+            index - indexCount_Param;
         
         
         //cout<<index<<"-" ;
@@ -116,7 +125,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         k *=  freq_Param * ((float)indexCount_Param/(float)indexQuant_Param); //Index Modifiers
         
         if(modulatorSelect_Param == 1 && modulation != -1)
-           k+= (modulation*2*PI);
+            k+= (modulation*PI)-PI/2;
         
         float linPhase = fmod(w+k, 2*PI) / (2*PI);
         float val = 0;
@@ -222,6 +231,13 @@ void elementOscilator::computeMultiplyMod(float *value){
     
     *value *= masterFader_Param;
     
+}
+
+
+void elementOscilator::indexRandChanged(float &val){
+    if(indexRand_Param_previous == 0)
+        random_shuffle(indexRand.begin(), indexRand.end());
+    indexRand_Param_previous = val;
 }
 
 

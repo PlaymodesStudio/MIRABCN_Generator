@@ -32,6 +32,8 @@ public:
     void computeFunc(float *infoVec, float phasor, float modulation = -1);
     void computeMultiplyMod(float* value);
     
+    void indexRandChanged(float &val);
+    
     void setIndexCount(int val){indexCount_Param = val;};
     
     ofParameterGroup getParameterGroup(){return parameters;};
@@ -45,6 +47,7 @@ private:
     ofParameter<float>  pwm_Param;
     ofParameter<bool>   invert_Param;
     ofParameter<int>    symmetry_Param;
+    ofParameter<float>  indexRand_Param;
     ofParameter<float>  holdTime_Param; //The duration of the hold in percentage (0.5) --> 50% of the cycle is the phase in initPhase
     ofParameter<float>  phaseOffset_Param;
     ofParameter<int>    indexOffset_Param;
@@ -60,6 +63,8 @@ private:
     ofParameter<float>  masterFader_Param;
     
     vector<float>       infoVec_preMod;
+    vector<int>         indexRand;
+    float               indexRand_Param_previous;
     
     float               oldPhasor;
     int                 prevIndex;

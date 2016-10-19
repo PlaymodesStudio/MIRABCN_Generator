@@ -39,7 +39,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     parameters.add(invert_Param.set("Invert 2D", false));
     parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
     parameters.add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
-    parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 10));
+    parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 2));
     ofParameter<string> label("Insert Formula_label", " ");
     parameters.add(label);
     parameters.add(waveFormula_Param.set("Formula", "sin(x)"));

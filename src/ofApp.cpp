@@ -107,7 +107,7 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     waveGrid.getTexture().draw(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
     
     //Draw the Bars
-    float wid = (float)ofGetWidth()/pixelNum;
+    float wid = (float)contentWidth/pixelNum;
     float hei = ofGetHeight()/3;
     for(int i = 0; i < pixelNum; i++)
         ofDrawRectangle((i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
@@ -116,7 +116,7 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
     
     //Draw another time the grid
-    waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
+    //waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
     
     
     //Draw the framerate
