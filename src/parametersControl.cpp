@@ -72,7 +72,7 @@ void parametersControl::setup(){
     datGui->addFooter();
 
     datGui->addButton("Global Reset Phase");
-    datGui->addSlider("Global BPM", 30, 180);
+    datGui->addSlider("Global BPM", 0, 999, 120);
     
     //Preset Control
     presetMatrix = datGui->addMatrix("Presets", NUM_PRESETS, true);

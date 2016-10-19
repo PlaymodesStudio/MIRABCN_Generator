@@ -29,8 +29,8 @@ void elementOscilator::setup(int index){
     parameters.add(modulo_Param.set("Modulo", indexCount_Param, 1, indexCount_Param));
     parameters.add(randomAdd_Param.set("Random addition", 0, -.5, .5));
     parameters.add(quant_Param.set("Quantization", 255, 1, 255));
-    parameters.add(scale_Param.set("Scale", 1, .5, 1.5));
-    parameters.add(offset_Param.set("Offset", 0, -.5, .5));
+    parameters.add(scale_Param.set("Scale", 1, 0, 2));
+    parameters.add(offset_Param.set("Offset", 0, -1, 1));
     parameters.add(pow_Param.set("Pow", 1, -40, 40));
     parameters.add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     parameters.add(masterFader_Param.set("Master Fader", 1, 0, 1));
