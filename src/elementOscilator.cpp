@@ -101,7 +101,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         if(invert_Param)
             index = ((float)indexCount_Param-(float)index);
         
-        index += indexRand[i]*indexRand_Param;
+        index += indexRand[index]*indexRand_Param;
         if(index > indexCount_Param)
             index - indexCount_Param;
         

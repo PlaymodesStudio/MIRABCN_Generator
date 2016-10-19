@@ -137,24 +137,24 @@ void parametersControl::update(){
         
         vector<string> splitAddress = ofSplitString(m.getAddress(), "/");
         ofStringReplace(splitAddress[1], "_", " ");
-        for(auto groupParam : parameterGroups){
-            cout<<groupParam.getName() << " " << splitAddress[1]<< " " << splitAddress[2] << endl;
-            if(groupParam.getName() == splitAddress[1]){
-                ofAbstractParameter &absParam = groupParam.get(splitAddress[2]);
-                if(absParam.type() == typeid(ofParameter<float>).name())
-                    groupParam.getFloat(splitAddress[2]) = m.getArgAsFloat(0);
-                else if(absParam.type() == typeid(ofParameter<int>).name())
-                    groupParam.getInt(splitAddress[2]) = m.getArgAsInt(0);
-                else if(absParam.type() == typeid(ofParameter<bool>).name())
-                    groupParam.getBool(splitAddress[2]) = m.getArgAsBool(0);
-                else
-                    groupParam.getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
-            }
-        }
         if(splitAddress[1] == "presetLoad"){
             loadPreset(m.getArgAsInt(0));
         }else if(splitAddress[1] == "presetSave"){
             savePreset(m.getArgAsInt(0));
+        }else{
+            for(auto groupParam : parameterGroups){
+                if(groupParam.getName() == splitAddress[1]){
+                    ofAbstractParameter &absParam = groupParam.get(splitAddress[2]);
+                    if(absParam.type() == typeid(ofParameter<float>).name())
+                        groupParam.getFloat(splitAddress[2]) = m.getArgAsFloat(0);
+                    else if(absParam.type() == typeid(ofParameter<int>).name())
+                        groupParam.getInt(splitAddress[2]) = m.getArgAsInt(0);
+                    else if(absParam.type() == typeid(ofParameter<bool>).name())
+                        groupParam.getBool(splitAddress[2]) = m.getArgAsBool(0);
+                    else
+                        groupParam.getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
+                }
+            }
         }
     }
     
