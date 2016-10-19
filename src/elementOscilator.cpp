@@ -125,11 +125,9 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         k *=  freq_Param * ((float)indexCount_Param/(float)indexQuant_Param); //Index Modifiers
         
         if(modulatorSelect_Param == 1 && modulation != -1)
-            k+= (modulation*PI)-PI/2;
+            k+= (modulation*2*PI);
         
         float linPhase = fmod(w+k, 2*PI) / (2*PI);
-//        float linPhase = w+k / (2*PI);
-//        linPhase = linPhase - (int)linPhase;
         float val = 0;
         switch (static_cast<oscTypes>(waveSelect_Param.get()+1)) {
             case sinOsc:
