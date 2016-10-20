@@ -41,6 +41,7 @@ private:
     int pixelNum;
     
     vector<float> infoVec;
+    vector<vector<float>> bankDatas;
     ofFbo pixelContent;
     ofFbo waveGrid;
     ofFbo waveLinear;

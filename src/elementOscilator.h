@@ -33,6 +33,7 @@ public:
     void computeMultiplyMod(float* value);
     
     void indexRandChanged(float &val);
+    void modulatorChanged(int &index);
     
     void setIndexCount(int val){indexCount_Param = val;};
     
@@ -61,6 +62,8 @@ private:
     ofParameter<int>    waveSelect_Param;
     ofParameter<int>    modulatorSelect_Param;
     ofParameter<float>  masterFader_Param;
+    ofParameter<float>  modulatorMin_Param;
+    ofParameter<float>  modulatorMax_Param;
     
     vector<float>       infoVec_preMod;
     vector<int>         indexRand;

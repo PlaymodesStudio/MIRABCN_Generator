@@ -20,6 +20,8 @@ void ofApp::setup(){
     //Initialize our vector that stores the information of the oscilators
     infoVec.resize(pixelNum, 0);
     
+    bankDatas.resize(COL_BARS*NUM_BARS, infoVec);
+    
     //Initlize our syphon and specify the name
     syphonServer.setName("MIRABCN_Generator");
     
@@ -77,9 +79,9 @@ void ofApp::update(){
     for(int i = 0; i < COL_BARS ; i++){
         for (int j = 0; j < ROW_BARS ; j++){
             //Calculation of the oscilators for each element, with phasor info and modulation info
-            singleGenerator.computeFunc(infoVec.data(), update_Phasor, modValues[j][i]);
+            singleGenerator.computeFunc(bankDatas[i*ROW_BARS+j].data(), update_Phasor, modValues[j][i]);
             //We use this indo to fill the output texture
-            waveControl.computeOutTex(pixelContent, infoVec, ofVec2f(i, j));
+            waveControl.computeOutTex(pixelContent, bankDatas[i*ROW_BARS+j], ofVec2f(i, j));
         }
     }
     
