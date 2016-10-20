@@ -24,6 +24,7 @@ public:
     
     void newFuncSelected(int &val);
     void newFuncEntered(string &str);
+    void newOrderSelected(int &val);
     void manualOrderChanged(string &str);
     
     void setPreviewTexture(bool b){previewTex = b;};
@@ -47,6 +48,7 @@ private:
     ofParameter<float>  phaseScale_Param;
     ofParameter<string> waveFormula_Param;
     ofParameter<int>    formulaChooser_Param;
+    ofParameter<int>    orderChoser_Param;
     vector<string>      formulasToChoose;
     vector<string>      orderToChoose;
     ofParameter<string> manualOrder;
