@@ -1,0 +1,5 @@
+<FORMULAS>
+  <a>Manual</a>
+  <a>sin(x)</a>
+  <a>cos(3*sqrt(pow(cx,2)+pow(cy,2))-t)</a>
+</FORMULAS>

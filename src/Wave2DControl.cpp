@@ -46,9 +46,19 @@ void Wave2DControl::setup(int _width, int _height, int index){
     ofParameterGroup formulaDropdown;
     formulaDropdown.setName("Wave Formula Select");
     //TODO: Change values
-    ofParameter<string> tempStrParam("Options2", "Manual-|-sin(x)-|-cos(x)-|-sin(x+y)-|--cos(3*sqrt(pow(x,2)+pow(y,2))-t)-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
+    loadFunctions();
+    
+    string  tempStr;
+    ofParameter<string> tempStrParam("Options");
+    for(auto opt : formulasToChoose)
+        tempStr += opt + "-|-";
+    
+    tempStr.erase(tempStr.end()-3, tempStr.end());
+    tempStrParam.set(tempStr);
+    
+//    ofParameter<string> tempStrParam("Options2", "Manual-|-sin(x)-|-cos(x)-|-sin(x+y)-|--cos(3*sqrt(pow(x,2)+pow(y,2))-t)-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
     formulaDropdown.add(tempStrParam);
-    formulaDropdown.add(formulaChooser_Param.set("Wave Forumula Select", 0, 0, ofSplitString(tempStrParam, "-|-").size()));
+    formulaDropdown.add(formulaChooser_Param.set("Wave Forumula Select", 0, 0, formulasToChoose.size()));
     parameters.add(formulaDropdown);
     
     ofParameter<string> label3("Insert Order_label", " ");
@@ -62,9 +72,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     
     //Set a default value
     manualOrder.set("1-2-3-4-5-6-7-8-9-10-11-12");
-    
-    //Get the formulasToChoose, where the different options for formulas are in a easy accesible vector
-    formulasToChoose = ofSplitString(tempStrParam, "-|-");
+
 
     //Add the simbols to the expression evaluator
     expression_parser.addSymbol("x", x);
@@ -178,4 +186,85 @@ void Wave2DControl::manualOrderChanged(string &str){
         manualOrder_int[i] = ofToInt(num)-1;
         i++;
     }
+}
+
+bool Wave2DControl::loadFunctions(){
+    //Test if there is no problem with the file
+    ofXml xml;
+    if(!xml.load("Functions.xml"))
+        return false;
+
+    for(int i=0; i<xml.getNumChildren(); i++){
+        xml.setToChild(i);
+        formulasToChoose.push_back(xml.getValue());
+        xml.setToParent();
+    }
+    
+    //Iterate for all the parameterGroups
+//    for (auto groupParam : parameterGroups){
+//        //Put xml in the place of the parametergroup
+//        string noSpacesGroupName = groupParam.getName();
+//        ofStringReplace(noSpacesGroupName, " ", "_");
+//        if(xml.exists(noSpacesGroupName)){
+//            xml.setTo(noSpacesGroupName);
+//            
+//            //Iterate for all parameters in parametergroup and look for the type of the parameter
+//            for (int j = 0; j < groupParam.size() ; j++){
+//                ofAbstractParameter &absParam = groupParam.get(j);
+//                if(absParam.type() == typeid(ofParameter<float>).name()){
+//                    //Cast it
+//                    ofParameter<float> castedParam = absParam.cast<float>();
+//                    
+//                    //Replace blank spaces with underscore
+//                    string noSpaces = castedParam.getName();
+//                    ofStringReplace(noSpaces, " ", "_");
+//                    
+//                    //get the value of that parameter if it's not bpm, we don't want to lose sync
+//                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces))
+//                        castedParam = xml.getValue(noSpaces, castedParam.get());
+//                }
+//                else if(absParam.type() == typeid(ofParameter<int>).name()){
+//                    ofParameter<int> castedParam = absParam.cast<int>();
+//                    string noSpaces = castedParam.getName();
+//                    ofStringReplace(noSpaces, " ", "_");
+//                    if(xml.exists(noSpaces))
+//                        castedParam = xml.getValue(noSpaces, castedParam.get());
+//                }
+//                else if(absParam.type() == typeid(ofParameter<bool>).name()){
+//                    ofParameter<bool> castedParam = absParam.cast<bool>();
+//                    string noSpaces = castedParam.getName();
+//                    ofStringReplace(noSpaces, " ", "_");
+//                    if(xml.exists(noSpaces))
+//                        castedParam = xml.getValue(noSpaces, castedParam.get());
+//                }
+//                else if(absParam.type() == typeid(ofParameter<string>).name()){
+//                    ofParameter<string> castedParam = absParam.cast<string>();
+//                    string noSpaces = castedParam.getName();
+//                    ofStringReplace(noSpaces, " ", "_");
+//                    if(xml.exists(noSpaces))
+//                        castedParam.set(xml.getValue(noSpaces, castedParam.get()));
+//                }
+//                else{
+//                    string noSpaces = groupParam.getGroup(j).getName();
+//                    ofStringReplace(noSpaces, " ", "_");
+//                    if(xml.exists(noSpaces))
+//                        groupParam.getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam.getGroup(j).getInt(1));
+//                }
+//            }
+//            //Jump one label before in xml structure
+//            xml.setToParent();
+//            //reset Phasor
+//            if(ofSplitString(groupParam.getName(), " ")[0] == "phasor")
+//                groupParam.getBool("Reset Phase") = false;
+//        }
+//    }
+    return true;
+}
+
+bool Wave2DControl::loadOrder(){
+    
+}
+
+bool Wave2DControl::loadReindexing(){
+    
 }

@@ -29,6 +29,10 @@ public:
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
     
+    bool loadFunctions();
+    bool loadOrder();
+    bool loadReindexing();
+    
     ofParameterGroup getParameterGroup(){return parameters;};
     ofParameterGroup getGeneratorParameterGroup(){return manualGenerator.getParameterGroup();};
     
@@ -44,6 +48,7 @@ private:
     ofParameter<string> waveFormula_Param;
     ofParameter<int>    formulaChooser_Param;
     vector<string>      formulasToChoose;
+    vector<string>      orderToChoose;
     ofParameter<string> manualOrder;
     
     vector<int>         manualOrder_int; //the order we manually type but put in a vector to be easy to use it
@@ -51,7 +56,7 @@ private:
     int width;
     int height;
     
-    bool previewTex = true; //Boolean for changing the way we see (it outputs) the output texture
+    bool previewTex = false; //Boolean for changing the way we see (it outputs) the output texture
     
     //Here there is a odd thing, we have the same values but represented in diferent ways
     //Grid way is more clarifying
