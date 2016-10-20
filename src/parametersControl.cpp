@@ -75,6 +75,7 @@ void parametersControl::setup(){
     datGui->addSlider("Global BPM", 0, 999, 120);
     
     //Preset Control
+    bankSelect = datGui->addDropdown("Bank Select", {"edu", "eloi", "santi"});
     presetMatrix = datGui->addMatrix("Presets", NUM_PRESETS, true);
     presetMatrix->setRadioMode(true);
     presetMatrix->setOpacity(.75);
@@ -282,13 +283,15 @@ void parametersControl::savePreset(int presetNum){
         }
         xml.setToParent();
     }
-    cout<<"Save Preset_" << presetNum<<endl;
-    xml.save("Preset_"+ofToString(presetNum)+".xml");
+    string bank = bankSelect->getSelected()->getName();
+    cout<<"Save Preset_" << presetNum<< "_" << bank << endl;
+    xml.save("Preset_"+ofToString(presetNum)+"_"+bank+".xml");
 }
 
 void parametersControl::loadPreset(int presetNum){
     //Test if there is no problem with the file
-    if(!xml.load("Preset_"+ofToString(presetNum)+".xml"))
+    string bank = bankSelect->getSelected()->getName();
+    if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
         return;
     
     //Iterate for all the parameterGroups
@@ -349,7 +352,7 @@ void parametersControl::loadPreset(int presetNum){
                 groupParam.getBool("Reset Phase") = false;
         }
     }
-    cout<<"Load Preset_" << presetNum<<endl;
+    cout<<"Save Preset_" << presetNum<< "_" << bank << endl;
     vector<int> tempVec;
     tempVec.push_back(presetNum-1);
     presetMatrix->setSelected(tempVec);

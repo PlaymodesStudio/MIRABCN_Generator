@@ -56,6 +56,7 @@ private:
     
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;
+    ofxDatGuiDropdown* bankSelect;
     
     vector<ofxDatGui*> datGuis;
     vector<ofParameterGroup> parameterGroups;
