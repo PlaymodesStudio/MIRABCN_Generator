@@ -62,6 +62,14 @@ void ofApp::setup(){
     
     //Setup the soundStream so we can use the audio rate colled function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
+    
+    outputCurve.setup();
+    outputCurve.useMouse(true);
+    outputCurve.load("responseCurve.yml");
+    
+    curvePos = ofPoint(700, 400);
+    curveDragger = ofRectangle(curvePos.x, curvePos.y-20, 255, 20);
+    outputCurve.notifyEvents(true);
 }
 
 //--------------------------------------------------------------
@@ -74,6 +82,8 @@ void ofApp::update(){
     
     //We get the values that we will use to modulate our bank of oscillators, we get them as a matrix to get them clear so we understand it like the space it has to be installed
     vector<vector<float>> modValues =  waveControl.computeWave(waveGrid, waveLinear, phasors[1].getPhasor());
+    
+    waveControl.setCurve(outputCurve);
     
     //We iterate for each column, and we compute it's value;
     for(int i = 0; i < COL_BARS ; i++){
@@ -94,7 +104,19 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    ofBackground(0);
     
+    if(waveControl.drawCurve()){
+        ofSetColor(ofColor::grey);
+        ofDrawRectangle(curveDragger);
+        ofSetColor(ofColor::red);
+        ofDrawBitmapString("DRAG ME", curvePos.x + 75, curvePos.y - 5);
+        outputCurve.draw(curvePos.x, curvePos.y);
+    }
+}
+
+void ofApp::exit(){
+    outputCurve.save("responseCurve.yml");
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){
@@ -155,17 +177,24 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    if(isDragging){
+        curvePos = (curvePos+(ofPoint(x, y)-curveDraggerPrevPos));
+        curveDragger = ofRectangle(curvePos.x, curvePos.y-20, 255, 20);
+        curveDraggerPrevPos = ofPoint(x, y);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    if(curveDragger.inside(x, y) && waveControl.drawCurve()){
+        curveDraggerPrevPos = ofPoint(x, y);
+        isDragging = true;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    isDragging = false;
 }
 
 //--------------------------------------------------------------

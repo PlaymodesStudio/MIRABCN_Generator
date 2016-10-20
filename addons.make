@@ -1,3 +1,4 @@
+ofxCurvesTool
 ofxDatGui_PM
 ofxExprtk
 ofxMidi

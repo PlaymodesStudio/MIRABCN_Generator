@@ -6,6 +6,7 @@
 #include "elementOscilator.h"
 #include "Wave2DControl.h"
 #include "parametersControl.h"
+#include "ofxCurvesTool.h"
 
 static const int NUM_BARS = 24;
 static const int PIXEL_X_BAR = 162;
@@ -18,6 +19,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+    void exit();
     
     void drawSecondWindow(ofEventArgs & args);
     void keyPressedOnSecondWindow(ofKeyEventArgs & args);
@@ -58,5 +60,13 @@ private:
     int guiWidth;
     
     ofSoundStream soundStream;
+    
+    
+    ofxCurvesTool outputCurve;
+    
+    ofPoint curvePos;
+    ofRectangle curveDragger;
+    ofPoint curveDraggerPrevPos;
+    bool isDragging = false;
 		
 };

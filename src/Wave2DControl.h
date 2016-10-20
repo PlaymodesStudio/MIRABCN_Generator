@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "ofxExprtk.h"
 #include "elementOscilator.h"
+#include "ofxCurvesTool.h"
 
 class Wave2DControl{
 public:
@@ -26,6 +27,9 @@ public:
     void newFuncEntered(string &str);
     void newOrderSelected(int &val);
     void manualOrderChanged(string &str);
+    
+    bool drawCurve(){return drawCurve_param;};
+    void setCurve(ofxCurvesTool curve){outputCurve = curve;};
     
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
@@ -54,6 +58,8 @@ private:
     ofParameter<string> manualOrder;
     ofParameter<bool>   previewTex;
     ofParameter<int>    inversionType;
+    ofParameter<bool>   drawCurve_param;
+    ofParameter<bool>   applyCurve_param;
     
     vector<int>         manualOrder_int; //the order we manually type but put in a vector to be easy to use it
     
@@ -76,6 +82,8 @@ private:
     //We insert a oscillator when we use the mode 2D for wave generation
     //TODO: Find a better way, define the generator outside, and pass it as a variable. Or redo the computeFunc function so from outside can be called
     elementOscilator manualGenerator;
+    
+    ofxCurvesTool outputCurve;
 };
 
 

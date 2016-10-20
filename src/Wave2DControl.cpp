@@ -92,6 +92,9 @@ void Wave2DControl::setup(int _width, int _height, int index){
     invertDropDown.add(inversionType.set("Inversion Type", 0, 0, 3));
     parameters.add(invertDropDown);
     
+    parameters.add(drawCurve_param.set("Draw Curve", 0));
+    parameters.add(applyCurve_param.set("Apply Curve", 0));
+    
     //Add listeners to parameters, becouse we have to compute some things when the parameter is changed
     formulaChooser_Param.addListener(this, &Wave2DControl::newFuncSelected);
     waveFormula_Param.addListener(this, &Wave2DControl::newFuncEntered);
@@ -178,36 +181,47 @@ void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f 
         auto &point = barInfo_Pos[i];
         if(point.first.x == pos.x && point.first.y == pos.y){
             for(int j = 0; j < infoVec.size(); j++){
-                //TODO: Change the inversion type, forula and dropdown
-                int index_main;
-                int index_second;
+                int valueInByte = infoVec[j]*255;
+                if(applyCurve_param)
+                    valueInByte = outputCurve[valueInByte];
+                
+                ofSetColor(valueInByte);
                 if(previewTex){
-                    index_main = i;
-                    index_second = i+barInfo_Pos.size();
+                    ofDrawRectangle(i,j, 1, 1);
                 }else{
-                    index_main = 2*i;
-                    index_second = 2*i+1;
+                    ofDrawRectangle(2*i,j, 1, 1);
                 }
-                ofSetColor(ofClamp(infoVec[j]*255, 0, 255));
-                ofDrawRectangle(index_main,j, 1, 1);
+            }
+            for(int j = 0; j < infoVec.size(); j++){
+                int valueInByte;
                 switch (inversionType) {
                     case 0:
-                        ofSetColor(ofClamp((infoVec[j])*255, 0, 255));
+                        valueInByte = infoVec[j]*255;
                         break;
                         
                     case 1:
-                        ofSetColor(ofClamp((1-infoVec[j])*255, 0, 255));
+                        valueInByte = infoVec[infoVec.size()-1-j]*255;
                         break;
                         
                     case 2:
-                        ofSetColor(ofClamp((infoVec[infoVec.size()-1-j])*255, 0, 255));
+                        valueInByte = (1-infoVec[j])*255;
                         break;
                         
                     default:
-                        ofSetColor(ofClamp((infoVec[j])*255, 0, 255));
+                        valueInByte = infoVec[j]*255;
                         break;
                 }
-                ofDrawRectangle(index_second,j, 1, 1);
+                if(applyCurve_param)
+                    valueInByte = outputCurve[valueInByte];
+                
+                ofSetColor(valueInByte);
+                
+                if(previewTex){
+                    ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
+                }else{
+                    ofDrawRectangle(2*i+1,j, 1, 1);
+                }
+                
             }
         }
     }
