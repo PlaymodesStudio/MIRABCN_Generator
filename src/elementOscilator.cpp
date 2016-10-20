@@ -18,8 +18,8 @@ elementOscilator::elementOscilator(){
 
 void elementOscilator::setup(int index){
     parameters.setName("oscillator " + ofToString(index));
-    parameters.add(freq_Param.set("n Waves", 1, 0, indexCount_Param));
-    parameters.add(phaseOffset_Param.set("Phase offset", 0, 0, 1));
+    parameters.add(freq_Param.set("Num Waves", 1, 0, indexCount_Param));
+    parameters.add(phaseOffset_Param.set("Phase Offset", 0, 0, 1));
     parameters.add(invert_Param.set("Invert", false));
     parameters.add(symmetry_Param.set("Symmetry", 0, 0, 10));
     parameters.add(indexRand_Param.set("Index Random", 0, 0, 1));
@@ -27,7 +27,7 @@ void elementOscilator::setup(int index){
     parameters.add(indexQuant_Param.set("Index Quantization", indexCount_Param, 1, indexCount_Param));
     parameters.add(comb_Param.set("Combination", 0, 0, 1));
     parameters.add(modulo_Param.set("Modulo", indexCount_Param, 1, indexCount_Param));
-    parameters.add(randomAdd_Param.set("Random addition", 0, -.5, .5));
+    parameters.add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
     parameters.add(scale_Param.set("Scale", 1, 0, 2));
     parameters.add(offset_Param.set("Offset", 0, -1, 1));
     parameters.add(pow_Param.set("Pow", 1, -40, 40));

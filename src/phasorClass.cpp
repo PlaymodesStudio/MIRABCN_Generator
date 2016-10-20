@@ -20,11 +20,12 @@ void phasorClass::setup(int index){
     parameters.add(beatsDiv_Param.set("Beats Div", 1, 1, 32));
     parameters.add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
     parameters.add(quant_Param.set("Quantization", 40, 1, 40));
-    parameters.add(initPhase_Param.set("Initial phase", 0, 0, 1));
+    parameters.add(initPhase_Param.set("Initial Phase", 0, 0, 1));
     parameters.add(resetPhase_Param.set("Reset Phase", false));
     parameters.add(loop_Param.set("Loop", true));
     parameters.add(bounce_Param.set("Bounce", false));
     parameters.add(phasorMonitor.set("Phasor Monitor", 0));
+    
     
     resetPhase_Param.addListener(this, &phasorClass::resetPhasor);
     loop_Param.addListener(this, &phasorClass::loopChanged);
