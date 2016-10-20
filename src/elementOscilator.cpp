@@ -60,7 +60,7 @@ void elementOscilator::setup(int index){
     ofParameter<string> label("Modulator Min Max_label", " ");
     parameters.add(label);
     parameters.add(modulatorMin_Param.set("Modulator Min", 0, 0, 1));
-    parameters.add(modulatorMax_Param.set("Modulator Max", 0, 0, 1));
+    parameters.add(modulatorMax_Param.set("Modulator Max", 1, 0, 1));
     
     
     indexRand_Param.addListener(this, &elementOscilator::indexRandChanged);
@@ -78,15 +78,15 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         ofAbstractParameter &absParam = parameters.get(modulatorSelect_Param-1);
             if(absParam.type() == typeid(ofParameter<float>).name()){
                 ofParameter<float> castedParam = parameters.getFloat(modulatorSelect_Param-1);
-                float min_modulated = ofMap(modulatorMin_Param, 0, 1, castedParam.getMin(), castedParam.getMax());
-                float max_modulated = ofMap(modulatorMax_Param, 0, 1, castedParam.getMin(), castedParam.getMax());
+                float min_modulated = ofMap(modulatorMin_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                float max_modulated = ofMap(modulatorMax_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                 float modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
                 castedParam.setWithoutEventNotifications(modulation_scaled);
             }
             else if(absParam.type() == typeid(ofParameter<int>).name()){
                 ofParameter<int> castedParam = parameters.getInt(modulatorSelect_Param-1);
-                int min_modulated = ofMap(modulatorMin_Param, 0, 1, castedParam.getMin(), castedParam.getMax());
-                int max_modulated = ofMap(modulatorMax_Param, 0, 1, castedParam.getMin(), castedParam.getMax());
+                int min_modulated = ofMap(modulatorMin_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                int max_modulated = ofMap(modulatorMax_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                 int modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
                 castedParam.setWithoutEventNotifications(modulation_scaled);
             }

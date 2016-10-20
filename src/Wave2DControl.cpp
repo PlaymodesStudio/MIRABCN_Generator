@@ -124,7 +124,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
         float z;
         if(formulasToChoose[formulaChooser_Param] == "Manual"){
             z = wave1d_values[i];
-            ofClamp(z, 0, 1);
+            z = ofClamp(z, 0, 1);
         }else{
             t = 2*PI*phasor;
             x = point.first.x;
@@ -132,9 +132,9 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
             cx = point.first.x-width/2;
             cy = point.first.y-height/2+0.5;
             z = expression_parser.evaluateExpression();
-            ofMap(z, -1, 1, 0, 1, true);
+            z = ofMap(z, -1, 1, 0, 1, true);
         }
-        grid[point.first.y][point.first.x] = z*phaseScale_Param;
+        grid[point.first.y][point.first.x] = ofClamp(z*phaseScale_Param, 0, 1);
         point.second = z;
     }
     

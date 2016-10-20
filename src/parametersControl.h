@@ -45,8 +45,8 @@ public:
     
     void newMidiMessage(ofxMidiMessage& eventArgs);
     
-    void savePreset(int presetNum);
-    void loadPreset(int presetNum);
+    void savePreset(int presetNum, string bank);
+    void loadPreset(int presetNum, string bank);
     
 private:
     
@@ -65,6 +65,7 @@ private:
     ofParameter<float> presetChangeBeatsPeriod;
     
     ofxOscReceiver oscReceiver;
+    ofxOscSender oscSender;
     
     ofXml xml;
     

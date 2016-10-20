@@ -109,7 +109,7 @@ void parametersControl::setup(){
     
     //OSC
     oscReceiver.setup(12345);
-    
+    oscSender.setup("192.168.1.39", 54321);
  
     
     
@@ -137,27 +137,34 @@ void parametersControl::update(){
         oscReceiver.getNextMessage(m);
         
         vector<string> splitAddress = ofSplitString(m.getAddress(), "/");
-        ofStringReplace(splitAddress[1], "_", " ");
-        if(splitAddress[1] == "presetLoad"){
-            loadPreset(m.getArgAsInt(0));
-        }else if(splitAddress[1] == "presetSave"){
-            savePreset(m.getArgAsInt(0));
-        }else{
-            for(auto groupParam : parameterGroups){
-                if(groupParam.getName() == splitAddress[1]){
-                    ofAbstractParameter &absParam = groupParam.get(splitAddress[2]);
-                    if(absParam.type() == typeid(ofParameter<float>).name()){
-                        ofParameter<float> castedParam = absParam.cast<float>();
-                        castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                    }else if(absParam.type() == typeid(ofParameter<int>).name()){
-                        ofParameter<int> castedParam = absParam.cast<int>();
-                        castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                    }else if(absParam.type() == typeid(ofParameter<bool>).name())
-                        groupParam.getBool(splitAddress[2]) = m.getArgAsBool(0);
-                    else if(absParam.type() == typeid(ofParameter<string>).name())
-                        groupParam.getString(splitAddress[2]) = m.getArgAsString(0);
-                    else
-                        groupParam.getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
+        if(splitAddress.size() >= 2){
+            ofStringReplace(splitAddress[1], "_", " ");
+            if(splitAddress[1] == "presetLoad"){
+                loadPreset(m.getArgAsInt(0), m.getArgAsString(1));
+            }else if(splitAddress[1] == "presetSave"){
+                savePreset(m.getArgAsInt(0), m.getArgAsString(1));
+            }else if(splitAddress[1] == "phaseReset"){
+                for(auto groupParam : parameterGroups){
+                    if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
+                        groupParam.getBool("Reset Phase") = 0;
+                }
+            }else{
+                for(auto groupParam : parameterGroups){
+                    if(groupParam.getName() == splitAddress[1]){
+                        ofAbstractParameter &absParam = groupParam.get(splitAddress[2]);
+                        if(absParam.type() == typeid(ofParameter<float>).name()){
+                            ofParameter<float> castedParam = absParam.cast<float>();
+                            castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                        }else if(absParam.type() == typeid(ofParameter<int>).name()){
+                            ofParameter<int> castedParam = absParam.cast<int>();
+                            castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                        }else if(absParam.type() == typeid(ofParameter<bool>).name())
+                            groupParam.getBool(splitAddress[2]) = m.getArgAsBool(0);
+                        else if(absParam.type() == typeid(ofParameter<string>).name())
+                            groupParam.getString(splitAddress[2]) = m.getArgAsString(0);
+                        else
+                            groupParam.getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
+                    }
                 }
             }
         }
@@ -219,7 +226,7 @@ void parametersControl::update(){
     //Auto preset
     if(autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
         presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
-        loadPreset(randomPresetsArrange.at(presetChangeCounter));
+        loadPreset(randomPresetsArrange.at(presetChangeCounter), bankSelect->getSelected()->getName());
         presetChangeCounter++;
         if(presetChangeCounter >= NUM_PRESETS)
             presetChangeCounter = 0;
@@ -227,7 +234,7 @@ void parametersControl::update(){
 }
 
 
-void parametersControl::savePreset(int presetNum){
+void parametersControl::savePreset(int presetNum, string bank){
     //xml.load("Preset_"+ofToString(presetNum)+".xml");
     xml.clear();
     
@@ -287,14 +294,18 @@ void parametersControl::savePreset(int presetNum){
         }
         xml.setToParent();
     }
-    string bank = bankSelect->getSelected()->getName();
     cout<<"Save Preset_" << presetNum<< "_" << bank << endl;
     xml.save("Preset_"+ofToString(presetNum)+"_"+bank+".xml");
+    
+    ofxOscMessage m;
+    m.setAddress("presetSave");
+    m.addIntArg(presetNum);
+    m.addStringArg(bank);
+    oscSender.sendMessage(m);
 }
 
-void parametersControl::loadPreset(int presetNum){
+void parametersControl::loadPreset(int presetNum, string bank){
     //Test if there is no problem with the file
-    string bank = bankSelect->getSelected()->getName();
     if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
         return;
     
@@ -356,10 +367,17 @@ void parametersControl::loadPreset(int presetNum){
                 groupParam.getBool("Reset Phase") = false;
         }
     }
-    cout<<"Save Preset_" << presetNum<< "_" << bank << endl;
+    cout<<"Load Preset_" << presetNum<< "_" << bank << endl;
     vector<int> tempVec;
     tempVec.push_back(presetNum-1);
     presetMatrix->setSelected(tempVec);
+    
+    ofxOscMessage m;
+    m.setAddress("presetLoad");
+    m.addIntArg(presetNum);
+    m.addStringArg(bank);
+    oscSender.sendMessage(m);
+    
 }
 
 void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
@@ -388,9 +406,9 @@ void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
 
 void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
     if(ofGetKeyPressed(OF_KEY_SHIFT))
-        savePreset(e.child+1);
+        savePreset(e.child+1, bankSelect->getSelected()->getName());
     else{
-        loadPreset(e.child+1);
+        loadPreset(e.child+1, bankSelect->getSelected()->getName());
         if(autoPreset)
             presetChangedTimeStamp = ofGetElapsedTimef();
     }
