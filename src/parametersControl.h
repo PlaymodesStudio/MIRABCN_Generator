@@ -23,10 +23,6 @@ public:
     parametersControl(){};
     ~parametersControl(){};
     
-    void bindPhasorParams(ofParameterGroup paramGroup);
-    void bindOscilatorParams(ofParameterGroup paramGroup);
-    void bindDelayParams(ofParameterGroup paramGroup);
-    
     void createGuiFromParams(ofParameterGroup paramGroup);
     
     void setup();
@@ -49,10 +45,6 @@ public:
     void loadPreset(int presetNum, string bank);
     
 private:
-    
-    ofParameterGroup phasorParams;
-    ofParameterGroup oscilatorParams;
-    ofParameterGroup delayParams;
     
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;

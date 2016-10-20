@@ -40,9 +40,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
     parameters.add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
     parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 2));
-    ofParameter<string> label("Insert Formula_label", " ");
-    parameters.add(label);
-    parameters.add(waveFormula_Param.set("Formula", "sin(x)"));
+    
     ofParameterGroup formulaDropdown;
     formulaDropdown.setName("Wave Formula Select");
     //TODO: Change values
@@ -60,10 +58,10 @@ void Wave2DControl::setup(int _width, int _height, int index){
     formulaDropdown.add(tempStrParam);
     formulaDropdown.add(formulaChooser_Param.set("Wave Forumula Select", 0, 0, formulasToChoose.size()));
     parameters.add(formulaDropdown);
-    
-    ofParameter<string> label3("Insert Order_label", " ");
-    parameters.add(label3);
-    parameters.add(manualOrder.set("Manual Order", "1-2-3-4-5-6-7-8-9-10-11-12"));
+    ofParameter<string> label("Insert Formula_label", " ");
+    parameters.add(label);
+    parameters.add(waveFormula_Param.set("Formula", "sin(x)"));
+
     
     ofParameterGroup OrderDropdown;
     OrderDropdown.setName("Order Select");
@@ -80,6 +78,19 @@ void Wave2DControl::setup(int _width, int _height, int index){
     OrderDropdown.add(tempOrderStrParam);
     OrderDropdown.add(orderChoser_Param.set("Order Select", 0, 0, orderToChoose.size()));
     parameters.add(OrderDropdown);
+    
+    ofParameter<string> label3("Insert Order_label", " ");
+    parameters.add(label3);
+    parameters.add(manualOrder.set("Manual Order", "1-2-3-4-5-6-7-8-9-10-11-12"));
+    
+    parameters.add(previewTex.set("Preview Texutre", 0));
+    
+    ofParameterGroup invertDropDown;
+    invertDropDown.setName("Inversion Type");
+    ofParameter<string> tempInvStrParam("Options", "no-|-position inverse-|-value inverse");
+    invertDropDown.add(tempInvStrParam);
+    invertDropDown.add(inversionType.set("Inversion Type", 0, 0, 3));
+    parameters.add(invertDropDown);
     
     //Add listeners to parameters, becouse we have to compute some things when the parameter is changed
     formulaChooser_Param.addListener(this, &Wave2DControl::newFuncSelected);
@@ -168,17 +179,35 @@ void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f 
         if(point.first.x == pos.x && point.first.y == pos.y){
             for(int j = 0; j < infoVec.size(); j++){
                 //TODO: Change the inversion type, forula and dropdown
+                int index_main;
+                int index_second;
                 if(previewTex){
-                    ofSetColor(ofClamp(infoVec[j]*255, 0, 255));
-                    ofDrawRectangle(i,j, 1, 1);
-                    ofSetColor(ofClamp((infoVec[j])*255, 0, 255));
-                    ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
+                    index_main = i;
+                    index_second = i+barInfo_Pos.size();
                 }else{
-                    ofSetColor(infoVec[j]*255);
-                    ofDrawRectangle(2*i, j,1, 1);
-                    ofSetColor((infoVec[j])*255);
-                    ofDrawRectangle(2*i+1, j,1, 1);
+                    index_main = 2*i;
+                    index_second = 2*i+1;
                 }
+                ofSetColor(ofClamp(infoVec[j]*255, 0, 255));
+                ofDrawRectangle(index_main,j, 1, 1);
+                switch (inversionType) {
+                    case 0:
+                        ofSetColor(ofClamp((infoVec[j])*255, 0, 255));
+                        break;
+                        
+                    case 1:
+                        ofSetColor(ofClamp((1-infoVec[j])*255, 0, 255));
+                        break;
+                        
+                    case 2:
+                        ofSetColor(ofClamp((infoVec[infoVec.size()-1-j])*255, 0, 255));
+                        break;
+                        
+                    default:
+                        ofSetColor(ofClamp((infoVec[j])*255, 0, 255));
+                        break;
+                }
+                ofDrawRectangle(index_second,j, 1, 1);
             }
         }
     }

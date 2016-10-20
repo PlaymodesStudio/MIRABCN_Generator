@@ -8,18 +8,6 @@
 
 #include "parametersControl.h"
 
-void parametersControl::bindPhasorParams(ofParameterGroup paramGroup){
-    phasorParams = paramGroup;
-}
-
-void parametersControl::bindOscilatorParams(ofParameterGroup paramGroup){
-    oscilatorParams = paramGroup;
-}
-
-void parametersControl::bindDelayParams(ofParameterGroup paramGroup){
-    delayParams = paramGroup;
-}
-
 void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
     
     ofxDatGuiLog::quiet();
@@ -140,6 +128,7 @@ void parametersControl::update(){
         if(splitAddress.size() >= 2){
             ofStringReplace(splitAddress[1], "_", " ");
             if(splitAddress[1] == "presetLoad"){
+                presetMatrix->setSelected({m.getArgAsInt(0)});
                 loadPreset(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "presetSave"){
                 savePreset(m.getArgAsInt(0), m.getArgAsString(1));
@@ -395,6 +384,8 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
         if(datGuis[i]->getToggle(e.target->getName()) == e.target)
             parameterGroups[i].getBool(e.target->getName()) = e.target->getChecked();
     }
+    if(e.target->getName() == "Automatic Preset")
+        autoPreset = e.checked;
 }
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
@@ -415,16 +406,16 @@ void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
 }
 
 void parametersControl::onGuiSliderEvent(ofxDatGuiSliderEvent e){
-    if(datGui->getButton(e.target->getName())){
+    if(datGui->getSlider(e.target->getName())->getName() == e.target->getName()){
         string nameNoGlobal = e.target->getName();
         ofStringReplace(nameNoGlobal, "Global ", "");
         for(auto groupParam : parameterGroups){
-            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
-            groupParam.getFloat(nameNoGlobal) = e.value;
+            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0 && groupParam.getFloat(nameNoGlobal).getName() == nameNoGlobal)
+                groupParam.getFloat(nameNoGlobal) = e.value;
         }
     }
     if(e.target->getName() == "Beats Period")
-        periodTime = e.value / phasorParams.getFloat(0) * 60.;
+        periodTime = e.value / datGui->getSlider("Global BPM")->getValue() * 60.;
 }
 
 void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){

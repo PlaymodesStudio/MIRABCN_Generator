@@ -52,13 +52,15 @@ private:
     vector<string>      formulasToChoose;
     vector<string>      orderToChoose;
     ofParameter<string> manualOrder;
+    ofParameter<bool>   previewTex;
+    ofParameter<int>    inversionType;
     
     vector<int>         manualOrder_int; //the order we manually type but put in a vector to be easy to use it
     
     int width;
     int height;
     
-    bool previewTex = false; //Boolean for changing the way we see (it outputs) the output texture
+    //Boolean for changing the way we see (it outputs) the output texture
     
     //Here there is a odd thing, we have the same values but represented in diferent ways
     //Grid way is more clarifying
