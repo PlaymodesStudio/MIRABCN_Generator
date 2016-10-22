@@ -9,6 +9,7 @@ You need at least openframeworks 0.9.3, in 0.9.2 ofxExprtk is not working
 - [ofxMidi]()
 - [ofxOsc]()
 - [ofxSyphon]()
+- [ofxCurvesTool](https://github.com/charlesveasey/ofxCurvesTool)
 
 
 ### Preview Window explanation
