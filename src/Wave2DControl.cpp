@@ -38,9 +38,9 @@ void Wave2DControl::setup(int _width, int _height, int index){
     //Add parameters in parameters group
     parameters.setName("wave2D " + ofToString(index));
     parameters.add(invert_Param.set("Invert 2D", false));
-    parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
-    parameters.add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
-    parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 2));
+//    parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
+//    parameters.add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
+    parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 4));
     
 
 
