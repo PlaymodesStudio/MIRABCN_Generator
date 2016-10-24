@@ -82,6 +82,9 @@ private:
     //Here there is a odd thing, we have the same values but represented in diferent ways
     //Grid way is more clarifying
     vector<vector<float>> grid;
+    
+    vector<vector<ofPoint>> columns_in_space;
+    
     //linear way is used to be able to fast get the columns in the order we first specyfied, the pair contains, first the position, then the value in this pos
     vector<pair<ofVec2f, float>> barInfo_Pos;
 

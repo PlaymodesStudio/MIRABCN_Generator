@@ -31,6 +31,11 @@ void Wave2DControl::setup(int _width, int _height, int index){
         }
     }
     
+    columns_in_space = {{ofPoint(-5.885, 3.11), ofPoint(0, 3.11), ofPoint(5.885, 3.11)},
+        {ofPoint(-5.885, 0), ofPoint(0, 0), ofPoint(5.885, 0)},
+        {ofPoint(-5.885, -3.11), ofPoint(0, -3.11), ofPoint(5.885, -3.11)},
+        {ofPoint(-5.885, -6.22), ofPoint(0, -6.22), ofPoint(5.885, -6.22)}};
+    
     //Resize the manualOrder vector to have as many values as elements
     orderSelected.resize(height*width, 0);
     reindexSelected.resize(height*width, 0);
@@ -119,10 +124,11 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
             z = ofClamp(z, 0, 1);
         }else{
             t = 2*PI*phasor;
-            x = reindexedPoint.first.x;
-            y = reindexedPoint.first.y;
-            cx = reindexedPoint.first.x-width/2;
-            cy = reindexedPoint.first.y-height/2+0.5;
+            ofPoint pos = columns_in_space[reindexedPoint.first.y][reindexedPoint.first.x];
+            x = pos.x;
+            y = pos.y + (3.11/2);
+            cx = x;
+            cy = y;
             z = expression_parser.evaluateExpression();
             z = ofMap(z, -1, 1, 0, 1, true);
         }
