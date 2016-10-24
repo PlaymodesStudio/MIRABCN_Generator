@@ -46,7 +46,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     if(loadDropdownOptions("Functions.xml", waveFormulaOptions))
         createDropdownAndStringInput("Wave Formula", waveFormulaOptions, waveFormulaInput_Param, waveFormulaChooser_Param);
     
-    if(loadDropdownOptions("Order.xml", orderOptions))
+    if(loadDropdownOptions("Orders.xml", orderOptions))
         createDropdownAndStringInput("Order", orderOptions, orderInput_Param, orderChooser_Param);
 
     
@@ -240,9 +240,6 @@ bool Wave2DControl::loadDropdownOptions(string filename, vector<string> &options
 void Wave2DControl::createDropdownAndStringInput(string name, vector<string> options, ofParameter<string> textInput, ofParameter<int> dropDownSelector){
     ofParameterGroup tempDropdown;
     tempDropdown.setName(name + " Select");
-    //TODO: Change values
-    loadWaveFormula();
-    
     string  tempStr;
     ofParameter<string> tempStrParam("Options");
     for(auto opt : options)
