@@ -14,6 +14,7 @@ elementOscilator::elementOscilator(){
     pow_Param = 1;
     invert_Param = false;
     symmetry_Param = 0;
+    previousModulation = 0;
 }
 
 void elementOscilator::setup(int index){
@@ -287,21 +288,18 @@ void elementOscilator::indexRandChanged(float &val){
 }
 
 void elementOscilator::modulatorChanged(int &index){
-//    ofAbstractParameter &absParam = parameters.get(index);
-//    if(absParam.type() == typeid(ofParameter<float>).name()){
-//        ofParameter<float> castedParam = parameters.getFloat(index);
-//        modulatorMin_Param.setMin(castedParam.getMin());
-//        modulatorMin_Param.setMax(castedParam.getMax());
-//        modulatorMax_Param.setMin(castedParam.getMin());
-//        modulatorMax_Param.setMax(castedParam.getMax());
-//    }
-//    else if(absParam.type() == typeid(ofParameter<int>).name()){
-//        ofParameter<int> castedParam = parameters.getInt(index);
-//        modulatorMin_Param.setMin(castedParam.getMin());
-//        modulatorMin_Param.setMax(castedParam.getMax());
-//        modulatorMax_Param.setMin(castedParam.getMin());
-//        modulatorMax_Param.setMax(castedParam.getMax());
-//    }
+    if(previousModulation != 0){
+        ofAbstractParameter &absParam = parameters.get(previousModulation-1);
+        if(absParam.type() == typeid(ofParameter<float>).name()){
+            ofParameter<float> castedParam = parameters.getFloat(previousModulation-1);
+            castedParam.set(castedParam);
+        }
+        else if(absParam.type() == typeid(ofParameter<int>).name()){
+            ofParameter<int> castedParam = parameters.getInt(previousModulation-1);
+            castedParam.set(castedParam);
+        }
+    }
+    previousModulation = index;
 }
 
 

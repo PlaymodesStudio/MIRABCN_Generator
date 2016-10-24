@@ -67,7 +67,7 @@ void ofApp::setup(){
     outputCurve.useMouse(true);
     outputCurve.load("responseCurve.yml");
     
-    curvePos = ofPoint(700, 400);
+    curvePos = ofPoint(600, 250);
     curveDragger = ofRectangle(curvePos.x, curvePos.y-20, 255, 20);
     outputCurve.notifyEvents(true);
 }

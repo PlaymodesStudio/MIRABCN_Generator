@@ -73,6 +73,8 @@ private:
     
     float               oldPhasor;
     int                 prevIndex;
+    
+    int                 previousModulation;
 };
 
 #endif /* elementOscilator_h */
