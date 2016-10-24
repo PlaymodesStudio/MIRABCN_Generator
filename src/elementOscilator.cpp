@@ -66,7 +66,9 @@ void elementOscilator::setup(int index){
     indexRand_Param.addListener(this, &elementOscilator::indexRandChanged);
     modulatorSelect_Param.addListener(this, &elementOscilator::modulatorChanged);
     
-    infoVec_preMod.resize(indexCount_Param);
+    infoVec_preMod.resize(indexCount_Param, 0);
+    pastRandom.resize(indexCount_Param, 0);
+    newRandom.resize(indexCount_Param, 0);
     indexRand.resize(indexCount_Param);
     for(int i = 0; i < indexRand.size(); i++)
         indexRand[i] = i;
@@ -210,8 +212,19 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
             }
             case rand2Osc:
             {
-                val = ofNoise(w+((float)index/(float)indexCount_Param));
-                val = ofMap(val, 0.25, 0.75, 0, 1, true);
+                if(phasor < oldPhasor){
+                    if(i == 0) pastRandom = newRandom;
+                    if(index != prevIndex)
+                        val = ofRandom(1);
+                    else
+                        val = infoVec_preMod[i-1];
+                    
+                    newRandom[i] = val;
+                    val = pastRandom[i];
+                }
+                else
+                    val = pastRandom[i]*(1-phasor) + newRandom[i]*phasor;
+                
                 break;
             }
             default:

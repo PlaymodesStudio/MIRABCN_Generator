@@ -66,6 +66,8 @@ private:
     ofParameter<float>  modulatorMax_Param;
     
     vector<float>       infoVec_preMod;
+    vector<float>       pastRandom;
+    vector<float>       newRandom;
     vector<int>         indexRand;
     float               indexRand_Param_previous;
     
