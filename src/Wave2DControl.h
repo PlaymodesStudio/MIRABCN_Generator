@@ -28,7 +28,7 @@ public:
     void orderDropdownListener(int &val);
     void orderInputListener(string &str);
     void reindexDropdownListener(int &val);
-    void reindexInputListener(string &val);
+    void reindexInputListener(string &str);
     
     bool drawCurve(){return drawCurve_param;};
     void setCurve(ofxCurvesTool curve){outputCurve = curve;};

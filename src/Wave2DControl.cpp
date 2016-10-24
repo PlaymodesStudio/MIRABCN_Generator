@@ -33,6 +33,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     
     //Resize the manualOrder vector to have as many values as elements
     orderSelected.resize(height*width, 0);
+    reindexSelected.resize(height*width, 0);
     
     //Add parameters in parameters group
     parameters.setName("wave2D " + ofToString(index));
@@ -48,6 +49,9 @@ void Wave2DControl::setup(int _width, int _height, int index){
     
     if(loadDropdownOptions("Orders.xml", orderOptions))
         createDropdownAndStringInput("Order", orderOptions, orderInput_Param, orderChooser_Param);
+    
+    if(loadDropdownOptions("Reindex.xml", reindexOptions))
+        createDropdownAndStringInput("Reindex", reindexOptions, reindexInput_Param, reindexChooser_Param);
 
     
     
@@ -70,9 +74,12 @@ void Wave2DControl::setup(int _width, int _height, int index){
     waveFormulaInput_Param.addListener(this, &Wave2DControl::waveFormulaInputListener);
     orderChooser_Param.addListener(this, &Wave2DControl::orderDropdownListener);
     orderInput_Param.addListener(this, &Wave2DControl::orderInputListener);
+    reindexChooser_Param.addListener(this, &Wave2DControl::reindexDropdownListener);
+    reindexInput_Param.addListener(this, &Wave2DControl::reindexInputListener);
     
     //Set a default value
     orderInput_Param.set("1-2-3-4-5-6-7-8-9-10-11-12");
+    reindexInput_Param.set("1-2-3-4-5-6-7-8-9-10-11-12");
 
 
     //Add the simbols to the expression evaluator
@@ -105,16 +112,17 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
     //iteate for all positions and calculate the function, or get the value
     for(int i = 0; i < barInfo_Pos.size() ; i++){
         auto &point = barInfo_Pos[i];
+        auto &reindexedPoint = barInfo_Pos[reindexSelected[i]];
         float z;
         if(waveFormulaOptions[waveFormulaChooser_Param] == "Manual"){
-            z = wave1d_values[i];
+            z = wave1d_values[reindexSelected[i]];
             z = ofClamp(z, 0, 1);
         }else{
             t = 2*PI*phasor;
-            x = point.first.x;
-            y = point.first.y;
-            cx = point.first.x-width/2;
-            cy = point.first.y-height/2+0.5;
+            x = reindexedPoint.first.x;
+            y = reindexedPoint.first.y;
+            cx = reindexedPoint.first.x-width/2;
+            cy = reindexedPoint.first.y-height/2+0.5;
             z = expression_parser.evaluateExpression();
             z = ofMap(z, -1, 1, 0, 1, true);
         }
@@ -222,6 +230,17 @@ void Wave2DControl::orderInputListener(string &str){
     }
 }
 
+void Wave2DControl::reindexDropdownListener(int &val){
+    reindexInput_Param = reindexOptions[val];
+}
+
+void Wave2DControl::reindexInputListener(string &str){
+    int i=0;
+    for(auto num : ofSplitString(str, "-")){
+        reindexSelected[i] = ofToInt(num)-1;
+        i++;
+    }
+}
 
 bool Wave2DControl::loadDropdownOptions(string filename, vector<string> &options){
     ofXml xml;
