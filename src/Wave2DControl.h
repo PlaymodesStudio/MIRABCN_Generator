@@ -23,10 +23,12 @@ public:
     vector<vector<float>> computeWave(ofFbo &waveTex, ofFbo &waveLin, float phasor);
     void computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos);
     
-    void newFuncSelected(int &val);
-    void newFuncEntered(string &str);
-    void newOrderSelected(int &val);
-    void manualOrderChanged(string &str);
+    void waveFormulaDropdownListener(int &val);
+    void waveFormulaInputListener(string &str);
+    void orderDropdownListener(int &val);
+    void orderInputListener(string &str);
+    void reindexDropdownListener(int &val);
+    void reindexInputListener(string &val);
     
     bool drawCurve(){return drawCurve_param;};
     void setCurve(ofxCurvesTool curve){outputCurve = curve;};
@@ -34,12 +36,12 @@ public:
     void setPreviewTexture(bool b){previewTex = b;};
     void togglePreviewTexture(){previewTex = !previewTex;};
     
-    bool loadFunctions();
-    bool loadOrder();
-    bool loadReindexing();
+    bool loadDropdownOptions(string filename, vector<string> &options);
     
     ofParameterGroup getParameterGroup(){return parameters;};
     ofParameterGroup getGeneratorParameterGroup(){return manualGenerator.getParameterGroup();};
+    
+    void createDropdownAndStringInput(string name, vector<string> options, ofParameter<string> textInput, ofParameter<int> dropDownSelector);
     
 private:
     
@@ -50,18 +52,27 @@ private:
     ofParameter<int>    symmetryY_Param;
     ofParameter<float>  comb_Param;
     ofParameter<float>  phaseScale_Param;
-    ofParameter<string> waveFormula_Param;
-    ofParameter<int>    formulaChooser_Param;
-    ofParameter<int>    orderChoser_Param;
-    vector<string>      formulasToChoose;
-    vector<string>      orderToChoose;
-    ofParameter<string> manualOrder;
+    
+    ofParameter<string> waveFormulaInput_Param;
+    ofParameter<int>    waveFormulaChooser_Param;
+    vector<string>      waveFormulaOptions;
+    
+    ofParameter<string> orderInput_Param;
+    ofParameter<int>    orderChooser_Param;
+    vector<string>      orderOptions;
+    vector<int>         orderSelected; //the order we manually type but put in a vector to be easy to use it
+    
+    ofParameter<string> reindexInput_Param;
+    ofParameter<int>    reindexChooser_Param;
+    vector<string>      reindexOptions;
+    vector<int>         reindexSelected;
+    
     ofParameter<bool>   previewTex;
     ofParameter<int>    inversionType;
     ofParameter<bool>   drawCurve_param;
     ofParameter<bool>   applyCurve_param;
     
-    vector<int>         manualOrder_int; //the order we manually type but put in a vector to be easy to use it
+    
     
     int width;
     int height;
