@@ -97,15 +97,22 @@ void parametersControl::setup(){
     
     //OSC
     oscReceiver.setup(12345);
-    oscSender.setup("192.168.1.39", 54321);
- 
+    string host = "192.168.1.39";
+    oscSender.setup(host, 54321);
+    
+    ofLog() << "OSC Info:";
+    ofLog() << "Listening on port " << 12345;
+    ofLog() << "Sending to host " << host << " on port " << 54321;
+  
     
     
     //MIDI
+    ofLog() << "MIDI Info:";
     ofxMidiOut::listPorts();
-    midiOut.openPort("BCF2000");
-    midiIn.openPort("BCF2000");
-    midiIn.addListener(this);
+    if(midiOut.openPort("BCF2000")){
+        midiIn.openPort("BCF2000");
+        midiIn.addListener(this);
+    }
     
     
 //    loadPreset(1);
@@ -283,7 +290,7 @@ void parametersControl::savePreset(int presetNum, string bank){
         }
         xml.setToParent();
     }
-    cout<<"Save Preset_" << presetNum<< "_" << bank << endl;
+    ofLog() <<"Save Preset_" << presetNum<< "_" << bank;
     xml.save("Preset_"+ofToString(presetNum)+"_"+bank+".xml");
     
     ofxOscMessage m;
@@ -356,7 +363,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
                 groupParam.getBool("Reset Phase") = false;
         }
     }
-    cout<<"Load Preset_" << presetNum<< "_" << bank << endl;
+    ofLog()<<"Load Preset_" << presetNum<< "_" << bank;
     vector<int> tempVec;
     tempVec.push_back(presetNum-1);
     presetMatrix->setSelected(tempVec);

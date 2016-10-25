@@ -219,9 +219,8 @@ void Wave2DControl::waveFormulaDropdownListener(int &val){
 }
 
 void Wave2DControl::waveFormulaInputListener(string &str){
-    if(waveFormulaOptions[waveFormulaChooser_Param] != "Manual"){
-        expression_parser.compileExpression(str);
-    }
+    waveFormulaChooser_Param.setWithoutEventNotifications(1);
+    if(!expression_parser.compileExpression(str)) ofLog() << "Can't Compile Expression: " << str;
 }
 
 void Wave2DControl::orderDropdownListener(int &val){
