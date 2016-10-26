@@ -77,6 +77,9 @@ void elementOscilator::setup(int index){
 }
 
 void elementOscilator::computeFunc(float *infoVec, float phasor, float modulation){
+    //TODO: Directily modulate the parameters it's not the best way, becouse we loose the value, in gui and for the other iterations of the same func.
+    // a Way could be to duplicate the values (don't think is the best way.
+    // another way could be to copy the value that it's modulated before it's modulated, and then return that value to the parameter once exit the function.
     if(modulation != -1 && modulatorSelect_Param != 0){
         ofAbstractParameter &absParam = parameters.get(modulatorSelect_Param-1);
             if(absParam.type() == typeid(ofParameter<float>).name()){
@@ -95,13 +98,6 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
             }
     }
     for (int i = 0; i < indexCount_Param ; i++){
-        
-//        if(modulatorSelect_Param == 3 && modulation != -1)
-//            freq_Param = ofMap(modulation, 0, 1, freq_Param.getMin(), freq_Param.getMax());
-//        
-//        if(modulatorSelect_Param == 4 && modulation != -1)
-//            comb_Param = ofMap(modulation, 0, 1, comb_Param.getMin(), comb_Param.getMax());
-        
         int index = i;
         
         //get phasor to be w (radial freq)
@@ -125,7 +121,6 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         int veusSym = newNumOfPixels/(symmetry_Param+1);
         index = veusSym-abs((((int)(index/veusSym)%2) * veusSym)-(index%veusSym));
         
-//        index = odd ? index-indexOffset_Param : index+indexOffset_Param;
         
         if(newNumOfPixels % 2 == 0)
             index += odd ? 1 : 0;
@@ -141,8 +136,6 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
             index - indexCount_Param;
         
         
-        //cout<<index<<"-" ;
-        
         //COMB
         index = abs(((index%2)*indexCount_Param*comb_Param)-index);
         
@@ -156,11 +149,8 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         
         
         //invert it?
-        //k *= invert_Param;
         k *=  freq_Param * ((float)indexCount_Param/(float)indexQuant_Param); //Index Modifiers
         
-//        if(modulatorSelect_Param == 1 && modulation != -1)
-//            k+= (modulation*2*PI);
         
         float linPhase = fmod(w+k, 2*PI) / (2*PI);
         float val = 0;
@@ -216,11 +206,10 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
                 if(phasor < oldPhasor){
                     if(i == 0) pastRandom = newRandom;
                     if(index != prevIndex)
-                        val = ofRandom(1);
+                        newRandom[i] = ofRandom(1);
                     else
-                        val = infoVec_preMod[i-1];
+                        newRandom[i] = newRandom[i-1];
                     
-                    newRandom[i] = val;
                     val = pastRandom[i];
                 }
                 else
@@ -235,9 +224,6 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         infoVec_preMod[i] = val;
         
         computeMultiplyMod(&val);
-        
-//        if(modulatorSelect_Param == 2 && modulation != -1)
-//            val *= modulation;
         
         if(i == indexCount_Param-1)
             oldPhasor = phasor;
