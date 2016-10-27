@@ -33,6 +33,7 @@ public:
     void onGuiButtonEvent(ofxDatGuiButtonEvent e);
     void onGuiToggleEvent(ofxDatGuiToggleEvent e);
     void onGuiDropdownEvent(ofxDatGuiDropdownEvent e);
+    void onGuiInternalEvent(ofxDatGuiInternalEvent e);
     void onGuiMatrixEvent(ofxDatGuiMatrixEvent e);
     void onGuiSliderEvent(ofxDatGuiSliderEvent e);
     void onGuiTextInputEvent(ofxDatGuiTextInputEvent e);
@@ -72,6 +73,8 @@ private:
     vector<int> randomPresetsArrange;
     vector<int> presetsTime;
     int presetChangeCounter;
+    
+    int height_before_dropdown;
 };
 
 

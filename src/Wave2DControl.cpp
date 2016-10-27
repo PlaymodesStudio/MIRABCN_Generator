@@ -22,12 +22,18 @@ void Wave2DControl::setup(int _width, int _height, int index){
     grid.resize(height);
     for( auto &row : grid)
         row.resize(width, 0);
+    indexGrid.resize(height);
+    for (auto &row : indexGrid)
+        row.resize(width);
+    int index_ = 0;
     for(int i=0 ; i<height ; i++){
         for(int j=0; j<width; j++){
             pair<ofVec2f, float> tempPair;
             tempPair.first = ofVec2f(j, i);
             tempPair.second = float((width*i)+j)/ float(height*width);
+            indexGrid[i][j] = index_;
             barInfo_Pos.push_back(tempPair);
+            index_++;
         }
     }
     
@@ -59,21 +65,6 @@ void Wave2DControl::setup(int _width, int _height, int index){
         createDropdownAndStringInput("Reindex", reindexOptions, reindexInput_Param, reindexChooser_Param);
 
     
-    
-    parameters.add(previewTex.set("Preview Texutre", 0));
-    
-    ofParameterGroup invertDropDown;
-    invertDropDown.setName("Inversion Type");
-    ofParameter<string> tempInvStrParam("Options", "no-|-position inverse-|-value inverse");
-    invertDropDown.add(tempInvStrParam);
-    invertDropDown.add(inversionType.set("Inversion Type", 0, 0, 3));
-    parameters.add(invertDropDown);
-    
-    
-    
-    parameters.add(drawCurve_param.set("Draw Curve", 0));
-    parameters.add(applyCurve_param.set("Apply Curve", 0));
-    
     //Add listeners to parameters, becouse we have to compute some things when the parameter is changed
     waveFormulaChooser_Param.addListener(this, &Wave2DControl::waveFormulaDropdownListener);
     waveFormulaInput_Param.addListener(this, &Wave2DControl::waveFormulaInputListener);
@@ -97,7 +88,7 @@ void Wave2DControl::setup(int _width, int _height, int index){
     expression_parser.compileExpression(waveFormulaInput_Param);
 }
 
-vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin, float phasor){
+vector<vector<float>> Wave2DControl::computeWave(float phasor){
     if(invert_Param) phasor = 1-phasor;
     
     vector<float> wave1d_values;
@@ -135,81 +126,7 @@ vector<vector<float>> Wave2DControl::computeWave(ofFbo &waveTex, ofFbo &waveLin,
         grid[point.first.y][point.first.x] = ofClamp(z*phaseScale_Param, 0, 1);
         point.second = z;
     }
-    
-    //Draw info to the FBO's
-    waveLin.begin();
-    ofSetColor(0);
-    ofDrawRectangle(0, 0, waveLin.getWidth(), waveLin.getHeight());
-    //Draw the Bars
-    float wid = 1;
-    float hei = waveLin.getHeight();
-    ofSetColor(255);
-    for(int i = 0; i < width*height; i++)
-        ofDrawRectangle((i*wid), (1-barInfo_Pos[i].second)*hei, wid, barInfo_Pos[i].second*hei);
-    waveLin.end();
-    
-    
-    waveTex.begin();
-    ofSetColor(0);
-    for(auto point : barInfo_Pos){
-        ofSetColor(point.second*255);
-        ofDrawRectangle(point.first.x, point.first.y, 1, 1);
-    }
-    waveTex.end();
     return grid;
-}
-
-void Wave2DControl::computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos){
-    outTex.begin();
-    for(int i=0 ; i < barInfo_Pos.size() ; i++){
-        auto &point = barInfo_Pos[i];
-        if(point.first.x == pos.x && point.first.y == pos.y){
-            for(int j = 0; j < infoVec.size(); j++){
-                int valueInByte = infoVec[j]*255;
-                if(applyCurve_param)
-                    valueInByte = outputCurve[valueInByte];
-                
-                ofSetColor(valueInByte);
-                if(previewTex){
-                    ofDrawRectangle(i,j, 1, 1);
-                }else{
-                    ofDrawRectangle(2*i,j, 1, 1);
-                }
-            }
-            for(int j = 0; j < infoVec.size(); j++){
-                int valueInByte;
-                switch (inversionType) {
-                    case 0:
-                        valueInByte = infoVec[j]*255;
-                        break;
-                        
-                    case 1:
-                        valueInByte = infoVec[infoVec.size()-1-j]*255;
-                        break;
-                        
-                    case 2:
-                        valueInByte = (1-infoVec[j])*255;
-                        break;
-                        
-                    default:
-                        valueInByte = infoVec[j]*255;
-                        break;
-                }
-                if(applyCurve_param)
-                    valueInByte = outputCurve[valueInByte];
-                
-                ofSetColor(valueInByte);
-                
-                if(previewTex){
-                    ofDrawRectangle(i+barInfo_Pos.size(),j, 1, 1);
-                }else{
-                    ofDrawRectangle(2*i+1,j, 1, 1);
-                }
-                
-            }
-        }
-    }
-    outTex.end();
 }
 
 void Wave2DControl::waveFormulaDropdownListener(int &val){

@@ -19,6 +19,8 @@ void ofApp::setup(){
     //Function that generates the wave(2D Wave) that modifies the bank of oscillators
     waveControl.setup(COL_BARS, ROW_BARS, 1);
     
+    masterModule.setup(1);
+    
     //Initialize our vector that stores the information of the oscilators
     infoVec.resize(pixelNum, 0);
     
@@ -58,11 +60,12 @@ void ofApp::setup(){
     paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getParameterGroup());
     paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup());
+    paramsControl.createGuiFromParams(masterModule.getParameterGroup());
     
     //Create main gui, and add listeners when all guis are created
     paramsControl.setup();
     
-    //Setup the soundStream so we can use the audio rate colled function "audioIn" to update the phasor and have it better synced
+    //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
     outputCurve.setup();
@@ -72,6 +75,9 @@ void ofApp::setup(){
     curvePos = ofPoint(600, 250);
     curveDragger = ofRectangle(curvePos.x, curvePos.y-20, 255, 20);
     outputCurve.notifyEvents(true);
+    masterModule.setCurve(outputCurve);
+    
+    ofAddListener(outputCurve.curHoverUpdate, this, &ofApp::outputCurveListener);
 }
 
 //--------------------------------------------------------------
@@ -79,21 +85,29 @@ void ofApp::update(){
     //Update paramsControl, becouse it also handles osc and midi
     paramsControl.update();
     
+    waveLinear.begin();
+    ofSetColor(0);
+    ofDrawRectangle(0, 0, waveLinear.getWidth(), waveLinear.getHeight());
+    waveLinear.end();
+
+    
     //Phasor updates automatically at audio rate, but we need to take the value for this update so the phasor is the same along all the time update is being called
     float update_Phasor = phasors[0].getPhasor();
     
     //We get the values that we will use to modulate our bank of oscillators, we get them as a matrix to get them clear so we understand it like the space it has to be installed
-    vector<vector<float>> modValues =  waveControl.computeWave(waveGrid, waveLinear, phasors[1].getPhasor());
+    vector<vector<float>> modValues =  waveControl.computeWave(phasors[1].getPhasor());
     
-    waveControl.setCurve(outputCurve);
     
     //We iterate for each column, and we compute it's value;
     for(int i = 0; i < COL_BARS ; i++){
         for (int j = 0; j < ROW_BARS ; j++){
+            int index = waveControl.getIndexFromPosition(j, i);
             //Calculation of the oscilators for each element, with phasor info and modulation info
-            singleGenerator.computeFunc(bankDatas[i*ROW_BARS+j].data(), update_Phasor, modValues[j][i]);
+            singleGenerator.computeFunc(bankDatas[index].data(), update_Phasor, modValues[j][i]);
             //We use this indo to fill the output texture
-            waveControl.computeOutTex(pixelContent, bankDatas[i*ROW_BARS+j], ofVec2f(i, j));
+            masterModule.computeOutTex(pixelContent, bankDatas[index], index);
+            masterModule.computeWaveTex(waveGrid, modValues[j][i], ofPoint(i, j));
+            masterModule.computeLinWaveTex(waveLinear, modValues[j][i], index);
         }
     }
     
@@ -108,7 +122,7 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(0);
     
-    if(waveControl.drawCurve()){
+    if(masterModule.drawCurve()){
         ofSetColor(ofColor::grey);
         ofDrawRectangle(curveDragger);
         ofSetColor(ofColor::red);
@@ -222,7 +236,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if(curveDragger.inside(x, y) && waveControl.drawCurve()){
+    if(curveDragger.inside(x, y) && masterModule.drawCurve()){
         curveDraggerPrevPos = ofPoint(x, y);
         isDragging = true;
     }

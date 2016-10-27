@@ -88,6 +88,7 @@ void parametersControl::setup(){
         gui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
 //        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
         gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
+        gui->onInternalEvent(this, &parametersControl::onGuiInternalEvent);
     }
     
     //OF PARAMETERS LISTERENRS
@@ -121,14 +122,13 @@ void parametersControl::setup(){
     if(buffer.size()) {
         for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
             string line = *it;
-            // copy the line
             // make sure its not a empty line
             if(!line.empty()) presetsTime.push_back(ofToInt(line));
-            cout << presetsTime[presetsTime.size()-1] << endl;
         }
     }
     
 //    loadPreset(1);
+    autoPreset = false;
     presetChangeCounter = 0;
     presetChangedTimeStamp = ofGetElapsedTimef();
 //    periodTime = presetChangeBeatsPeriod / parameterGroups[0].getFloat("BPM") * 60.;
@@ -136,6 +136,8 @@ void parametersControl::setup(){
         randomPresetsArrange.push_back(i+1);
     
     random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
+    
+    height_before_dropdown = ofGetHeight();
 }
 
 
@@ -326,7 +328,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
         //Put xml in the place of the parametergroup
         string noSpacesGroupName = groupParam.getName();
         ofStringReplace(noSpacesGroupName, " ", "_");
-        if(xml.exists(noSpacesGroupName)){
+        if(xml.exists(noSpacesGroupName) && !ofStringTimesInString(groupParam.getName(), "master")){
             xml.setTo(noSpacesGroupName);
             
             //Iterate for all parameters in parametergroup and look for the type of the parameter
@@ -413,9 +415,13 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
     for (int i=0; i < datGuis.size() ; i++){
-        if(datGuis[i]->getDropdown(e.target->getName()) == e.target)
+        if(datGuis[i]->getDropdown(e.target->getName()) == e.target){
             parameterGroups[i].getGroup(e.target->getName()).getInt(1) = e.child;
+//            if(datGuis[i]->getHeight() > ofGetHeight())
+//                ofSetWindowShape(ofGetWidth(), datGuis[i]->getHeight());
+        }
     }
+    ofSetWindowShape(ofGetWidth(), height_before_dropdown);
 }
 
 void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
@@ -448,6 +454,22 @@ void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
     }
 }
 
+void parametersControl::onGuiInternalEvent(ofxDatGuiInternalEvent e){
+    if(e.type == DROPDOWN_TOGGLED){
+        bool isExpanding = false;
+        for (auto datGui : datGuis){
+            if(datGui->getHeight() > ofGetHeight()){
+                if(height_before_dropdown > ofGetHeight())
+                    height_before_dropdown = ofGetHeight();
+                ofSetWindowShape(ofGetWidth(), datGui->getHeight());
+                isExpanding = true;
+            }
+        }
+        if(!isExpanding){
+            ofSetWindowShape(ofGetWidth(), height_before_dropdown);
+        }
+    }
+}
 
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;

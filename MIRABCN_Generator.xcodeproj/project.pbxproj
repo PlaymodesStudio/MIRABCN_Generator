@@ -35,6 +35,7 @@
 		8F5205AEF8861EF234F0651A /* ofxOscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81967292BFC87A0144BD32C6 /* ofxOscSender.cpp */; };
 		99713A77173E6C750326219F /* parametersControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 087D8883A39116874A1FC5E8 /* parametersControl.cpp */; };
 		9F084FA81DBF8A910023EF53 /* bufferLoggerChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F084FA61DBF8A910023EF53 /* bufferLoggerChannel.cpp */; };
+		9FBFD8341DC2254900B299C1 /* masterControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBFD8321DC2254900B299C1 /* masterControl.cpp */; };
 		A231433F2B06ACB44C821F42 /* Wave2DControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 71D79EDAD38ACC0C7E9998BE /* Wave2DControl.cpp */; };
 		ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD194746185E2DA11468377 /* IpEndpointName.cpp */; };
 		BCC8D420CBA9217E437D2D76 /* ofxRtMidiIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F634AA6CA2E3C60F3B87B59A /* ofxRtMidiIn.cpp */; };
@@ -142,6 +143,8 @@
 		9F084FA61DBF8A910023EF53 /* bufferLoggerChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bufferLoggerChannel.cpp; sourceTree = "<group>"; };
 		9F084FA71DBF8A910023EF53 /* bufferLoggerChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bufferLoggerChannel.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
+		9FBFD8321DC2254900B299C1 /* masterControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = masterControl.cpp; sourceTree = "<group>"; };
+		9FBFD8331DC2254900B299C1 /* masterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = masterControl.h; sourceTree = "<group>"; };
 		A13853A1B21F20177F44EE37 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui_PM/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
 		A2AAA8CA403479E6FCDF920E /* OscHostEndianness.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscHostEndianness.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscHostEndianness.h; sourceTree = SOURCE_ROOT; };
 		A403D3D25D08FC7AF3B871D4 /* ofxSmartFont.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSmartFont.cpp; path = ../../../addons/ofxDatGui_PM/src/libs/ofxSmartFont/ofxSmartFont.cpp; sourceTree = SOURCE_ROOT; };
@@ -563,6 +566,8 @@
 				8EB8216F8C3E856F43F74E4C /* Wave2DControl.h */,
 				9F084FA61DBF8A910023EF53 /* bufferLoggerChannel.cpp */,
 				9F084FA71DBF8A910023EF53 /* bufferLoggerChannel.h */,
+				9FBFD8321DC2254900B299C1 /* masterControl.cpp */,
+				9FBFD8331DC2254900B299C1 /* masterControl.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -755,6 +760,7 @@
 				11DF9AB1B4EAA63E3B190CA0 /* ofxSyphonServerDirectory.mm in Sources */,
 				C9109422648B170B07A778CF /* SyphonNameboundClient.m in Sources */,
 				9F084FA81DBF8A910023EF53 /* bufferLoggerChannel.cpp in Sources */,
+				9FBFD8341DC2254900B299C1 /* masterControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

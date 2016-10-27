@@ -8,6 +8,8 @@
 #include "parametersControl.h"
 #include "ofxCurvesTool.h"
 #include "bufferLoggerChannel.h"
+#include "masterControl.h"
+
 
 static const int NUM_BARS = 24;
 static const int PIXEL_X_BAR = 162;
@@ -26,6 +28,8 @@ class ofApp : public ofBaseApp{
     void keyPressedOnSecondWindow(ofKeyEventArgs & args);
     
     void audioIn(float * input, int bufferSize, int nChannels);
+    
+    void outputCurveListener(ofVec3f &pos){masterModule.setCurve(outputCurve);};
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -55,8 +59,8 @@ private:
     vector<phasorClass> phasors;
     elementOscilator singleGenerator;
     Wave2DControl   waveControl;
-    
     parametersControl paramsControl;
+    masterControl   masterModule;
     
     int guiWidth;
     

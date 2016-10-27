@@ -12,7 +12,6 @@
 #include "ofMain.h"
 #include "ofxExprtk.h"
 #include "elementOscilator.h"
-#include "ofxCurvesTool.h"
 
 class Wave2DControl{
 public:
@@ -20,8 +19,7 @@ public:
     ~Wave2DControl(){};
     
     void setup(int width, int height, int index = 0);
-    vector<vector<float>> computeWave(ofFbo &waveTex, ofFbo &waveLin, float phasor);
-    void computeOutTex(ofFbo &outTex, vector<float> infoVec, ofVec2f pos);
+    vector<vector<float>> computeWave(float phasor);
     
     void waveFormulaDropdownListener(int &val);
     void waveFormulaInputListener(string &str);
@@ -30,18 +28,14 @@ public:
     void reindexDropdownListener(int &val);
     void reindexInputListener(string &str);
     
-    bool drawCurve(){return drawCurve_param;};
-    void setCurve(ofxCurvesTool curve){outputCurve = curve;};
-    
-    void setPreviewTexture(bool b){previewTex = b;};
-    void togglePreviewTexture(){previewTex = !previewTex;};
-    
     bool loadDropdownOptions(string filename, vector<string> &options);
     
     ofParameterGroup getParameterGroup(){return parameters;};
     ofParameterGroup getGeneratorParameterGroup(){return manualGenerator.getParameterGroup();};
     
     void createDropdownAndStringInput(string name, vector<string> options, ofParameter<string> textInput, ofParameter<int> dropDownSelector);
+    
+    int getIndexFromPosition(int x, int y){return indexGrid[x][y];};
     
 private:
     
@@ -67,11 +61,6 @@ private:
     vector<string>      reindexOptions;
     vector<int>         reindexSelected;
     
-    ofParameter<bool>   previewTex;
-    ofParameter<int>    inversionType;
-    ofParameter<bool>   drawCurve_param;
-    ofParameter<bool>   applyCurve_param;
-    
     
     
     int width;
@@ -82,6 +71,7 @@ private:
     //Here there is a odd thing, we have the same values but represented in diferent ways
     //Grid way is more clarifying
     vector<vector<float>> grid;
+    vector<vector<int>>     indexGrid;
     
     vector<vector<ofPoint>> columns_in_space;
     
@@ -96,8 +86,6 @@ private:
     //We insert a oscillator when we use the mode 2D for wave generation
     //TODO: Find a better way, define the generator outside, and pass it as a variable. Or redo the computeFunc function so from outside can be called
     elementOscilator manualGenerator;
-    
-    ofxCurvesTool outputCurve;
 };
 
 
