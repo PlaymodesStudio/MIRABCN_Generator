@@ -70,6 +70,7 @@ private:
     float   periodTime;
     
     vector<int> randomPresetsArrange;
+    vector<int> presetsTime;
     int presetChangeCounter;
 };
 

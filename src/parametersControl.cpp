@@ -56,7 +56,7 @@ void parametersControl::setup(){
     
     datGui = new ofxDatGui();
     datGui->setWidth(290);
-    datGui->addHeader("Pressets Control");
+    datGui->addHeader("Presets Control");
     datGui->addFooter();
 
     datGui->addButton("Global Reset Phase");
@@ -115,10 +115,23 @@ void parametersControl::setup(){
     }
     
     
+    // this is our buffer to stroe the text data
+    ofBuffer buffer = ofBufferFromFile("PresetTimes.txt");
+    
+    if(buffer.size()) {
+        for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
+            string line = *it;
+            // copy the line
+            // make sure its not a empty line
+            if(!line.empty()) presetsTime.push_back(ofToInt(line));
+            cout << presetsTime[presetsTime.size()-1] << endl;
+        }
+    }
+    
 //    loadPreset(1);
     presetChangeCounter = 0;
     presetChangedTimeStamp = ofGetElapsedTimef();
-    periodTime = presetChangeBeatsPeriod / parameterGroups[0].getFloat("BPM") * 60.;
+//    periodTime = presetChangeBeatsPeriod / parameterGroups[0].getFloat("BPM") * 60.;
     for(int i = 0 ; i < NUM_PRESETS ; i++)
         randomPresetsArrange.push_back(i+1);
     
@@ -223,9 +236,12 @@ void parametersControl::update(){
     if(autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
         presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
         loadPreset(randomPresetsArrange.at(presetChangeCounter), bankSelect->getSelected()->getName());
+        periodTime = presetsTime[randomPresetsArrange.at(presetChangeCounter)-1];
         presetChangeCounter++;
-        if(presetChangeCounter >= NUM_PRESETS)
+        if(presetChangeCounter >= NUM_PRESETS){
             presetChangeCounter = 0;
+            random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
+        }
     }
 }
 
