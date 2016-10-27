@@ -475,11 +475,8 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         position = parameterGroups[parentIndex].getPosition(e.getName());
         position += parentIndex*20;
         
-        if(castedParam.getName() == "Wave Select"){
-            for(auto gui : datGuis){
-                if(gui->getHeader()->getName() == parent)
-                    gui->getDropdown(castedParam.getName())->select(castedParam);
-            }
+        if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
+            datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
         }
     }
     else if(e.type() == typeid(ofParameter<bool>).name()){
@@ -488,8 +485,8 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         position = parameterGroups[parentIndex].getPosition(e.getName());
         position += parentIndex*20;
         
-        //Update to datGui
-        datGui->getToggle(castedParam.getName())->setChecked(normalizedVal);
+        //Update to datGuis
+        datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<string>).name()){
         ofParameter<string> castedParam = e.cast<string>();
@@ -497,6 +494,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         
         datGuis[parentIndex]->getTextInput(castedParam.getName())->setText(castedParam);
     }
+    
     
     
     if(position != -1)
