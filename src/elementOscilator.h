@@ -75,6 +75,7 @@ private:
     int                 prevIndex;
     
     int                 previousModulation;
+    float               modulatedParameter_noModValue;
 };
 
 #endif /* elementOscilator_h */

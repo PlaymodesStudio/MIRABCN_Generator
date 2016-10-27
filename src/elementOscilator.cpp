@@ -87,6 +87,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
                 float min_modulated = ofMap(modulatorMin_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                 float max_modulated = ofMap(modulatorMax_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                 float modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
+                modulatedParameter_noModValue = castedParam;
                 castedParam.setWithoutEventNotifications(modulation_scaled);
             }
             else if(absParam.type() == typeid(ofParameter<int>).name()){
@@ -94,6 +95,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
                 int min_modulated = ofMap(modulatorMin_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                 int max_modulated = ofMap(modulatorMax_Param, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                 int modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
+                modulatedParameter_noModValue = castedParam;
                 castedParam.setWithoutEventNotifications(modulation_scaled);
             }
     }
@@ -231,6 +233,18 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         infoVec[i] = val;
         prevIndex = index;
     }
+    
+    if(modulation != -1 && modulatorSelect_Param != 0){
+        ofAbstractParameter &absParam = parameters.get(modulatorSelect_Param-1);
+        if(absParam.type() == typeid(ofParameter<float>).name()){
+            ofParameter<float> castedParam = parameters.getFloat(modulatorSelect_Param-1);
+            castedParam.setWithoutEventNotifications(modulatedParameter_noModValue);
+        }
+        else if(absParam.type() == typeid(ofParameter<int>).name()){
+            ofParameter<int> castedParam = parameters.getInt(modulatorSelect_Param-1);
+            castedParam.setWithoutEventNotifications(modulatedParameter_noModValue);
+        }
+    }
 }
 
 void elementOscilator::computeMultiplyMod(float *value){
@@ -274,18 +288,7 @@ void elementOscilator::indexRandChanged(float &val){
 }
 
 void elementOscilator::modulatorChanged(int &index){
-    if(previousModulation != 0){
-        ofAbstractParameter &absParam = parameters.get(previousModulation-1);
-        if(absParam.type() == typeid(ofParameter<float>).name()){
-            ofParameter<float> castedParam = parameters.getFloat(previousModulation-1);
-            castedParam.set(castedParam);
-        }
-        else if(absParam.type() == typeid(ofParameter<int>).name()){
-            ofParameter<int> castedParam = parameters.getInt(previousModulation-1);
-            castedParam.set(castedParam);
-        }
-    }
-    previousModulation = index;
+    
 }
 
 
