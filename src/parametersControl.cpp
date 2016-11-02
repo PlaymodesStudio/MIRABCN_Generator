@@ -97,13 +97,22 @@ void parametersControl::setup(){
     }
     
     //OSC
-    oscReceiver.setup(12345);
-    string host = "192.168.1.39";
-    oscSender.setup(host, 54321);
-    
     ofLog() << "OSC Info:";
-    ofLog() << "Listening on port " << 12345;
-    ofLog() << "Sending to host " << host << " on port " << 54321;
+    ofXml xml;
+    if(xml.load("OSCConfig.xml")){
+        string host = xml.getValue("host");
+        if(host != ""){
+            oscReceiver.setup(xml.getIntValue("ReceiverPort"));
+            oscSender.setup(host, xml.getIntValue("SenderPort"));
+            ofLog() << "Listening on port " << 12345;
+            ofLog() << "Sending to host: " << host << " on port: " << 54321;
+        }else
+            ofLog() << "NO OSC";
+    }
+    
+    
+ 
+    
   
     
     

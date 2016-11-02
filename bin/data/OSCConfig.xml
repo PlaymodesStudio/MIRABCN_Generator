@@ -1,0 +1,5 @@
+<OSCConfig>
+  <host>localhost</host>
+  <ReceiverPort>12345</ReceiverPort>
+  <SenderPort>54321</SenderPort>
+</OSCConfig>
