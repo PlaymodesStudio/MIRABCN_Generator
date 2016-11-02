@@ -72,7 +72,7 @@ void elementOscilator::setup(int index){
     newRandom.resize(indexCount_Param, 0);
     indexRand.resize(indexCount_Param);
     for(int i = 0; i < indexRand.size(); i++)
-        indexRand[i] = i;
+        indexRand[i] = i-(indexRand.size()/2);
     indexRand_Param_previous = 0;
 }
 
