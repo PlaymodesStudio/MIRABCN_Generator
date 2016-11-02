@@ -36,10 +36,12 @@ private:
     ofParameter<int>    beatsDiv_Param;
     ofParameter<float>  initPhase_Param;
     ofParameter<int>    quant_Param;
+    ofParameter<float>  phasorMonitor;
+    ofParameter<float>  minVal_Param;
+    ofParameter<float>  maxVal_Param;
     ofParameter<bool>   loop_Param;
     ofParameter<bool>   bounce_Param;
     ofParameter<bool>   resetPhase_Param;
-    ofParameter<float>  phasorMonitor;
 };
 
 

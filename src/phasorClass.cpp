@@ -21,6 +21,8 @@ void phasorClass::setup(int index){
     parameters.add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
     parameters.add(quant_Param.set("Quantization", 40, 1, 40));
     parameters.add(initPhase_Param.set("Initial Phase", 0, 0, 1));
+    parameters.add(minVal_Param.set("Min Value", 0, 0, 1));
+    parameters.add(maxVal_Param.set("Max Value", 1, 0, 1));
     parameters.add(resetPhase_Param.set("Reset Phase", false));
     parameters.add(loop_Param.set("Loop", true));
     parameters.add(bounce_Param.set("Bounce", false));
@@ -33,8 +35,8 @@ void phasorClass::setup(int index){
 
 
 float phasorClass::getPhasor(){
-    phasorMonitor = phasorMod;
-    return (float)phasorMod;
+    phasorMonitor = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
+    return (float)ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
 }
 
 void phasorClass::resetPhasor(bool &reset){
