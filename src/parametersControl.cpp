@@ -72,7 +72,8 @@ void parametersControl::setup(){
     
     
     datGui->addToggle("Automatic Preset");
-    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
+    datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
+//    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
     datGui->setPosition(ofxDatGuiAnchor::BOTTOM_LEFT);
     
@@ -110,12 +111,6 @@ void parametersControl::setup(){
             ofLog() << "NO OSC";
     }
     
-    
- 
-    
-  
-    
-    
     //MIDI
     ofLog() << "MIDI Info:";
     ofxMidiOut::listPorts();
@@ -147,10 +142,15 @@ void parametersControl::setup(){
     random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
     
     height_before_dropdown = ofGetHeight();
+    
+    
+    Tweenzor::init();
 }
 
 
 void parametersControl::update(){
+    Tweenzor::update(ofGetElapsedTimeMillis());
+    
     while(oscReceiver.hasWaitingMessages()){
         ofxOscMessage m;
         oscReceiver.getNextMessage(m);
@@ -159,8 +159,13 @@ void parametersControl::update(){
         if(splitAddress.size() >= 2){
             ofStringReplace(splitAddress[1], "_", " ");
             if(splitAddress[1] == "presetLoad"){
-                presetMatrix->setSelected({m.getArgAsInt(0)});
-                loadPreset(m.getArgAsInt(0), m.getArgAsString(1));
+                presetToLoad = m.getArgAsInt(0);
+                bankToLoad = m.getArgAsString(1);
+                presetMatrix->setSelected({presetToLoad});
+                Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+                Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+                isFading = true;
+
             }else if(splitAddress[1] == "presetSave"){
                 savePreset(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){
@@ -188,6 +193,13 @@ void parametersControl::update(){
                 }
             }
         }
+    }
+    
+    if(isFading){
+        ofxOscMessage m;
+        m.setAddress("presetFade");
+        m.addFloatArg(parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get());
+        oscSender.sendMessage(m);
     }
     
     //TODO: Reimplement MIDI
@@ -403,6 +415,17 @@ void parametersControl::loadPreset(int presetNum, string bank){
     
 }
 
+void parametersControl::loadPresetWhenFadeOutCompletes(float *arg){
+    if(*arg == 0){
+        loadPreset(presetToLoad, bankToLoad);
+        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
+         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+    }
+    else if(*arg == 1.0f){
+        isFading = false;
+    }
+}
+
 void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
     if(datGui->getButton(e.target->getName())){
         string nameNoGlobal = e.target->getName();
@@ -437,7 +460,11 @@ void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
     if(ofGetKeyPressed(OF_KEY_SHIFT))
         savePreset(e.child+1, bankSelect->getSelected()->getName());
     else{
-        loadPreset(e.child+1, bankSelect->getSelected()->getName());
+        presetToLoad = e.child+1;
+        bankToLoad = bankSelect->getSelected()->getName();
+        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+        isFading = true;
         if(autoPreset)
             presetChangedTimeStamp = ofGetElapsedTimef();
     }
@@ -488,10 +515,6 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     if(e.getName() == "Phasor Monitor"){
         return;
     }
-//        for(auto stri : e.getGroupHierarchyNames())
-//            cout<<stri<<"-";
-//
-//        cout<<endl;
     
     
     auto parent = e.getGroupHierarchyNames()[0];

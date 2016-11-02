@@ -13,6 +13,7 @@
 #include "ofxOsc.h"
 #include "ofxDatGui.h"
 #include "ofxMidi.h"
+#include "ofxTweenzor.h"
 
 static const int NUM_PRESETS = 40;
 
@@ -45,6 +46,8 @@ public:
     void savePreset(int presetNum, string bank);
     void loadPreset(int presetNum, string bank);
     
+    void loadPresetWhenFadeOutCompletes(float *arg);
+    
 private:
     
     ofxDatGui *datGui;
@@ -56,6 +59,7 @@ private:
     
     ofParameter<bool> autoPreset;
     ofParameter<float> presetChangeBeatsPeriod;
+    ofParameter<float>  fadeTime;
     
     ofxOscReceiver oscReceiver;
     ofxOscSender oscSender;
@@ -75,6 +79,11 @@ private:
     int presetChangeCounter;
     
     int height_before_dropdown;
+    
+    int presetToLoad;
+    string bankToLoad;
+    
+    bool isFading;
 };
 
 

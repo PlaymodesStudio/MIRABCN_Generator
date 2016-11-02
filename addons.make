@@ -4,3 +4,4 @@ ofxExprtk
 ofxMidi
 ofxOsc
 ofxSyphon
+ofxTweenzor
