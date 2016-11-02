@@ -121,25 +121,36 @@ void parametersControl::setup(){
     
     
     // this is our buffer to stroe the text data
-    ofBuffer buffer = ofBufferFromFile("PresetTimes.txt");
+    ofBuffer buffer = ofBufferFromFile("PresetsSequencing.txt");
     
     if(buffer.size()) {
         for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
             string line = *it;
+            
             // make sure its not a empty line
-            if(!line.empty()) presetsTime.push_back(ofToInt(line));
+            if(!line.empty()){
+                vector<string> splitedStr = ofSplitString(line,"-");
+                pair<int, string> tempPair;
+                tempPair.first = ofToInt(splitedStr[0]);
+                tempPair.second = splitedStr[1];
+                presetNumbersAndBanks.push_back(tempPair);
+                presetsTime.push_back(ofToInt(splitedStr[2]));
+            }
         }
     }
+    
+    for(int i = 0 ; i < presetNumbersAndBanks.size(); i++)
+        randomPresetsArrange.push_back(i);
     
 //    loadPreset(1);
     autoPreset = false;
     presetChangeCounter = 0;
     presetChangedTimeStamp = ofGetElapsedTimef();
-//    periodTime = presetChangeBeatsPeriod / parameterGroups[0].getFloat("BPM") * 60.;
-    for(int i = 0 ; i < NUM_PRESETS ; i++)
-        randomPresetsArrange.push_back(i+1);
     
+    
+    srand(time(0));
     random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
+
     
     height_before_dropdown = ofGetHeight();
     
@@ -159,13 +170,7 @@ void parametersControl::update(){
         if(splitAddress.size() >= 2){
             ofStringReplace(splitAddress[1], "_", " ");
             if(splitAddress[1] == "presetLoad"){
-                presetToLoad = m.getArgAsInt(0);
-                bankToLoad = m.getArgAsString(1);
-                presetMatrix->setSelected({presetToLoad});
-                Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
-                Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-                isFading = true;
-
+                loadPresetWithFade(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "presetSave"){
                 savePreset(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){
@@ -258,11 +263,13 @@ void parametersControl::update(){
     //Auto preset
     if(autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
         presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
-        loadPreset(randomPresetsArrange.at(presetChangeCounter), bankSelect->getSelected()->getName());
-        periodTime = presetsTime[randomPresetsArrange.at(presetChangeCounter)-1];
+        int index = randomPresetsArrange[presetChangeCounter];
+        loadPresetWithFade(presetNumbersAndBanks.at(index).first, presetNumbersAndBanks.at(index).second);
+        periodTime = presetsTime[index];
         presetChangeCounter++;
-        if(presetChangeCounter >= NUM_PRESETS){
+        if(presetChangeCounter >= randomPresetsArrange.size()){
             presetChangeCounter = 0;
+            srand(time(0));
             random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
         }
     }
@@ -415,6 +422,20 @@ void parametersControl::loadPreset(int presetNum, string bank){
     
 }
 
+void parametersControl::loadPresetWithFade(int presetNum, string bank){
+    ofXml xml;
+    if(xml.exists("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
+        presetToLoad = presetNum;
+        bankToLoad = bank;
+        presetMatrix->setSelected({presetToLoad});
+        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+        isFading = true;
+    }else{
+        ofLog() << "Preset " << presetNum << "_" << bank << ".xml does not exist";
+    }
+}
+
 void parametersControl::loadPresetWhenFadeOutCompletes(float *arg){
     if(*arg == 0){
         loadPreset(presetToLoad, bankToLoad);
@@ -441,8 +462,12 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
         if(datGuis[i]->getToggle(e.target->getName()) == e.target)
             parameterGroups[i].getBool(e.target->getName()) = e.target->getChecked();
     }
-    if(e.target->getName() == "Automatic Preset")
+    if(e.target->getName() == "Automatic Preset"){
         autoPreset = e.checked;
+        presetChangedTimeStamp = ofGetElapsedTimef();
+        srand(time(0));
+        random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
+    }
 }
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
@@ -460,11 +485,7 @@ void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
     if(ofGetKeyPressed(OF_KEY_SHIFT))
         savePreset(e.child+1, bankSelect->getSelected()->getName());
     else{
-        presetToLoad = e.child+1;
-        bankToLoad = bankSelect->getSelected()->getName();
-        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
-        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-        isFading = true;
+        loadPresetWithFade(e.child+1, bankSelect->getSelected()->getName());
         if(autoPreset)
             presetChangedTimeStamp = ofGetElapsedTimef();
     }

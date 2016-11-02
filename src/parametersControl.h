@@ -45,6 +45,7 @@ public:
     
     void savePreset(int presetNum, string bank);
     void loadPreset(int presetNum, string bank);
+    void loadPresetWithFade(int presetNum, string bank);
     
     void loadPresetWhenFadeOutCompletes(float *arg);
     
@@ -75,6 +76,7 @@ private:
     float   periodTime;
     
     vector<int> randomPresetsArrange;
+    vector<pair<int, string>> presetNumbersAndBanks;
     vector<int> presetsTime;
     int presetChangeCounter;
     
