@@ -75,7 +75,8 @@ void parametersControl::setup(){
     datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
-    datGui->setPosition(ofxDatGuiAnchor::BOTTOM_LEFT);
+    ofPoint guiPos = datGuis[0]->getPosition() + ofPoint(0, datGuis[0]->getWidth());
+    datGui->setPosition(guiPos.x, guiPos.y);
     
     //ControlGui Events
     datGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);

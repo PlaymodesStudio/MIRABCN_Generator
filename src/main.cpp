@@ -13,7 +13,7 @@ int main( ){
     
     ofGLFWWindowSettings mainSettings;
     mainSettings.width = 1765;
-    mainSettings.height = 510;
+    mainSettings.height = 610;
     mainSettings.setPosition(ofVec2f(0,0));
     mainSettings.windowMode = OF_WINDOW;
     mainSettings.resizable = true;
