@@ -130,14 +130,14 @@ vector<vector<float>> Wave2DControl::computeWave(float phasor){
 }
 
 void Wave2DControl::waveFormulaDropdownListener(int &val){
-    if(waveFormulaOptions[waveFormulaChooser_Param] != "Manual"){
-        waveFormulaInput_Param = waveFormulaOptions[val];
-    }
+    waveFormulaInput_Param = waveFormulaOptions[val];
 }
 
 void Wave2DControl::waveFormulaInputListener(string &str){
-    waveFormulaChooser_Param.setWithoutEventNotifications(1);
-    if(!expression_parser.compileExpression(str)) ofLog() << "Can't Compile Expression: " << str;
+    if(str != "Manual"){
+        waveFormulaChooser_Param.setWithoutEventNotifications(1);
+        if(!expression_parser.compileExpression(str)) ofLog() << "Can't Compile Expression: " << str;
+    }
 }
 
 void Wave2DControl::orderDropdownListener(int &val){
