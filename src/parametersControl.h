@@ -46,6 +46,9 @@ public:
     void loadPreset(int presetNum, string bank);
     void loadPresetWithFade(int presetNum, string bank);
     
+    void saveGuiArrangement();
+    void loadGuiArrangement();
+    
     void loadPresetWhenFadeOutCompletes(float *arg);
     
 private:

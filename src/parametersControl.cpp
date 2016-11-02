@@ -82,6 +82,7 @@ void parametersControl::setup(){
     datGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
     datGui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
     datGui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
+    datGui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
 
     //GUIS EVENT LISTERNERS
     for(auto gui : datGuis){
@@ -272,6 +273,52 @@ void parametersControl::update(){
     }
 }
 
+
+void parametersControl::saveGuiArrangement(){
+    //xml.load("Preset_"+ofToString(presetNum)+".xml");
+    xml.clear();
+    
+    //Root Element
+    xml.addChild("GUIARRANGEMENT");
+    
+    // now we set our current element so we're on the right
+    // element, so when add new nodes, they are still inside
+    //the root element
+    xml.setTo("GUIARRANGEMENT");
+    
+    xml.addChild("Main");
+    xml.setTo("Main");
+    xml.addValue("x", ofToString(datGui->getPosition().x));
+    xml.addValue("y", ofToString(datGui->getPosition().y));
+    xml.setToParent();
+    
+    for ( int i = 0; i < datGuis.size() ; i++){
+        xml.addChild("Gui_" + ofToString(i));
+        xml.setTo("Gui_" + ofToString(i));
+        xml.addValue("x", ofToString(datGuis[i]->getPosition().x));
+        xml.addValue("y", ofToString(datGuis[i]->getPosition().y));
+        xml.setToParent();
+    }
+    xml.save("GuiArrangement_"+bankSelect->getSelected()->getName()+".xml");
+}
+
+void parametersControl::loadGuiArrangement(){
+    //Test if there is no problem with the file
+    if(!xml.load("GuiArrangement_"+bankSelect->getSelected()->getName()+".xml"))
+        return;
+    
+    xml.setTo("Main");
+    datGui->setPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+    xml.setToParent();
+    
+    for ( int i = 0; i < datGuis.size() ; i++){
+        xml.setTo("Gui_" + ofToString(i));
+        datGuis[i]->setPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+        xml.setToParent();
+    }
+    
+    ofLog()<<"Load Arrangement_" + bankSelect->getSelected()->getName();
+}
 
 void parametersControl::savePreset(int presetNum, string bank){
     //xml.load("Preset_"+ofToString(presetNum)+".xml");
@@ -468,11 +515,15 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
 }
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
-    for (int i=0; i < datGuis.size() ; i++){
-        if(datGuis[i]->getDropdown(e.target->getName()) == e.target){
-            parameterGroups[i].getGroup(e.target->getName()).getInt(1) = e.child;
-//            if(datGuis[i]->getHeight() > ofGetHeight())
-//                ofSetWindowShape(ofGetWidth(), datGuis[i]->getHeight());
+    if(e.target == bankSelect)
+        loadGuiArrangement();
+    else{
+        for (int i=0; i < datGuis.size() ; i++){
+            if(datGuis[i]->getDropdown(e.target->getName()) == e.target){
+                parameterGroups[i].getGroup(e.target->getName()).getInt(1) = e.child;
+                //            if(datGuis[i]->getHeight() > ofGetHeight())
+                //                ofSetWindowShape(ofGetWidth(), datGuis[i]->getHeight());
+            }
         }
     }
 }

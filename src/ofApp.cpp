@@ -133,6 +133,7 @@ void ofApp::draw(){
 
 void ofApp::exit(){
     outputCurve.save("responseCurve.yml");
+    paramsControl.saveGuiArrangement();
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){
