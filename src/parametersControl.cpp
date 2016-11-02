@@ -89,7 +89,6 @@ void parametersControl::setup(){
         gui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
 //        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
         gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
-        gui->onInternalEvent(this, &parametersControl::onGuiInternalEvent);
     }
     
     //OF PARAMETERS LISTERENRS
@@ -150,9 +149,6 @@ void parametersControl::setup(){
     
     srand(time(0));
     random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
-
-    
-    height_before_dropdown = ofGetHeight();
     
     
     Tweenzor::init();
@@ -478,7 +474,6 @@ void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
 //                ofSetWindowShape(ofGetWidth(), datGuis[i]->getHeight());
         }
     }
-    ofSetWindowShape(ofGetWidth(), height_before_dropdown);
 }
 
 void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
@@ -511,27 +506,8 @@ void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
     }
 }
 
-void parametersControl::onGuiInternalEvent(ofxDatGuiInternalEvent e){
-    if(e.type == DROPDOWN_TOGGLED){
-        bool isExpanding = false;
-        for (auto datGui : datGuis){
-            if(datGui->getHeight() > ofGetHeight()){
-                if(height_before_dropdown > ofGetHeight())
-                    height_before_dropdown = ofGetHeight();
-                ofSetWindowShape(ofGetWidth(), datGui->getHeight());
-                isExpanding = true;
-            }
-        }
-        if(!isExpanding){
-            ofSetWindowShape(ofGetWidth(), height_before_dropdown);
-        }
-    }
-}
-
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;
-    
-    
     
     if(e.getName() == "Phasor Monitor"){
         return;
