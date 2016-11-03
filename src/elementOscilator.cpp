@@ -34,7 +34,7 @@ void elementOscilator::setup(int index){
     parameters.add(offset_Param.set("Offset", 0, -1, 1));
     parameters.add(pow_Param.set("Pow", 1, -40, 40));
     parameters.add(quant_Param.set("Quantization", 255, 1, 255));
-    parameters.add(masterFader_Param.set("Master Fader", 1, 0, 1));
+    parameters.add(masterFader_Param.set("Fader", 1, 0, 1));
     ofParameterGroup waveDropDown;
     waveDropDown.setName("Wave Select");
     ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
@@ -165,7 +165,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         if(invert_Param)
             index = ((float)indexCount_Param-(float)index);
         
-        index += indexRand[index]*indexRand_Param;
+        index += indexRand[index-1]*indexRand_Param;
         if(index > indexCount_Param)
             index - indexCount_Param;
         

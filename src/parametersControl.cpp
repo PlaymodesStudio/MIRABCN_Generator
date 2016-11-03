@@ -515,6 +515,10 @@ void parametersControl::loadPreset(int presetNum, string bank){
     m.addStringArg(bank);
     oscSender.sendMessage(m);
     
+    for(auto groupParam : parameterGroups){
+        if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
+            groupParam.getBool("Reset_Phase") = 0;
+    }
 }
 
 void parametersControl::loadPresetWithFade(int presetNum, string bank){
