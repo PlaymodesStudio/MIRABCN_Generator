@@ -51,6 +51,8 @@ public:
     
     void loadPresetWhenFadeOutCompletes(float *arg);
     
+    void setWindows(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){this->guiWindow = guiWindow; this->prevWindow = prevWindow;};
+    
 private:
     
     ofxDatGui *datGui;
@@ -86,6 +88,9 @@ private:
     string bankToLoad;
     
     bool isFading;
+    
+    shared_ptr<ofAppBaseWindow> guiWindow;
+    shared_ptr<ofAppBaseWindow> prevWindow;
 };
 
 

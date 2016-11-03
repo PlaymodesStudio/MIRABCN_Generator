@@ -58,7 +58,7 @@ void elementOscilator::setup(int index){
     modulationDropDown.add(temp2StrParam);
     modulationDropDown.add(modulatorSelect_Param.set("Modulation Select", 0, 0, 4));
     parameters.add(modulationDropDown);
-    ofParameter<string> label("Modulator Min Max_label", " ");
+    ofParameter<string> label("MODULATOR MIIN MAX_label", " ");
     parameters.add(label);
     parameters.add(modulatorMin_Param.set("Modulator Min", 0, 0, 1));
     parameters.add(modulatorMax_Param.set("Modulator Max", 1, 0, 1));
@@ -99,6 +99,9 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
                 castedParam.setWithoutEventNotifications(modulation_scaled);
             }
     }
+    
+    prevIndex = -1;
+    
     for (int i = 0; i < indexCount_Param ; i++){
         int index = i;
         

@@ -32,11 +32,8 @@ int main( ){
     shared_ptr<ofApp> mainApp(new ofApp);
     ofAddListener(prevWindow->events().draw, mainApp.get(), &ofApp::drawSecondWindow);
     ofAddListener(prevWindow->events().keyPressed, mainApp.get(), &ofApp::keyPressedOnSecondWindow);
+    mainApp->setWindowsToParamsControl(mainWindow, prevWindow);
     
-//    monitorApp->setMainApp(mainApp);
-//    mainApp->setMonitor(monitorApp);
-    
-//    ofRunApp(prevWindow, monitorApp);
     ofRunApp(mainWindow, mainApp);
     
     ofRunMainLoop();

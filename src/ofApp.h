@@ -26,6 +26,7 @@ class ofApp : public ofBaseApp{
     
     void drawSecondWindow(ofEventArgs & args);
     void keyPressedOnSecondWindow(ofKeyEventArgs & args);
+    void setWindowsToParamsControl(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){paramsControl.setWindows(guiWindow, prevWindow);};
     
     void audioIn(float * input, int bufferSize, int nChannels);
     

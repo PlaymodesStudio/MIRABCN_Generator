@@ -193,7 +193,7 @@ void Wave2DControl::createDropdownAndStringInput(string name, vector<string> opt
     tempDropdown.add(tempStrParam);
     tempDropdown.add(dropDownSelector.set(name +" Select", 0, 0, options.size()));
     parameters.add(tempDropdown);
-    ofParameter<string> label("Insert "+name+"_label", " ");
+    ofParameter<string> label("INSERT "+name+"_label", " ");
     parameters.add(label);
     parameters.add(textInput.set(name, options[0]));
 }

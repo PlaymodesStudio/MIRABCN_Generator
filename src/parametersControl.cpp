@@ -17,8 +17,15 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
     parameterGroups.push_back(paramGroup);
         
     ofxDatGui* tempDatGui = new ofxDatGui();
+    
+    ofxDatGuiTheme* theme = new ofxDatGuiThemeCharcoal;
+    ofColor randColor =  ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
+    theme->color.slider.fill = randColor;
+    theme->color.textInput.text = randColor;
+    theme->color.icons = randColor;
+    tempDatGui->setTheme(theme);
+    
     tempDatGui->setWidth(290);
-//    tempDatGui->setAssetPath("");
     tempDatGui->addHeader(paramGroup.getName());
     tempDatGui->addFooter();
     if(datGuis.size() == 0)
@@ -55,6 +62,14 @@ void parametersControl::setup(){
     ofxDatGui::setAssetPath("");
     
     datGui = new ofxDatGui();
+    
+    ofxDatGuiTheme* theme = new ofxDatGuiThemeCharcoal;
+    ofColor randColor =  ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
+    theme->color.slider.fill = randColor;
+    theme->color.textInput.text = randColor;
+    theme->color.icons = randColor;
+    datGui->setTheme(theme);
+    
     datGui->setWidth(290);
     datGui->addHeader("Presets Control");
     datGui->addFooter();
@@ -286,6 +301,22 @@ void parametersControl::saveGuiArrangement(){
     //the root element
     xml.setTo("GUIARRANGEMENT");
     
+    xml.addChild("GuiWindow");
+    xml.setTo("GuiWindow");
+    xml.addValue("x", guiWindow->getWindowPosition().x);
+    xml.addValue("y", guiWindow->getWindowPosition().y);
+    xml.addValue("width", guiWindow->getWindowSize().x);
+    xml.addValue("height", guiWindow->getWindowSize().y);
+    xml.setToParent();
+    
+    xml.addChild("PrevWindow");
+    xml.setTo("PrevWindow");
+    xml.addValue("x", prevWindow->getWindowPosition().x);
+    xml.addValue("y", prevWindow->getWindowPosition().y);
+    xml.addValue("width", prevWindow->getWindowSize().x);
+    xml.addValue("height", prevWindow->getWindowSize().y);
+    xml.setToParent();
+    
     xml.addChild("Main");
     xml.setTo("Main");
     xml.addValue("x", ofToString(datGui->getPosition().x));
@@ -307,14 +338,32 @@ void parametersControl::loadGuiArrangement(){
     if(!xml.load("GuiArrangement_"+bankSelect->getSelected()->getName()+".xml"))
         return;
     
-    xml.setTo("Main");
-    datGui->setPosition(xml.getIntValue("x"), xml.getIntValue("y"));
-    xml.setToParent();
-    
-    for ( int i = 0; i < datGuis.size() ; i++){
-        xml.setTo("Gui_" + ofToString(i));
-        datGuis[i]->setPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+    if(xml.exists("GuiWindow")){
+        xml.setTo("GuiWindow");
+        guiWindow->setWindowPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+        guiWindow->setWindowShape(xml.getIntValue("width"), xml.getIntValue("height"));
         xml.setToParent();
+    }
+    
+    if(xml.exists("PrevWindow")){
+        xml.setTo("PrevWindow");
+        prevWindow->setWindowPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+        prevWindow->setWindowShape(xml.getIntValue("width"), xml.getIntValue("height"));
+        xml.setToParent();
+    }
+
+    if(xml.exists("Main")){
+        xml.setTo("Main");
+        datGui->setPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+        xml.setToParent();
+    }
+
+    for ( int i = 0; i < datGuis.size() ; i++){
+        if(xml.exists("Gui_" + ofToString(i))){
+            xml.setTo("Gui_" + ofToString(i));
+            datGuis[i]->setPosition(xml.getIntValue("x"), xml.getIntValue("y"));
+            xml.setToParent();
+        }
     }
     
     ofLog()<<"Load Arrangement_" + bankSelect->getSelected()->getName();
