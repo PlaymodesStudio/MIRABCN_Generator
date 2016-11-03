@@ -11,7 +11,7 @@
 
 phasorClass::phasorClass()
 {
-
+	phasor = 0;
 }
 
 void phasorClass::setup(int index){

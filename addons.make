@@ -3,5 +3,5 @@ ofxDatGui_PM
 ofxExprtk
 ofxMidi
 ofxOsc
-ofxSyphon
+ofxSpout
 ofxTweenzor

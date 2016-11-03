@@ -10,7 +10,8 @@ int main( ){
 //	// pass in width and height too:
 //	ofRunApp(new ofApp());
     
-    
+	
+
     ofGLFWWindowSettings mainSettings;
     mainSettings.width = 1765;
     mainSettings.height = 610;
@@ -33,7 +34,9 @@ int main( ){
     ofAddListener(prevWindow->events().draw, mainApp.get(), &ofApp::drawSecondWindow);
     ofAddListener(prevWindow->events().keyPressed, mainApp.get(), &ofApp::keyPressedOnSecondWindow);
     mainApp->setWindowsToParamsControl(mainWindow, prevWindow);
-    
+
+	ofSetVerticalSync(false);
+
     ofRunApp(mainWindow, mainApp);
     
     ofRunMainLoop();

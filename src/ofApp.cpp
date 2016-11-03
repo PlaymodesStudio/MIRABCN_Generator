@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	ofSetVerticalSync(false);
     ofBackground(0);
     logBuffer = make_shared<bufferLoggerChannel>();
     ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
@@ -27,7 +28,7 @@ void ofApp::setup(){
     bankDatas.resize(COL_BARS*NUM_BARS, infoVec);
     
     //Initlize our syphon and specify the name
-    syphonServer.setName("MIRABCN_Generator");
+    spoutSender.init("MIRABCN_Generator");
     
     //Allocation of the fbo's, and modify the texture to show correctly the discrete pixels
     //bank of oscillators
@@ -66,7 +67,8 @@ void ofApp::setup(){
     paramsControl.setup();
     
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
-    soundStream.setup(this, 0, 2, 44100, 512, 4);
+	soundStream.setDeviceID(2);
+    soundStream.setup(this, 2, 0, 44100, 512, 4);
     
     outputCurve.setup();
     outputCurve.useMouse(true);
@@ -115,7 +117,7 @@ void ofApp::update(){
     singleGenerator.computeFunc(infoVec.data(), update_Phasor);
 
     //Pass texture to syphon
-    syphonServer.publishTexture(&pixelContent.getTexture());
+    spoutSender.send(pixelContent.getTexture());
 }
 
 //--------------------------------------------------------------
@@ -206,7 +208,7 @@ void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
 }
 
 //--------------------------------------------------------------
-void ofApp::audioIn(float * input, int bufferSize, int nChannels){
+void ofApp::audioOut(float * input, int bufferSize, int nChannels){
     for(auto phasor : phasors)
         phasor.audioIn(input, bufferSize, nChannels);
 }
