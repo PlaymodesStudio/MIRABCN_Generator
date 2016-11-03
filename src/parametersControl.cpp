@@ -392,6 +392,8 @@ void parametersControl::savePreset(int presetNum, string bank){
 
 void parametersControl::loadPreset(int presetNum, string bank){
     //Test if there is no problem with the file
+//    xml.clear();
+    
     if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
         return;
     
@@ -467,16 +469,13 @@ void parametersControl::loadPreset(int presetNum, string bank){
 }
 
 void parametersControl::loadPresetWithFade(int presetNum, string bank){
-    ofXml xml;
-    if(xml.exists("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
+    ofXml xml2;
+    if(xml2.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
         presetToLoad = presetNum;
         bankToLoad = bank;
-        presetMatrix->setSelected({presetToLoad});
         Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
         isFading = true;
-    }else{
-        ofLog() << "Preset " << presetNum << "_" << bank << ".xml does not exist";
     }
 }
 
