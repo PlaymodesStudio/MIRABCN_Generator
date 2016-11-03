@@ -33,7 +33,6 @@ public:
     void computeMultiplyMod(float* value);
     
     void indexRandChanged(float &val);
-    void modulatorChanged(int &index);
     
     void setIndexCount(int val){indexCount_Param = val;};
     
@@ -60,10 +59,14 @@ private:
     ofParameter<int>    modulo_Param;
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
-    ofParameter<int>    modulatorSelect_Param;
     ofParameter<float>  masterFader_Param;
-    ofParameter<float>  modulatorMin_Param;
-    ofParameter<float>  modulatorMax_Param;
+    ofParameter<int>    modulatorSelect_Param1;
+    ofParameter<float>  modulatorMin_Param1;
+    ofParameter<float>  modulatorMax_Param1;
+    ofParameter<int>    modulatorSelect_Param2;
+    ofParameter<float>  modulatorMin_Param2;
+    ofParameter<float>  modulatorMax_Param2;
+    
     
     vector<float>       infoVec_preMod;
     vector<float>       pastRandom;
@@ -74,8 +77,10 @@ private:
     float               oldPhasor;
     int                 prevIndex;
     
-    int                 previousModulation;
-    float               modulatedParameter_noModValue;
+    int                 previousModulation1;
+    float               modulatedParameter_noModValue1;
+    int                 previousModulation2;
+    float               modulatedParameter_noModValue2;
 };
 
 #endif /* elementOscilator_h */
