@@ -66,9 +66,15 @@ void Wave2DControl::setup(int _width, int _height, int index){
     parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 4));
     
 
-
+    
+    
     if(loadDropdownOptions("Functions.xml", waveFormulaOptions))
         createDropdownAndStringInput("Wave Formula", waveFormulaOptions, waveFormulaInput_Param, waveFormulaChooser_Param);
+    
+    parameters.add(a_Param.set("Variable a", 1, -4, 4));
+    parameters.add(b_Param.set("Variable b", 1, -4, 4));
+    parameters.add(c_Param.set("Variable c", 1, -4, 4));
+    parameters.add(d_Param.set("Variable d", 1, -4, 4));
     
     if(loadDropdownOptions("Orders.xml", orderOptions))
         createDropdownAndStringInput("Order", orderOptions, orderInput_Param, orderChooser_Param);
@@ -94,9 +100,10 @@ void Wave2DControl::setup(int _width, int _height, int index){
     expression_parser.addSymbol("x", x);
     expression_parser.addSymbol("y", y);
     expression_parser.addSymbol("t", t);
-//    expression_parser.addSymbol("a", a_Param);
-//    expression_parser.addSymbol("b", b_Param.get());
-//    expression_parser.addSymbol("c", c_Param.get());
+    expression_parser.addSymbol("a",  *(float*)&a_Param.get());
+    expression_parser.addSymbol("b", *(float*)&b_Param.get());
+    expression_parser.addSymbol("c", *(float*)&c_Param.get());
+    expression_parser.addSymbol("d", *(float*)&d_Param.get());
     expression_parser.registerSymbols();
     expression_parser.compileExpression(waveFormulaInput_Param);
 }
