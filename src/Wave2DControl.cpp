@@ -42,6 +42,18 @@ void Wave2DControl::setup(int _width, int _height, int index){
         {ofPoint(-5.885, -3.11), ofPoint(0, -3.11), ofPoint(5.885, -3.11)},
         {ofPoint(-5.885, -6.22), ofPoint(0, -6.22), ofPoint(5.885, -6.22)}};
     
+    
+    for(auto &row_column : columns_in_space){
+        for(ofPoint &column : row_column){
+            //center the columns
+            column.y += (3.11/2);
+            
+            //normalize
+            column /= ofPoint(5.885, 4,665);
+        }
+    }
+        
+    
     //Resize the manualOrder vector to have as many values as elements
     orderSelected.resize(height*width, 0);
     reindexSelected.resize(height*width, 0);
@@ -82,8 +94,9 @@ void Wave2DControl::setup(int _width, int _height, int index){
     expression_parser.addSymbol("x", x);
     expression_parser.addSymbol("y", y);
     expression_parser.addSymbol("t", t);
-    expression_parser.addSymbol("cx", cx);
-    expression_parser.addSymbol("cy", cy);
+//    expression_parser.addSymbol("a", a_Param);
+//    expression_parser.addSymbol("b", b_Param.get());
+//    expression_parser.addSymbol("c", c_Param.get());
     expression_parser.registerSymbols();
     expression_parser.compileExpression(waveFormulaInput_Param);
 }
@@ -99,8 +112,9 @@ vector<vector<float>> Wave2DControl::computeWave(float phasor){
     //reorder the info with the manual Order, overwrite when the value is higher, keep when it's lower;
     vector<float> wave1d_values_copy;
     wave1d_values_copy.resize(height*width, 0);
+    float noValue = 0;
     for ( int i = 0; i < orderSelected.size(); i++ ) {
-        auto &newValue = wave1d_values_copy[orderSelected[i]];
+        float &newValue = (orderSelected[i] < 0) ? noValue : wave1d_values_copy[orderSelected[i]];
         newValue = newValue == 0 ? wave1d_values[i] : max(newValue, wave1d_values[i]);
     }
     wave1d_values = wave1d_values_copy;
@@ -108,20 +122,22 @@ vector<vector<float>> Wave2DControl::computeWave(float phasor){
     //iteate for all positions and calculate the function, or get the value
     for(int i = 0; i < barInfo_Pos.size() ; i++){
         auto &point = barInfo_Pos[i];
-        auto &reindexedPoint = barInfo_Pos[reindexSelected[i]];
         float z;
-        if(waveFormulaOptions[waveFormulaChooser_Param] == "Manual"){
-            z = wave1d_values[reindexSelected[i]];
-            z = ofClamp(z, 0, 1);
+        if(reindexSelected[i] < 0){
+            z = 0;
         }else{
-            t = 2*PI*phasor;
-            ofPoint pos = columns_in_space[reindexedPoint.first.y][reindexedPoint.first.x];
-            x = pos.x;
-            y = pos.y + (3.11/2);
-            cx = x;
-            cy = y;
-            z = expression_parser.evaluateExpression();
-            z = ofMap(z, -1, 1, 0, 1, true);
+            auto &reindexedPoint = barInfo_Pos[reindexSelected[i]];
+            if(waveFormulaOptions[waveFormulaChooser_Param] == "Manual"){
+                z = wave1d_values[reindexSelected[i]];
+                z = ofClamp(z, 0, 1);
+            }else{
+                t = 2*PI*phasor;
+                ofPoint pos = columns_in_space[reindexedPoint.first.y][reindexedPoint.first.x];
+                x = pos.x * PI/2;
+                y = pos.y * PI/2;
+                z = expression_parser.evaluateExpression();
+                z = ofMap(z, -1, 1, 0, 1, true);
+            }
         }
         grid[point.first.y][point.first.x] = ofClamp(z*phaseScale_Param, 0, 1);
         point.second = z;

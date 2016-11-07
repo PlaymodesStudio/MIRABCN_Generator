@@ -81,7 +81,8 @@ private:
     
     //Variables for the function expression evaluator
     ofxExprtk<float> expression_parser;
-    float x, y, t, cx, cy;
+    float x, y, t;
+    ofParameter<float> a_Param, b_Param, c_Param, d_Param;
     
     //We insert a oscillator when we use the mode 2D for wave generation
     //TODO: Find a better way, define the generator outside, and pass it as a variable. Or redo the computeFunc function so from outside can be called
