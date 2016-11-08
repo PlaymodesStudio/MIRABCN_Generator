@@ -87,6 +87,7 @@ void parametersControl::setup(){
     
     
     datGui->addToggle("Automatic Preset");
+    datGui->addButton("Reload Sequence");
     datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
@@ -136,35 +137,9 @@ void parametersControl::setup(){
     }
     
     
-    // this is our buffer to stroe the text data
-    ofBuffer buffer = ofBufferFromFile("PresetsSequencing.txt");
-    
-    if(buffer.size()) {
-        for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
-            string line = *it;
-            
-            // make sure its not a empty line
-            if(!line.empty()){
-                vector<string> splitedStr = ofSplitString(line,"-");
-                pair<int, string> tempPair;
-                tempPair.first = ofToInt(splitedStr[0]);
-                tempPair.second = splitedStr[1];
-                presetNumbersAndBanks.push_back(tempPair);
-                presetsTime.push_back(ofToInt(splitedStr[2]));
-            }
-        }
-    }
-    
-    for(int i = 0 ; i < presetNumbersAndBanks.size(); i++)
-        randomPresetsArrange.push_back(i);
-    
-//    loadPreset(1);
     autoPreset = false;
-    presetChangeCounter = 0;
-    presetChangedTimeStamp = ofGetElapsedTimef();
     
-    mt19937 g(static_cast<uint32_t>(time(0)));
-    shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
+    datGui->getButton("Reload Sequence")->setBackgroundColor(loadPresetsSequence() ? ofColor::green : ofColor::red);
     
     Tweenzor::init();
 }
@@ -272,7 +247,7 @@ void parametersControl::update(){
     
     
     //Auto preset
-    if(autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
+    if(randomPresetsArrange.size()>0 && autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
         presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
         int index = randomPresetsArrange[presetChangeCounter];
         loadPresetWithFade(presetNumbersAndBanks.at(index).first, presetNumbersAndBanks.at(index).second);
@@ -365,6 +340,50 @@ void parametersControl::loadGuiArrangement(){
     }
     
     ofLog()<<"Load Arrangement_" + bankSelect->getSelected()->getName();
+}
+
+bool parametersControl::loadPresetsSequence(){
+    // this is our buffer to stroe the text data
+    ofBuffer buffer = ofBufferFromFile("PresetsSequencing.txt");
+    
+    if(buffer.size()) {
+        presetNumbersAndBanks.clear();
+        presetsTime.clear();
+        for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
+            string line = *it;
+            
+            // make sure its not a empty line
+            if(!line.empty()){
+                vector<string> splitedStr = ofSplitString(line,"-");
+                pair<int, string> tempPair;
+                tempPair.first = ofToInt(splitedStr[0]);
+                tempPair.second = splitedStr[1];
+                presetNumbersAndBanks.push_back(tempPair);
+                presetsTime.push_back(ofToInt(splitedStr[2]));
+            }
+        }
+    }
+    else{
+        return false;
+    }
+    
+    if(presetNumbersAndBanks.size() != presetsTime.size()){
+        presetNumbersAndBanks.clear();
+        presetsTime.clear();
+        return false;
+    }
+    
+    randomPresetsArrange.clear();
+    for(int i = 0 ; i < presetNumbersAndBanks.size(); i++)
+        randomPresetsArrange.push_back(i);
+    
+    presetChangeCounter = 0;
+    presetChangedTimeStamp = ofGetElapsedTimef();
+    
+    mt19937 g(static_cast<uint32_t>(time(0)));
+    shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
+    
+    return true;
 }
 
 void parametersControl::savePreset(int presetNum, string bank){
@@ -543,11 +562,15 @@ void parametersControl::loadPresetWhenFadeOutCompletes(float *arg){
 
 void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
     if(datGui->getButton(e.target->getName())){
-        string nameNoGlobal = e.target->getName();
-        ofStringReplace(nameNoGlobal, "Global ", "");
-        for(auto groupParam : parameterGroups){
-            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
-            groupParam.getBool(nameNoGlobal) = 0;
+        if(ofStringTimesInString(e.target->getName(), "Global")){
+            string nameNoGlobal = e.target->getName();
+            ofStringReplace(nameNoGlobal, "Global ", "");
+            for(auto groupParam : parameterGroups){
+                if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
+                    groupParam.getBool(nameNoGlobal) = 0;
+            }
+        }else if(e.target->getName() == "Reload Sequence"){
+            e.target->setBackgroundColor(loadPresetsSequence() ? ofColor(0,50,0) : ofColor(50,0,0));
         }
     }
 }
