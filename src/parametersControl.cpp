@@ -7,6 +7,7 @@
 //
 
 #include "parametersControl.h"
+#include <random>
 
 void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
     
@@ -163,10 +164,8 @@ void parametersControl::setup(){
     presetChangeCounter = 0;
     presetChangedTimeStamp = ofGetElapsedTimef();
     
-    
-    srand(time(0));
-    random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
-    
+    mt19937 g(static_cast<uint32_t>(time(0)));
+    shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
     
     Tweenzor::init();
 }
@@ -282,8 +281,8 @@ void parametersControl::update(){
         presetChangeCounter++;
         if(presetChangeCounter >= randomPresetsArrange.size()){
             presetChangeCounter = 0;
-            srand(time(0));
-            random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
+            mt19937 g(static_cast<uint32_t>(time(0)));
+            shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
         }
     }
 }
