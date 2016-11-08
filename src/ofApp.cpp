@@ -55,12 +55,12 @@ void ofApp::setup(){
     // - ofParameter<string> -> creates a textInputField;
     // - ofParameter<string> whose name ends with "_label" -> creates a label
     // - ofParameter<int> and ofParameter<string> inside a ofParameterGroup -> creates a dropdown list with elements in ofParameter<string> delimeted by "-|-"
-    paramsControl.createGuiFromParams(phasors[0].getParameterGroup());
-    paramsControl.createGuiFromParams(singleGenerator.getParameterGroup());
-    paramsControl.createGuiFromParams(phasors[1].getParameterGroup());
-    paramsControl.createGuiFromParams(waveControl.getParameterGroup());
-    paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup());
-    paramsControl.createGuiFromParams(masterModule.getParameterGroup());
+    paramsControl.createGuiFromParams(phasors[0].getParameterGroup(), ofColor::mediumVioletRed);
+    paramsControl.createGuiFromParams(singleGenerator.getParameterGroup(), ofColor::mediumVioletRed);
+    paramsControl.createGuiFromParams(phasors[1].getParameterGroup(), ofColor::blueSteel);
+    paramsControl.createGuiFromParams(waveControl.getParameterGroup(), ofColor::blueSteel);
+    paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
+    paramsControl.createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
     
     //Create main gui, and add listeners when all guis are created
     paramsControl.setup();

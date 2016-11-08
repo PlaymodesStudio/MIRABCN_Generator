@@ -24,7 +24,7 @@ public:
     parametersControl(){};
     ~parametersControl(){};
     
-    void createGuiFromParams(ofParameterGroup paramGroup);
+    void createGuiFromParams(ofParameterGroup paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
     
     void setup();
     void update();

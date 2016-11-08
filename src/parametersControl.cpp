@@ -9,7 +9,7 @@
 #include "parametersControl.h"
 #include <random>
 
-void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
+void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor guiColor){
     
     ofxDatGuiLog::quiet();
     ofxDatGui::setAssetPath("");
@@ -20,10 +20,9 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup){
     ofxDatGui* tempDatGui = new ofxDatGui();
     
     ofxDatGuiTheme* theme = new ofxDatGuiThemeCharcoal;
-    ofColor randColor =  ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
-    theme->color.slider.fill = randColor;
-    theme->color.textInput.text = randColor;
-    theme->color.icons = randColor;
+    theme->color.slider.fill = guiColor;
+    theme->color.textInput.text = guiColor;
+    theme->color.icons = guiColor;
     tempDatGui->setTheme(theme);
     
     tempDatGui->setWidth(290);
@@ -65,7 +64,7 @@ void parametersControl::setup(){
     datGui = new ofxDatGui();
     
     ofxDatGuiTheme* theme = new ofxDatGuiThemeCharcoal;
-    ofColor randColor =  ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
+    ofColor randColor =  ofColor::indianRed;
     theme->color.slider.fill = randColor;
     theme->color.textInput.text = randColor;
     theme->color.icons = randColor;
