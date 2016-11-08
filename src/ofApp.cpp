@@ -69,10 +69,11 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
     outputCurve.setup();
-    outputCurve.useMouse(true);
+    outputCurve.useMouse(false);
+    outputCurve.useKey(false);
     outputCurve.load("responseCurve.yml");
     
-    curvePos = ofPoint(600, 250);
+    curvePos = ofPoint(600, 300);
     curveDragger = ofRectangle(curvePos.x, curvePos.y-20, 255, 20);
     outputCurve.notifyEvents(true);
     masterModule.setCurve(outputCurve);
@@ -123,11 +124,16 @@ void ofApp::draw(){
     ofBackground(0);
     
     if(masterModule.drawCurve()){
+        outputCurve.useMouse(true);
+        outputCurve.useKey(true);
         ofSetColor(ofColor::grey);
         ofDrawRectangle(curveDragger);
         ofSetColor(ofColor::red);
         ofDrawBitmapString("DRAG ME", curvePos.x + 75, curvePos.y - 5);
         outputCurve.draw(curvePos.x, curvePos.y);
+    }else{
+        outputCurve.useMouse(false);
+        outputCurve.useKey(false);
     }
 }
 
