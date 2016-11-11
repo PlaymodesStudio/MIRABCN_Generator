@@ -47,6 +47,8 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor
             else
                 tempDatGui->addTextInput(absParam.getName())->setText(absParam.cast<string>());
         }
+        else if(absParam.type() == typeid(ofParameter<ofColor>).name())
+            tempDatGui->addColorPicker(paramGroup.getName(i), ofColor::white);
         else{
             tempDatGui->addLabel(paramGroup.getGroup(i).getName());
             tempDatGui->addDropdown(paramGroup.getGroup(i).getName(), ofSplitString(paramGroup.getGroup(i).getString(0), "-|-"))->select(paramGroup.getGroup(i).getInt(1));
@@ -107,6 +109,8 @@ void parametersControl::setup(){
         gui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
 //        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
         gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
+        gui->onColorPickerEvent(this, &parametersControl::onGuiColorPickerEvent);
+        
     }
     
     //OF PARAMETERS LISTERENRS
@@ -438,6 +442,12 @@ void parametersControl::savePreset(int presetNum, string bank){
                 ofStringReplace(noSpaces, " ", "_");
                 xml.addValue(noSpaces, castedParam.get());
             }
+            else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
+                ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
+                string noSpaces = castedParam.getName();
+                ofStringReplace(noSpaces, " ", "_");
+                xml.addValue(noSpaces, ofToString((int)castedParam.get().r) + "-" + ofToString((int)castedParam.get().g) + "-" + ofToString((int)castedParam.get().b));
+            }
             else{
                 string noSpaces = groupParam.getGroup(j).getName();
                 ofStringReplace(noSpaces, " ", "_");
@@ -468,7 +478,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
         //Put xml in the place of the parametergroup
         string noSpacesGroupName = groupParam.getName();
         ofStringReplace(noSpacesGroupName, " ", "_");
-        if(xml.exists(noSpacesGroupName) && !ofStringTimesInString(groupParam.getName(), "master")){
+        if(xml.exists(noSpacesGroupName)){
             xml.setTo(noSpacesGroupName);
             
             //Iterate for all parameters in parametergroup and look for the type of the parameter
@@ -483,34 +493,47 @@ void parametersControl::loadPreset(int presetNum, string bank){
                     ofStringReplace(noSpaces, " ", "_");
                     
                     //get the value of that parameter if it's not bpm, we don't want to lose sync
-                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces))
+                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam.getName(), "master"))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<int>).name()){
                     ofParameter<int> castedParam = absParam.cast<int>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<bool>).name()){
                     ofParameter<bool> castedParam = absParam.cast<bool>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<string>).name()){
                     ofParameter<string> castedParam = absParam.cast<string>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
                         castedParam.set(xml.getValue(noSpaces, castedParam.get()));
+                }
+                else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
+                    ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
+                    string noSpaces = castedParam.getName();
+                    ofStringReplace(noSpaces, " ", "_");
+                    if(xml.exists(noSpaces)){
+                        vector<string> colors = ofSplitString(xml.getValue(noSpaces), "-");
+                        ofColor_<unsigned char> color = ofColor(ofToInt(colors[0]), ofToInt(colors[1]), ofToInt(colors[2]));
+                        //TODO: hack, arreglar
+                        groupParam.getInt("R Channel") = ofToInt(colors[0]);
+                        groupParam.getInt("G Channel") = ofToInt(colors[1]);
+                        groupParam.getInt("B Channel") = ofToInt(colors[2]);
+                    }
                 }
                 else{
                     string noSpaces = groupParam.getGroup(j).getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
                         groupParam.getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam.getGroup(j).getInt(1));
                 }
             }
@@ -635,6 +658,10 @@ void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
     }
 }
 
+void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
+   parameterGroups[parameterGroups.size()-1].getColor("LedsColor") = e.color;
+}
+
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;
     
@@ -690,7 +717,12 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         
         datGuis[parentIndex]->getTextInput(castedParam.getName())->setText(castedParam);
     }
-    
+    else if(e.type() == typeid(ofParameter<ofColor>).name()){
+        ofParameter<ofColor> castedParam = e.cast<ofColor>();
+        position = -1;
+        
+        datGuis[parentIndex]->getColorPicker(castedParam.getName())->setColor(castedParam);
+    }
     
     
     if(position != -1)

@@ -28,11 +28,15 @@ void ofApp::setup(){
     
     //Initlize our syphon and specify the name
     syphonServer.setName("MIRABCN_Generator");
+    tintedSyphon.setName("MIRABCN_Generator_Tinted");
     
     //Allocation of the fbo's, and modify the texture to show correctly the discrete pixels
     //bank of oscillators
     pixelContent.allocate(NUM_BARS, PIXEL_X_BAR, GL_RGB);
     pixelContent.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+    
+    pixelContent_tinted.allocate(NUM_BARS, PIXEL_X_BAR, GL_RGB);
+    pixelContent_tinted.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
     //2D wave in grid arrangement
     waveGrid.allocate(COL_BARS, ROW_BARS, GL_RGB);
@@ -106,7 +110,7 @@ void ofApp::update(){
             //Calculation of the oscilators for each element, with phasor info and modulation info
             singleGenerator.computeFunc(bankDatas[index].data(), update_Phasor, modValues[j][i]);
             //We use this indo to fill the output texture
-            masterModule.computeOutTex(pixelContent, bankDatas[index], index);
+            masterModule.computeOutTex(pixelContent, pixelContent_tinted, bankDatas[index], index);
             masterModule.computeWaveTex(waveGrid, modValues[j][i], ofPoint(i, j));
             masterModule.computeLinWaveTex(waveLinear, modValues[j][i], index);
         }
@@ -117,6 +121,7 @@ void ofApp::update(){
 
     //Pass texture to syphon
     syphonServer.publishTexture(&pixelContent.getTexture());
+    tintedSyphon.publishTexture(&pixelContent_tinted.getTexture());
 }
 
 //--------------------------------------------------------------

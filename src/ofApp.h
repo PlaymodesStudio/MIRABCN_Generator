@@ -51,11 +51,13 @@ private:
     vector<float> infoVec;
     vector<vector<float>> bankDatas;
     ofFbo pixelContent;
+    ofFbo pixelContent_tinted;
     ofFbo waveGrid;
     ofFbo waveLinear;
     
     
     ofxSyphonServer syphonServer;
+    ofxSyphonServer tintedSyphon;
     
     vector<phasorClass> phasors;
     elementOscilator singleGenerator;

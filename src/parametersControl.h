@@ -37,6 +37,7 @@ public:
     void onGuiMatrixEvent(ofxDatGuiMatrixEvent e);
     void onGuiSliderEvent(ofxDatGuiSliderEvent e);
     void onGuiTextInputEvent(ofxDatGuiTextInputEvent e);
+    void onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e);
     
     void listenerFunction(ofAbstractParameter& e);
     
