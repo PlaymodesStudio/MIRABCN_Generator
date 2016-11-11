@@ -49,6 +49,8 @@ public:
     void saveGuiArrangement();
     void loadGuiArrangement();
     
+    bool loadPresetsSequence();
+    
     void loadPresetWhenFadeOutCompletes(float *arg);
     
     void setWindows(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){this->guiWindow = guiWindow; this->prevWindow = prevWindow;};
