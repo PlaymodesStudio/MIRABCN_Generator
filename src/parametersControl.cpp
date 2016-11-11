@@ -524,6 +524,10 @@ void parametersControl::loadPresetWithFade(int presetNum, string bank){
     if(xml2.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
         presetToLoad = presetNum;
         bankToLoad = bank;
+        ofxOscMessage m;
+        m.setAddress("bankSelect");
+        m.addStringArg(bank);
+        oscSender.sendMessage(m);
         Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
         isFading = true;
