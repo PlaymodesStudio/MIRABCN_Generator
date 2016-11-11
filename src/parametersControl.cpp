@@ -156,7 +156,7 @@ void parametersControl::update(){
         if(splitAddress.size() >= 2){
             ofStringReplace(splitAddress[1], "_", " ");
             if(splitAddress[1] == "presetLoad"){
-                loadPresetWithFade(m.getArgAsInt(0), m.getArgAsString(1));
+                loadPreset(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "presetSave"){
                 savePreset(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){
