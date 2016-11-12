@@ -25,6 +25,8 @@ void masterControl::setup(int index){
     parameters.add(colorRParam.set("R Channel", colorPickerParam.get().r, 0, 255));
     parameters.add(colorGParam.set("G Channel", colorPickerParam.get().g, 0, 255));
     parameters.add(colorBParam.set("B Channel", colorPickerParam.get().b, 0, 255));
+    parameters.add(randomColorStepsParam.set("Rnd Color Steps", 4, 0, 255));
+    parameters.add(randomizeColorParam.set("Randomize Color", true));
     
     colorPickerParam.addListener(this, &masterControl::onColorPickerChanged);
     colorRParam.addListener(this, &masterControl::onColorSlidersChanged);
@@ -159,9 +161,9 @@ void masterControl::tintTexture(ofFbo &tex){
 }
 
 void masterControl::onColorPickerChanged(ofColor &color){
-    colorRParam.set(color.r);
-    colorGParam.set(color.g);
-    colorBParam.set(color.b);
+    colorRParam.setWithoutEventNotifications(color.r);
+    colorGParam.setWithoutEventNotifications(color.g);
+    colorBParam.setWithoutEventNotifications(color.b);
 }
 
 void masterControl::onColorSlidersChanged(int &component){

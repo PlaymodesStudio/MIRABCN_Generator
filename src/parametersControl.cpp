@@ -470,6 +470,8 @@ void parametersControl::loadPreset(int presetNum, string bank){
     //Test if there is no problem with the file
 //    xml.clear();
     
+    bool isColorLoaded = false;
+    
     if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
         return;
     
@@ -528,6 +530,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
                         groupParam.getInt("R Channel") = ofToInt(colors[0]);
                         groupParam.getInt("G Channel") = ofToInt(colors[1]);
                         groupParam.getInt("B Channel") = ofToInt(colors[2]);
+                        isColorLoaded = true;
                     }
                 }
                 else{
@@ -544,6 +547,22 @@ void parametersControl::loadPreset(int presetNum, string bank){
                 groupParam.getBool("Reset Phase") = false;
         }
     }
+    
+    auto &materGroupParam = parameterGroups[parameterGroups.size()-1];
+    if(!isColorLoaded || materGroupParam.getBool("Randomize Color")){
+        int availableSteps = parameterGroups[parameterGroups.size()-1].getInt("Rnd Color Steps");
+        vector<int> colorComponents = {0,0,0};
+        for(auto &component : colorComponents)
+            component = ofMap(floor(ofRandom(0, availableSteps+1)), 0, availableSteps, 0, 255);
+        
+        if(max_element(colorComponents.begin(), colorComponents.end())[0] != 255)
+            colorComponents[floor(ofRandom(0, 3))] = 255;
+        
+        materGroupParam.getInt("R Channel") = colorComponents[0];
+        materGroupParam.getInt("G Channel") = colorComponents[1];
+        materGroupParam.getInt("B Channel") = colorComponents[2];
+    }
+    
     ofLog()<<"Load Preset_" << presetNum<< "_" << bank;
     vector<int> tempVec;
     tempVec.push_back(presetNum-1);

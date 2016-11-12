@@ -45,6 +45,8 @@ private:
     ofParameter<int>        colorRParam;
     ofParameter<int>        colorGParam;
     ofParameter<int>        colorBParam;
+    ofParameter<int>        randomColorStepsParam;
+    ofParameter<bool>       randomizeColorParam;
     
     ofxCurvesTool       outputCurve;
 };
