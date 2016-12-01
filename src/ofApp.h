@@ -50,6 +50,7 @@ private:
     
     vector<float> infoVec;
     vector<vector<float>> bankDatas;
+    vector<vector<ofColor>> outColoredInfo;
     ofFbo pixelContent;
     ofFbo pixelContent_tinted;
     ofFbo waveGrid;
