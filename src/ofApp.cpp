@@ -220,6 +220,8 @@ void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     for(auto phasor : phasors)
         phasor.audioIn(input, bufferSize, nChannels);
+    
+    bpmControl::getInstance().audioIn(input, bufferSize, nChannels);
 }
 
 //--------------------------------------------------------------

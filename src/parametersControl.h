@@ -14,6 +14,7 @@
 #include "ofxDatGui.h"
 #include "ofxMidi.h"
 #include "ofxTweenzor.h"
+#include "bpmControl.h"
 
 static const int NUM_PRESETS = 40;
 
@@ -38,6 +39,8 @@ public:
     void onGuiSliderEvent(ofxDatGuiSliderEvent e);
     void onGuiTextInputEvent(ofxDatGuiTextInputEvent e);
     void onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e);
+    
+    void bpmChangedListener(float &bpm);
     
     void listenerFunction(ofAbstractParameter& e);
     
@@ -94,6 +97,11 @@ private:
     
     shared_ptr<ofAppBaseWindow> guiWindow;
     shared_ptr<ofAppBaseWindow> prevWindow;
+    
+    
+    //BPM Detect
+    bpmControl *beatTracker;
+    float       newBpm;
 };
 
 

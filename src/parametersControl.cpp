@@ -87,7 +87,7 @@ void parametersControl::setup(){
     
     presetMatrix->onMatrixEvent(this, &parametersControl::onGuiMatrixEvent);
     
-    
+    datGui->addToggle("BPM Sync")->setChecked(false);
     datGui->addToggle("Automatic Preset");
     datGui->addButton("Reload Sequence");
     datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
@@ -146,6 +146,9 @@ void parametersControl::setup(){
     datGui->getButton("Reload Sequence")->setBackgroundColor(loadPresetsSequence() ? ofColor::green : ofColor::red);
     
     Tweenzor::init();
+    
+    beatTracker = &bpmControl::getInstance();
+    beatTracker->setup();
 }
 
 
@@ -249,7 +252,6 @@ void parametersControl::update(){
 //        }
 //    }
     
-    
     //Auto preset
     if(randomPresetsArrange.size()>0 && autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
         presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
@@ -263,6 +265,16 @@ void parametersControl::update(){
             shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
         }
     }
+    
+    if(newBpm != 0){
+        datGui->getSlider("Global BPM")->setValue(newBpm);
+        for(auto groupParam : parameterGroups){
+            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0 && groupParam.getFloat("BPM").getName() == "BPM")
+                groupParam.getFloat("BPM") = newBpm;
+        }
+        newBpm = 0;
+    }
+
 }
 
 
@@ -471,6 +483,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
 //    xml.clear();
     
     bool isColorLoaded = false;
+
     
     if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
         return;
@@ -563,6 +576,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
         materGroupParam.getInt("B Channel") = colorComponents[2];
     }
     
+    
     ofLog()<<"Load Preset_" << presetNum<< "_" << bank;
     vector<int> tempVec;
     tempVec.push_back(presetNum-1);
@@ -630,6 +644,12 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
         presetChangedTimeStamp = ofGetElapsedTimef();
         srand(time(0));
         random_shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end());
+    }else if(e.target->getName() == "BPM Sync"){
+        if(e.checked)
+            ofAddListener(beatTracker->bpmChanged, this, &parametersControl::bpmChangedListener);
+        else
+            ofRemoveListener(beatTracker->bpmChanged, this, &parametersControl::bpmChangedListener);
+        
     }
 }
 
@@ -679,6 +699,10 @@ void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
 
 void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
    parameterGroups[parameterGroups.size()-1].getColor("LedsColor") = e.color;
+}
+
+void parametersControl::bpmChangedListener(float &bpm){
+    newBpm = bpm;
 }
 
 void parametersControl::listenerFunction(ofAbstractParameter& e){

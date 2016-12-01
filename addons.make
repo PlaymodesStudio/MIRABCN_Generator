@@ -1,3 +1,4 @@
+ofxAubio
 ofxCurvesTool
 ofxDatGui_PM
 ofxExprtk
