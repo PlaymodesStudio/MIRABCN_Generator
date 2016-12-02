@@ -698,7 +698,7 @@ void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
 }
 
 void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
-   parameterGroups[parameterGroups.size()-1].getColor("LedsColor") = e.color;
+   //parameterGroups[parameterGroups.size()-2].getColor("LedsColor") = e.color;
 }
 
 void parametersControl::bpmChangedListener(float &bpm){

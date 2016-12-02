@@ -25,6 +25,12 @@ public:
     parametersControl(){};
     ~parametersControl(){};
     
+    static parametersControl &getInstance()
+    {
+        static parametersControl instance;
+        return instance;
+    }
+    
     void createGuiFromParams(ofParameterGroup paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
     
     void setup();

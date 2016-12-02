@@ -59,15 +59,18 @@ void ofApp::setup(){
     // - ofParameter<string> -> creates a textInputField;
     // - ofParameter<string> whose name ends with "_label" -> creates a label
     // - ofParameter<int> and ofParameter<string> inside a ofParameterGroup -> creates a dropdown list with elements in ofParameter<string> delimeted by "-|-"
-    paramsControl.createGuiFromParams(phasors[0].getParameterGroup(), ofColor::mediumVioletRed);
-    paramsControl.createGuiFromParams(singleGenerator.getParameterGroup(), ofColor::mediumVioletRed);
-    paramsControl.createGuiFromParams(phasors[1].getParameterGroup(), ofColor::blueSteel);
-    paramsControl.createGuiFromParams(waveControl.getParameterGroup(), ofColor::blueSteel);
-    paramsControl.createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
-    paramsControl.createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
+    paramsControl = &parametersControl::getInstance();
+    paramsControl->createGuiFromParams(phasors[0].getParameterGroup(), ofColor::mediumVioletRed);
+    paramsControl->createGuiFromParams(singleGenerator.getParameterGroup(), ofColor::mediumVioletRed);
+    paramsControl->createGuiFromParams(phasors[1].getParameterGroup(), ofColor::blueSteel);
+    paramsControl->createGuiFromParams(waveControl.getParameterGroup(), ofColor::blueSteel);
+    paramsControl->createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
+    paramsControl->createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
     
+    colorModule = new colorApplier();
+    senderModule = new senderManager();
     //Create main gui, and add listeners when all guis are created
-    paramsControl.setup();
+    paramsControl->setup();
     
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
@@ -88,7 +91,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     //Update paramsControl, becouse it also handles osc and midi
-    paramsControl.update();
+    paramsControl->update();
     
     waveLinear.begin();
     ofSetColor(0);
@@ -144,7 +147,7 @@ void ofApp::draw(){
 
 void ofApp::exit(){
     outputCurve.save("responseCurve.yml");
-    paramsControl.saveGuiArrangement();
+    paramsControl->saveGuiArrangement();
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){

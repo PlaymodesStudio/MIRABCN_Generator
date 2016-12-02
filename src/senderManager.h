@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "ofxSyphon.h"
 #include "ofxOsc.h"
+#include "parametersControl.h"
 
 class senderManager{
 public:
@@ -24,6 +25,9 @@ public:
     //listeres
     void enableOscListener(bool &b);
     void enableSyphonListener(bool &b);
+    
+    void oscHostOrOscPortListener(string &s);
+    void syphonNameListener(string &s);
     
 private:
     ofxSyphonServer*    grayscaleSyphonServer;

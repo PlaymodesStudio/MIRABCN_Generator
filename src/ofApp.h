@@ -9,7 +9,8 @@
 #include "ofxCurvesTool.h"
 #include "bufferLoggerChannel.h"
 #include "masterControl.h"
-
+#include "colorApplier.h"
+#include "senderManager.h"
 
 static const int NUM_BARS = 24;
 static const int PIXEL_X_BAR = 162;
@@ -26,7 +27,7 @@ class ofApp : public ofBaseApp{
     
     void drawSecondWindow(ofEventArgs & args);
     void keyPressedOnSecondWindow(ofKeyEventArgs & args);
-    void setWindowsToParamsControl(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){paramsControl.setWindows(guiWindow, prevWindow);};
+    void setWindowsToParamsControl(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){parametersControl::getInstance().setWindows(guiWindow, prevWindow);};
     
     void audioIn(float * input, int bufferSize, int nChannels);
     
@@ -63,8 +64,9 @@ private:
     vector<phasorClass> phasors;
     elementOscilator singleGenerator;
     Wave2DControl   waveControl;
-    parametersControl paramsControl;
+    parametersControl* paramsControl;
     masterControl   masterModule;
+    senderManager* senderModule;
     
     int guiWidth;
     
@@ -79,4 +81,6 @@ private:
     bool isDragging = false;
     
     shared_ptr<bufferLoggerChannel> logBuffer;
+    
+    colorApplier*   colorModule;
 };

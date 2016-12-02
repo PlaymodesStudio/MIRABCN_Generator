@@ -18,6 +18,7 @@ senderManager::senderManager(){
     parameters.add(oscHost.set("Host", "127.0.0.1"));
     parameters.add(oscPort.set("Port", "1234"));
     
+    parametersControl::getInstance().createGuiFromParams(parameters);
     
     enableOsc.addListener(this, &senderManager::enableOscListener);
     enableSyphon.addListener(this, &senderManager::enableSyphonListener);
@@ -49,7 +50,11 @@ void senderManager::enableOscListener(bool &b){
     if(b){
         oscSender = new ofxOscSender();
         oscSender->setup(oscHost, ofToInt(oscPort));
+        oscHost.addListener(this, &senderManager::oscHostOrOscPortListener);
+        oscPort.addListener(this, &senderManager::oscHostOrOscPortListener);
     }else{
+        oscHost.removeListener(this, &senderManager::oscHostOrOscPortListener);
+        oscPort.removeListener(this, &senderManager::oscHostOrOscPortListener);
         delete oscSender;
     }
 }
@@ -61,8 +66,23 @@ void senderManager::enableSyphonListener(bool &b){
         
         grayscaleSyphonServer->setName(grayscaleSyphonName);
         colorSyphonServer->setName(colorSyphonName);
+        
+        colorSyphonName.addListener(this, &senderManager::syphonNameListener);
+        grayscaleSyphonName.addListener(this, &senderManager::syphonNameListener);
     }else{
+        colorSyphonName.removeListener(this, &senderManager::syphonNameListener);
+        grayscaleSyphonName.removeListener(this, &senderManager::syphonNameListener);
+        
         delete grayscaleSyphonServer;
         delete colorSyphonServer;
     }
+}
+
+void senderManager::oscHostOrOscPortListener(string &s){
+    oscSender->setup(oscHost, ofToInt(oscPort));
+}
+
+void senderManager::syphonNameListener(string &s){
+    grayscaleSyphonServer->setName(grayscaleSyphonName);
+    colorSyphonServer->setName(colorSyphonName);
 }
