@@ -24,6 +24,13 @@ senderManager::senderManager(){
     enableSyphon.addListener(this, &senderManager::enableSyphonListener);
 }
 
+void senderManager::send(ofFbo &grayscaleFbo, ofFbo &colorFbo){
+    if(grayscaleSyphonServer != NULL && enableSyphon)
+        grayscaleSyphonServer->publishTexture(&grayscaleFbo.getTexture());
+    if(colorSyphonServer != NULL && enableSyphon)
+        colorSyphonServer->publishTexture(&colorFbo.getTexture());
+}
+
 void senderManager::send( vector<vector<float>> &grayscaleInfo, vector<vector<ofColor>> &colorInfo){
     if(enableOsc){
         ofxOscMessage* messageGrayscale = new ofxOscMessage();
@@ -32,8 +39,8 @@ void senderManager::send( vector<vector<float>> &grayscaleInfo, vector<vector<of
         ofxOscMessage* messageColor = new ofxOscMessage();
         messageColor->setAddress("info/color");
         
-        for(int i = 0 ; i < colorInfo.size() ; i++){
-            for (int j = 0 ; j < colorInfo[i].size() ; j++){
+        for(int i = 0 ; i < grayscaleInfo.size() ; i++){
+            for (int j = 0 ; j < grayscaleInfo[i].size() ; j++){
                 messageGrayscale->addFloatArg(grayscaleInfo[i][j]);
                 messageColor->addFloatArg((float)colorInfo[i][j].r);
                 messageColor->addFloatArg((float)colorInfo[i][j].g);
@@ -42,6 +49,21 @@ void senderManager::send( vector<vector<float>> &grayscaleInfo, vector<vector<of
         }
         oscSender->sendMessage(*messageGrayscale);
         oscSender->sendMessage(*messageColor);
+    }
+}
+
+void senderManager::send( vector<vector<float>> &grayscaleInfo){
+    if(enableOsc){
+        ofxOscMessage messageGrayscale;
+        messageGrayscale.setAddress("info/grayscale");
+    
+        
+        for(int i = 0 ; i < grayscaleInfo.size() ; i++){
+            for (int j = 0 ; j < grayscaleInfo[i].size() ; j++){
+                messageGrayscale.addFloatArg(grayscaleInfo[i][j]);
+            }
+        }
+        oscSender->sendMessage(messageGrayscale);
     }
 }
 

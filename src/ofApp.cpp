@@ -24,11 +24,11 @@ void ofApp::setup(){
     //Initialize our vector that stores the information of the oscilators
     infoVec.resize(pixelNum, 0);
     
-    bankDatas.resize(COL_BARS*NUM_BARS, infoVec);
+    bankDatas.resize(NUM_BARS, infoVec);
     
     //Initlize our syphon and specify the name
-    syphonServer.setName("MIRABCN_Generator");
-    tintedSyphon.setName("MIRABCN_Generator_Tinted");
+//    syphonServer.setName("MIRABCN_Generator");
+//    tintedSyphon.setName("MIRABCN_Generator_Tinted");
     
     //Allocation of the fbo's, and modify the texture to show correctly the discrete pixels
     //bank of oscillators
@@ -121,10 +121,13 @@ void ofApp::update(){
     
     //We compute one more time without modifiers to have a representation what tha bank of oscillators originaly was
     singleGenerator.computeFunc(infoVec.data(), update_Phasor);
+    
+    senderModule->send(bankDatas);
+    senderModule->send(pixelContent, pixelContent_tinted);
 
     //Pass texture to syphon
-    syphonServer.publishTexture(&pixelContent.getTexture());
-    tintedSyphon.publishTexture(&pixelContent_tinted.getTexture());
+//    syphonServer.publishTexture(&pixelContent.getTexture());
+//    tintedSyphon.publishTexture(&pixelContent_tinted.getTexture());
 }
 
 //--------------------------------------------------------------

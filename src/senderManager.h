@@ -20,7 +20,11 @@ public:
     senderManager();
     ~senderManager(){};
     
+    void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo, ofFbo &grayscaleFbo, ofFbo &colorFbo){};
+    void send(ofFbo &grayscaleFbo, ofFbo &colorFbo);
+    void send(ofFbo &grayscaleFbo){};
     void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo);
+    void send(vector<vector<float>> &greyscaleInfo);
     
     //listeres
     void enableOscListener(bool &b);
