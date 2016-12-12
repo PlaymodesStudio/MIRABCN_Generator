@@ -133,6 +133,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0);
+    paramsControl->draw();
     
     if(masterModule.drawCurve()){
         outputCurve.useMouse(true);

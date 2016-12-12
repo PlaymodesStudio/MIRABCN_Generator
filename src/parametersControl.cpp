@@ -45,7 +45,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor
             if(ofSplitString(absParam.getName(), "_").size() > 1)
                 tempDatGui->addLabel(ofSplitString(absParam.getName(), "_")[0]);
             else
-                tempDatGui->addTextInput(absParam.getName())->setText(absParam.cast<string>());
+                tempDatGui->addTextInput(absParam.getName(), absParam.cast<string>());
         }
         else if(absParam.type() == typeid(ofParameter<ofColor>).name())
             tempDatGui->addColorPicker(paramGroup.getName(i), ofColor::white);
@@ -58,6 +58,9 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor
 }
 
 void parametersControl::setup(){
+    
+    ofAddListener(ofEvents().mouseReleased, this, &parametersControl::mouseReleased);
+    ofAddListener(ofEvents().mouseDragged, this, &parametersControl::mouseDragged);
     //DatGui
     
     ofxDatGuiLog::quiet();
@@ -110,7 +113,7 @@ void parametersControl::setup(){
 //        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
         gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
         gui->onColorPickerEvent(this, &parametersControl::onGuiColorPickerEvent);
-        
+        gui->onRightClickEvent(this, &parametersControl::onGuiRightClickEvent);
     }
     
     //OF PARAMETERS LISTERENRS
@@ -277,6 +280,15 @@ void parametersControl::update(){
 
 }
 
+void parametersControl::draw(){
+    ofPushStyle();
+    ofSetColor(ofColor::white);
+    ofSetLineWidth(2);
+    for(auto connection : connections){
+        connection.getPolyline().draw();
+    }
+    ofPopStyle();
+}
 
 void parametersControl::saveGuiArrangement(){
     //xml.load("Preset_"+ofToString(presetNum)+".xml");
@@ -698,7 +710,32 @@ void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
 }
 
 void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
-   //parameterGroups[parameterGroups.size()-2].getColor("LedsColor") = e.color;
+    for (int i=0; i < datGuis.size() ; i++){
+        if(datGuis[i]->getColorPicker(e.target->getName()) == e.target)
+            parameterGroups[i].getColor(e.target->getName()) = e.color;
+    }}
+
+void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
+    if(e.down == 1){
+        connections.push_back(nodeConnection(e.target));
+    }else{
+        connections.back().connectTo(e.target);
+    }
+}
+
+void parametersControl::mouseReleased(ofMouseEventArgs &e){
+    if(e.button == 2 && connections.size() > 0){
+        if(!connections.back().closedLine)
+            connections.pop_back();
+    }
+}
+
+void parametersControl::mouseDragged(ofMouseEventArgs &e){
+    if(e.button == 2 && connections.size() > 0){
+        if(!connections.back().closedLine)
+            connections.back().moveLine(e);
+    }
+
 }
 
 void parametersControl::bpmChangedListener(float &bpm){
@@ -758,7 +795,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         ofParameter<string> castedParam = e.cast<string>();
         position = -1;
         
-        datGuis[parentIndex]->getTextInput(castedParam.getName())->setText(castedParam);
+        datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
     }
     else if(e.type() == typeid(ofParameter<ofColor>).name()){
         ofParameter<ofColor> castedParam = e.cast<ofColor>();

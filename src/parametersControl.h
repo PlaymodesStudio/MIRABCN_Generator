@@ -18,6 +18,56 @@
 
 static const int NUM_PRESETS = 40;
 
+class nodeConnection{
+public:
+    nodeConnection(){};
+    nodeConnection(ofxDatGuiComponent* c){
+        points.resize(2);
+        points[0].x = c->getX() + c->getWidth();
+        points[0].y = c->getY() + c->getHeight()/2;
+        bindedComponents[0] = c;
+        polyline.addVertex(points[0]);
+        polyline.addVertex(points[0]);
+    }
+    
+    void moveLine(ofPoint p){
+        points[1] = p;
+        polyline.getVertices()[1] = p;
+    }
+    
+    void connectTo(ofxDatGuiComponent* c){
+        points[1].x = c->getX();
+        points[1].y = c->getY() + c->getHeight()/2;
+        bindedComponents[1] = c;
+        polyline.getVertices()[1] = points[1];
+        closedLine = true;
+    }
+    
+    ofPolyline getPolyline(){
+        if(closedLine){
+            ofPoint p1;
+            p1.x = bindedComponents[0]->getX() + bindedComponents[0]->getWidth();
+            p1.y = bindedComponents[0]->getY() + bindedComponents[0]->getHeight()/2;
+            ofPoint p2;
+            p2.x = bindedComponents[1]->getX();
+            p2.y = bindedComponents[1]->getY() + bindedComponents[1]->getHeight()/2;
+            if(p1 != points[0] || p2 != points[1]){
+                polyline.getVertices()[0] = p1;
+                polyline.getVertices()[1] = p2;
+            }
+        }
+        return polyline;
+    }
+    
+    
+    bool closedLine = false;
+    
+private:
+    vector<ofPoint> points;
+    ofPolyline polyline;
+    ofxDatGuiComponent* bindedComponents[2];
+};
+
 
 class parametersControl: public ofxMidiListener{
 public:
@@ -35,6 +85,7 @@ public:
     
     void setup();
     void update();
+    void draw();
     
     int getGuiWidth(){return datGui->getWidth();};
     
@@ -45,6 +96,10 @@ public:
     void onGuiSliderEvent(ofxDatGuiSliderEvent e);
     void onGuiTextInputEvent(ofxDatGuiTextInputEvent e);
     void onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e);
+    void onGuiRightClickEvent(ofxDatGuiRightClickEvent e);
+    
+    void mouseDragged(ofMouseEventArgs &e);
+    void mouseReleased(ofMouseEventArgs &e);
     
     void bpmChangedListener(float &bpm);
     
@@ -108,6 +163,10 @@ private:
     //BPM Detect
     bpmControl *beatTracker;
     float       newBpm;
+    
+    
+    //node
+    vector<nodeConnection>  connections;
 };
 
 
