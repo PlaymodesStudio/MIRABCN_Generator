@@ -41,7 +41,7 @@ private:
     ofParameter<int>        inversionType;
     ofParameter<bool>       drawCurve_param;
     ofParameter<bool>       applyCurve_param;
-    ofParameter<ofColor>   colorPickerParam;
+    ofParameter<ofColor>    colorPickerParam;
     ofParameter<int>        colorRParam;
     ofParameter<int>        colorGParam;
     ofParameter<int>        colorBParam;

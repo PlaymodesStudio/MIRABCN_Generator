@@ -24,14 +24,16 @@ private:
     ofParameterGroup        parameters;
     ofParameter<void>       cableConnected;
     ofParameter<ofColor>    colorPickerParam[2];
-    ofParameter<int>        colorRParam[2];
-    ofParameter<int>        colorGParam[2];
-    ofParameter<int>        colorBParam[2];
+    ofParameter<float>        colorRParam[2];
+    ofParameter<float>        colorGParam[2];
+    ofParameter<float>        colorBParam[2];
     
     ofParameter<int>        randomColorStepsParam;
     ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
+    //in and outs
     ofParameter<vector<float>>  indexs;
+    ofParameter<vector<vector<ofColor>>> colorizedValues;
 };
 
 #endif /* colorApplier_h */

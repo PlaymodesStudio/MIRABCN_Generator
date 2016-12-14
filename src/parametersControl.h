@@ -21,11 +21,12 @@ static const int NUM_PRESETS = 40;
 class nodeConnection{
 public:
     nodeConnection(){};
-    nodeConnection(ofxDatGuiComponent* c){
+    nodeConnection(ofxDatGuiComponent* c, ofAbstractParameter* p){
         points.resize(2);
         points[0].x = c->getX() + c->getWidth();
         points[0].y = c->getY() + c->getHeight()/2;
         bindedComponents[0] = c;
+        bindedParameters[0] = p;
         polyline.addVertex(points[0]);
         polyline.addVertex(points[0]);
     }
@@ -35,10 +36,11 @@ public:
         polyline.getVertices()[1] = p;
     }
     
-    void connectTo(ofxDatGuiComponent* c){
+    void connectTo(ofxDatGuiComponent* c, ofAbstractParameter* p){
         points[1].x = c->getX();
         points[1].y = c->getY() + c->getHeight()/2;
         bindedComponents[1] = c;
+        bindedParameters[1] = p;
         polyline.getVertices()[1] = points[1];
         closedLine = true;
     }
@@ -56,9 +58,16 @@ public:
                 polyline.getVertices()[1] = p2;
             }
         }
+        
         return polyline;
     }
     
+    bool hitTest(ofPoint p){
+        //ofLog() << p.angle(points[1]-points[0]);
+    }
+    
+    ofAbstractParameter* getSourceParameter(){return bindedParameters[0];};
+    ofAbstractParameter* getSinkParameter(){return bindedParameters[1];};
     
     bool closedLine = false;
     
@@ -66,6 +75,8 @@ private:
     vector<ofPoint> points;
     ofPolyline polyline;
     ofxDatGuiComponent* bindedComponents[2];
+    ofAbstractParameter* bindedParameters[2];
+    ofColor color = ofColor::white;
 };
 
 
@@ -121,6 +132,8 @@ public:
     void setWindows(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){this->guiWindow = guiWindow; this->prevWindow = prevWindow;};
     
 private:
+    
+    void setFromNormalizedValue(ofAbstractParameter* p, float v);
     
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;

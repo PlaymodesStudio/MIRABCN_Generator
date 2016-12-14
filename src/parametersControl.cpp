@@ -713,17 +713,31 @@ void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
     for (int i=0; i < datGuis.size() ; i++){
         if(datGuis[i]->getColorPicker(e.target->getName()) == e.target)
             parameterGroups[i].getColor(e.target->getName()) = e.color;
-    }}
+    }
+}
 
 void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
     if(e.down == 1){
-        connections.push_back(nodeConnection(e.target));
+        for (int i=0; i < datGuis.size() ; i++){
+            if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target)
+                connections.push_back(nodeConnection(e.target, &parameterGroups[i].get(e.target->getName())));
+        }
     }else{
-        connections.back().connectTo(e.target);
+        for (int i=0; i < datGuis.size() ; i++){
+            if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target)
+                connections.back().connectTo(e.target, &parameterGroups[i].get(e.target->getName()));
+        }
     }
 }
 
 void parametersControl::mouseReleased(ofMouseEventArgs &e){
+    if(e.button == 0 && connections.size() > 0){
+        for(auto connection : connections){
+            connection.getPolyline();
+            connection.hitTest(e);
+        }
+    }
+    
     if(e.button == 2 && connections.size() > 0){
         if(!connections.back().closedLine)
             connections.pop_back();
@@ -744,6 +758,7 @@ void parametersControl::bpmChangedListener(float &bpm){
 
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;
+    nodeConnection* validConnection = nullptr;
     
     if(e.getName() == "Phasor Monitor"){
         return;
@@ -758,23 +773,41 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
             parentIndex = i;
     }
     
-    int normalizedVal = 0;
+    //ParameterBinding
+    for(auto &connection : connections){
+        ofAbstractParameter* possibleSource = connection.getSourceParameter();
+        if(possibleSource == &e && connection.closedLine){
+            validConnection = &connection;
+        }
+    }
+    
+    //Midi and to gui
+    int toMidiVal = 0;
+    float normalizedVal = 0;
     if(e.type() == typeid(ofParameter<float>).name()){
         ofParameter<float> castedParam = e.cast<float>();
-        normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 127);
+        normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
+        toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 127);
         position = parameterGroups[parentIndex].getPosition(e.getName());
         position += parentIndex*20;
         
         if(castedParam.getName() == "BPM")
             periodTime = presetChangeBeatsPeriod / castedParam * 60.;
+        
+        if(validConnection != nullptr)
+            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
+        
     }
     else if(e.type() == typeid(ofParameter<int>).name()){
         ofParameter<int> castedParam = e.cast<int>();
         int range = castedParam.getMax()-castedParam.getMin();
+        //TODO: Review, map is from 0 127 not 0 1;
         if(range < 128)
-            normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, ((int)(128/(range))*range));
+            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, ((int)(128/(range))*range));
         else
-            normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, range/ceil((float)range/(float)128));
+            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, range/ceil((float)range/(float)128));
+        
+        normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
         position = parameterGroups[parentIndex].getPosition(e.getName());
         position += parentIndex*20;
         
@@ -784,7 +817,8 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }
     else if(e.type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e.cast<bool>();
-        normalizedVal = castedParam ? 127 : 0;
+        toMidiVal = castedParam ? 127 : 0;
+        normalizedVal = castedParam ? 1 : 0;
         position = parameterGroups[parentIndex].getPosition(e.getName());
         position += parentIndex*20;
         
@@ -814,4 +848,51 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
 void parametersControl::newMidiMessage(ofxMidiMessage &eventArgs){
     //Save all midi messages into a que;
     midiMessages.push_front(eventArgs);
+}
+
+void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
+    if(e->type() == typeid(ofParameter<float>).name()){
+        ofParameter<float> castedParam = e->cast<float>();
+        castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
+    }
+//    else if(e.type() == typeid(ofParameter<int>).name()){
+//        ofParameter<int> castedParam = e.cast<int>();
+//        int range = castedParam.getMax()-castedParam.getMin();
+//        //TODO: Review, map is from 0 127 not 0 1;
+//        if(range < 128)
+//            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, ((int)(128/(range))*range));
+//        else
+//            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, range/ceil((float)range/(float)128));
+//        
+//        normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
+//        position = parameterGroups[parentIndex].getPosition(e.getName());
+//        position += parentIndex*20;
+//        
+//        if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
+//            datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
+//        }
+//    }
+//    else if(e.type() == typeid(ofParameter<bool>).name()){
+//        ofParameter<bool> castedParam = e.cast<bool>();
+//        toMidiVal = castedParam ? 127 : 0;
+//        normalizedVal = castedParam ? 1 : 0;
+//        position = parameterGroups[parentIndex].getPosition(e.getName());
+//        position += parentIndex*20;
+//        
+//        //Update to datGuis
+//        datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
+//    }
+//    else if(e.type() == typeid(ofParameter<string>).name()){
+//        ofParameter<string> castedParam = e.cast<string>();
+//        position = -1;
+//        
+//        datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
+//    }
+//    else if(e.type() == typeid(ofParameter<ofColor>).name()){
+//        ofParameter<ofColor> castedParam = e.cast<ofColor>();
+//        position = -1;
+//        
+//        datGuis[parentIndex]->getColorPicker(castedParam.getName())->setColor(castedParam);
+//    }
+
 }
