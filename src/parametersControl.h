@@ -63,7 +63,12 @@ public:
     }
     
     bool hitTest(ofPoint p){
-        //ofLog() << p.angle(points[1]-points[0]);
+//        float angleBetweenVectors = (p-points[0]).angle(points[1]-points[0]);
+//        float margin = 2;
+//        float dotLine = points[0].dot(points[1]);
+//        float dotLinePoint = (p-points[0]).dot(points[1]-points[0]);
+//        if(angleBetweenVectors < margin && 0 < dotLinePoint && dotLinePoint < dotLine) return true;
+//        else return false;
     }
     
     ofAbstractParameter* getSourceParameter(){return bindedParameters[0];};
@@ -134,6 +139,7 @@ public:
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
+    void setFromSameTypeValue(ofAbstractParameter* source, ofAbstractParameter* sink);
     
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;

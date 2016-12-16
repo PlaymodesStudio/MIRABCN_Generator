@@ -49,9 +49,11 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor
         }
         else if(absParam.type() == typeid(ofParameter<ofColor>).name())
             tempDatGui->addColorPicker(paramGroup.getName(i), ofColor::white);
-        else{
+        else if(absParam.type() == typeid(ofParameterGroup).name()){
             tempDatGui->addLabel(paramGroup.getGroup(i).getName());
             tempDatGui->addDropdown(paramGroup.getGroup(i).getName(), ofSplitString(paramGroup.getGroup(i).getString(0), "-|-"))->select(paramGroup.getGroup(i).getInt(1));
+        }else{
+            tempDatGui->addLabel(absParam.getName());
         }
     }
     datGuis.push_back(tempDatGui);
@@ -731,12 +733,12 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
 }
 
 void parametersControl::mouseReleased(ofMouseEventArgs &e){
-    if(e.button == 0 && connections.size() > 0){
-        for(auto connection : connections){
-            connection.getPolyline();
-            connection.hitTest(e);
-        }
-    }
+//    if(e.button == 0 && connections.size() > 0){
+//        for(auto connection : connections){
+//            //connection.getPolyline();
+//            //connection.hitTest(e);
+//        }
+//    }
     
     if(e.button == 2 && connections.size() > 0){
         if(!connections.back().closedLine)
@@ -814,6 +816,9 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
             datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
         }
+        
+        if(validConnection != nullptr)
+            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e.cast<bool>();
@@ -824,18 +829,30 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         
         //Update to datGuis
         datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
+        
+        if(validConnection != nullptr)
+            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<string>).name()){
         ofParameter<string> castedParam = e.cast<string>();
         position = -1;
         
         datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
+        
+        if(validConnection != nullptr)
+            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<ofColor>).name()){
         ofParameter<ofColor> castedParam = e.cast<ofColor>();
         position = -1;
         
         datGuis[parentIndex]->getColorPicker(castedParam.getName())->setColor(castedParam);
+    }else if(e.type() == typeid(ofParameterGroup).name()){
+        ofParameter<int> castedParam = parameterGroups[parentIndex].getGroup(e.getName()).getInt(1);
+        datGuis[parentIndex]->getDropdown(e.getName())->select(castedParam);
+    }else{
+        if(validConnection != nullptr)
+            setFromSameTypeValue(validConnection->getSourceParameter(), validConnection->getSinkParameter());
     }
     
     
@@ -855,44 +872,39 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
         ofParameter<float> castedParam = e->cast<float>();
         castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
     }
-//    else if(e.type() == typeid(ofParameter<int>).name()){
-//        ofParameter<int> castedParam = e.cast<int>();
-//        int range = castedParam.getMax()-castedParam.getMin();
-//        //TODO: Review, map is from 0 127 not 0 1;
-//        if(range < 128)
-//            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, ((int)(128/(range))*range));
-//        else
-//            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, range/ceil((float)range/(float)128));
-//        
-//        normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
-//        position = parameterGroups[parentIndex].getPosition(e.getName());
-//        position += parentIndex*20;
-//        
-//        if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
-//            datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
-//        }
-//    }
-//    else if(e.type() == typeid(ofParameter<bool>).name()){
-//        ofParameter<bool> castedParam = e.cast<bool>();
-//        toMidiVal = castedParam ? 127 : 0;
-//        normalizedVal = castedParam ? 1 : 0;
-//        position = parameterGroups[parentIndex].getPosition(e.getName());
-//        position += parentIndex*20;
-//        
-//        //Update to datGuis
-//        datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
-//    }
-//    else if(e.type() == typeid(ofParameter<string>).name()){
-//        ofParameter<string> castedParam = e.cast<string>();
-//        position = -1;
-//        
-//        datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
-//    }
-//    else if(e.type() == typeid(ofParameter<ofColor>).name()){
-//        ofParameter<ofColor> castedParam = e.cast<ofColor>();
-//        position = -1;
-//        
-//        datGuis[parentIndex]->getColorPicker(castedParam.getName())->setColor(castedParam);
-//    }
+    else if(e->type() == typeid(ofParameter<int>).name()){
+        ofParameter<int> castedParam = e->cast<int>();
+        castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
+    }
+    else if(e->type() == typeid(ofParameter<bool>).name()){
+        ofParameter<bool> castedParam = e->cast<bool>();
+        castedParam = v<64 ? true : false;
+    }
+    else if(e->type() == typeid(ofParameter<ofColor>).name()){
+        ofParameter<ofColor> castedParam = e->cast<ofColor>();
+        castedParam.set(ofColor::fromHsb(v*255, 255, 255));
+    }
+    else if(e->type() == typeid(ofParameterGroup).name()){
+        ofParameterGroup adoptiveGroup;
+        adoptiveGroup.add(*e);
+        ofParameterGroup nestedGroup = adoptiveGroup.getGroup(0);
+        ofParameter<int> castedParam = nestedGroup.getInt(1);
+        castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
+    }
+}
 
+void parametersControl::setFromSameTypeValue(ofAbstractParameter* source, ofAbstractParameter* sink){
+    if(source->type() == sink->type()){
+        
+    }else{
+        int i = 0;
+        for(auto &connection : connections){
+            if(connection.getSourceParameter() == source && connection.getSinkParameter() == sink){
+                connections.erase(connections.begin() + i);
+                break;
+            }
+            i++;
+        }
+    }
+        
 }

@@ -57,7 +57,7 @@ void elementOscilator::setup(int index){
     modulationDropDown1.setName("Modulation1 Select");
     ofParameter<string> temp2StrParam("Options", modulationOptionsString);
     modulationDropDown1.add(temp2StrParam);
-    modulationDropDown1.add(modulatorSelect_Param1.set("Modulation1 Select", 0, 0, 4));
+    modulationDropDown1.add(modulatorSelect_Param1.set("Modulation1 Select", 0, 0, modulationOptions.size()));
     parameters.add(modulationDropDown1);
     ofParameter<string> label1("MODULATOR1 MIIN MAX_label", " ");
     parameters.add(label1);
@@ -67,7 +67,7 @@ void elementOscilator::setup(int index){
     ofParameterGroup modulationDropDown2;
     modulationDropDown2.setName("Modulation2 Select");
     modulationDropDown2.add(temp2StrParam);
-    modulationDropDown2.add(modulatorSelect_Param2.set("Modulation2 Select", 0, 0, 4));
+    modulationDropDown2.add(modulatorSelect_Param2.set("Modulation2 Select", 0, 0, modulationOptions.size()));
     parameters.add(modulationDropDown2);
     ofParameter<string> label2("MODULATOR2 MIIN MAX_label", " ");
     parameters.add(label2);
