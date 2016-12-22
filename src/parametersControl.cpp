@@ -9,7 +9,7 @@
 #include "parametersControl.h"
 #include <random>
 
-void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor guiColor){
+void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor){
     
     ofxDatGuiLog::quiet();
     ofxDatGui::setAssetPath("");
@@ -26,21 +26,21 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor
     tempDatGui->setTheme(theme);
     
     tempDatGui->setWidth(290);
-    tempDatGui->addHeader(paramGroup.getName());
+    tempDatGui->addHeader(paramGroup->getName());
     tempDatGui->addFooter();
     if(datGuis.size() == 0)
         tempDatGui->setPosition(0, 0);
     else
         tempDatGui->setPosition((datGuis[datGuis.size()-1]->getPosition().x + datGuis[datGuis.size()-1]->getWidth()), 0);
     
-    for(int i=0 ; i<paramGroup.size(); i++){
-        ofAbstractParameter &absParam = paramGroup.get(i);
+    for(int i=0 ; i<paramGroup->size(); i++){
+        ofAbstractParameter &absParam = paramGroup->get(i);
         if(absParam.type() == typeid(ofParameter<float>).name())
-            tempDatGui->addSlider(paramGroup.getFloat(i));
+            tempDatGui->addSlider(paramGroup->getFloat(i));
         else if(absParam.type() == typeid(ofParameter<int>).name())
-            tempDatGui->addSlider(paramGroup.getInt(i));
+            tempDatGui->addSlider(paramGroup->getInt(i));
         else if(absParam.type() == typeid(ofParameter<bool>).name())
-            tempDatGui->addToggle(paramGroup.getName(i))->setChecked(paramGroup.getBool(i).get());
+            tempDatGui->addToggle(paramGroup->getName(i))->setChecked(paramGroup->getBool(i).get());
         else if(absParam.type() == typeid(ofParameter<string>).name()){
             if(ofSplitString(absParam.getName(), "_").size() > 1)
                 tempDatGui->addLabel(ofSplitString(absParam.getName(), "_")[0]);
@@ -48,10 +48,10 @@ void parametersControl::createGuiFromParams(ofParameterGroup paramGroup, ofColor
                 tempDatGui->addTextInput(absParam.getName(), absParam.cast<string>());
         }
         else if(absParam.type() == typeid(ofParameter<ofColor>).name())
-            tempDatGui->addColorPicker(paramGroup.getName(i), ofColor::white);
+            tempDatGui->addColorPicker(paramGroup->getName(i), ofColor::white);
         else if(absParam.type() == typeid(ofParameterGroup).name()){
-            tempDatGui->addLabel(paramGroup.getGroup(i).getName());
-            tempDatGui->addDropdown(paramGroup.getGroup(i).getName(), ofSplitString(paramGroup.getGroup(i).getString(0), "-|-"))->select(paramGroup.getGroup(i).getInt(1));
+            tempDatGui->addLabel(paramGroup->getGroup(i).getName());
+            tempDatGui->addDropdown(paramGroup->getGroup(i).getName(), ofSplitString(paramGroup->getGroup(i).getString(0), "-|-"))->select(paramGroup->getGroup(i).getInt(1));
         }else{
             tempDatGui->addLabel(absParam.getName());
         }
@@ -120,7 +120,7 @@ void parametersControl::setup(){
     
     //OF PARAMETERS LISTERENRS
     for(auto paramGroup : parameterGroups){
-        ofAddListener(paramGroup.parameterChangedE(), this, &parametersControl::listenerFunction);
+        ofAddListener(paramGroup->parameterChangedE(), this, &parametersControl::listenerFunction);
     }
     
     //OSC
@@ -173,13 +173,13 @@ void parametersControl::update(){
                 savePreset(m.getArgAsInt(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){
                 for(auto groupParam : parameterGroups){
-                    if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
-                        groupParam.getBool("Reset Phase") = 0;
+                    if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
+                        groupParam->getBool("Reset Phase") = 0;
                 }
             }else{
                 for(auto groupParam : parameterGroups){
-                    if(groupParam.getName() == splitAddress[1]){
-                        ofAbstractParameter &absParam = groupParam.get(splitAddress[2]);
+                    if(groupParam->getName() == splitAddress[1]){
+                        ofAbstractParameter &absParam = groupParam->get(splitAddress[2]);
                         if(absParam.type() == typeid(ofParameter<float>).name()){
                             ofParameter<float> castedParam = absParam.cast<float>();
                             castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
@@ -187,11 +187,11 @@ void parametersControl::update(){
                             ofParameter<int> castedParam = absParam.cast<int>();
                             castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                         }else if(absParam.type() == typeid(ofParameter<bool>).name())
-                            groupParam.getBool(splitAddress[2]) = m.getArgAsBool(0);
+                            groupParam->getBool(splitAddress[2]) = m.getArgAsBool(0);
                         else if(absParam.type() == typeid(ofParameter<string>).name())
-                            groupParam.getString(splitAddress[2]) = m.getArgAsString(0);
+                            groupParam->getString(splitAddress[2]) = m.getArgAsString(0);
                         else
-                            groupParam.getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
+                            groupParam->getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
                     }
                 }
             }
@@ -201,7 +201,7 @@ void parametersControl::update(){
     if(isFading){
         ofxOscMessage m;
         m.setAddress("presetFade");
-        m.addFloatArg(parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get());
+        m.addFloatArg(parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get());
         oscSender.sendMessage(m);
     }
     
@@ -232,7 +232,7 @@ void parametersControl::update(){
 //        }
 //        
 //        //Iterate for all parameters in parametergroup and look for the type of the parameter
-//        ofAbstractParameter &absParam = groupParam.get(parameterNum);
+//        ofAbstractParameter &absParam = groupParam->get(parameterNum);
 //        if(absParam.type() == typeid(ofParameter<float>).name()){
 //            //Cast it
 //            ofParameter<float> castedParam = absParam.cast<float>();
@@ -274,8 +274,8 @@ void parametersControl::update(){
     if(newBpm != 0){
         datGui->getSlider("Global BPM")->setValue(newBpm);
         for(auto groupParam : parameterGroups){
-            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0 && groupParam.getFloat("BPM").getName() == "BPM")
-                groupParam.getFloat("BPM") = newBpm;
+            if(ofStringTimesInString(groupParam->getName(), "phasor") != 0 && groupParam->getFloat("BPM").getName() == "BPM")
+                groupParam->getFloat("BPM") = newBpm;
         }
         newBpm = 0;
     }
@@ -431,14 +431,14 @@ void parametersControl::savePreset(int presetNum, string bank){
     //Iterate for all the three parameterGroups
     for (auto groupParam : parameterGroups){
         //set XML structure to parameterGroup
-        string noSpacesGroupName = groupParam.getName();
+        string noSpacesGroupName = groupParam->getName();
         ofStringReplace(noSpacesGroupName, " ", "_");
         xml.addChild(noSpacesGroupName);
         xml.setTo(noSpacesGroupName);
         
         //Iterate for all parameters in parametergroup and look for the type of the parameter
-        for (int j = 0; j < groupParam.size() ; j++){
-            ofAbstractParameter &absParam = groupParam.get(j);
+        for (int j = 0; j < groupParam->size() ; j++){
+            ofAbstractParameter &absParam = groupParam->get(j);
             if(absParam.type() == typeid(ofParameter<float>).name()){
                 //Cast it
                 ofParameter<float> castedParam = absParam.cast<float>();
@@ -475,9 +475,9 @@ void parametersControl::savePreset(int presetNum, string bank){
                 xml.addValue(noSpaces, ofToString((int)castedParam.get().r) + "-" + ofToString((int)castedParam.get().g) + "-" + ofToString((int)castedParam.get().b));
             }
             else{
-                string noSpaces = groupParam.getGroup(j).getName();
+                string noSpaces = groupParam->getGroup(j).getName();
                 ofStringReplace(noSpaces, " ", "_");
-                xml.addValue(noSpaces, groupParam.getGroup(j).getInt(1).get());
+                xml.addValue(noSpaces, groupParam->getGroup(j).getInt(1).get());
             }
         }
         xml.setToParent();
@@ -505,14 +505,14 @@ void parametersControl::loadPreset(int presetNum, string bank){
     //Iterate for all the parameterGroups
     for (auto groupParam : parameterGroups){
         //Put xml in the place of the parametergroup
-        string noSpacesGroupName = groupParam.getName();
+        string noSpacesGroupName = groupParam->getName();
         ofStringReplace(noSpacesGroupName, " ", "_");
         if(xml.exists(noSpacesGroupName)){
             xml.setTo(noSpacesGroupName);
             
             //Iterate for all parameters in parametergroup and look for the type of the parameter
-            for (int j = 0; j < groupParam.size() ; j++){
-                ofAbstractParameter &absParam = groupParam.get(j);
+            for (int j = 0; j < groupParam->size() ; j++){
+                ofAbstractParameter &absParam = groupParam->get(j);
                 if(absParam.type() == typeid(ofParameter<float>).name()){
                     //Cast it
                     ofParameter<float> castedParam = absParam.cast<float>();
@@ -522,28 +522,28 @@ void parametersControl::loadPreset(int presetNum, string bank){
                     ofStringReplace(noSpaces, " ", "_");
                     
                     //get the value of that parameter if it's not bpm, we don't want to lose sync
-                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam.getName(), "master"))
+                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master"))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<int>).name()){
                     ofParameter<int> castedParam = absParam.cast<int>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<bool>).name()){
                     ofParameter<bool> castedParam = absParam.cast<bool>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
                         castedParam = xml.getValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<string>).name()){
                     ofParameter<string> castedParam = absParam.cast<string>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
                         castedParam.set(xml.getValue(noSpaces, castedParam.get()));
                 }
                 else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
@@ -554,30 +554,30 @@ void parametersControl::loadPreset(int presetNum, string bank){
                         vector<string> colors = ofSplitString(xml.getValue(noSpaces), "-");
                         ofColor_<unsigned char> color = ofColor(ofToInt(colors[0]), ofToInt(colors[1]), ofToInt(colors[2]));
                         //TODO: hack, arreglar
-                        groupParam.getInt("R Channel") = ofToInt(colors[0]);
-                        groupParam.getInt("G Channel") = ofToInt(colors[1]);
-                        groupParam.getInt("B Channel") = ofToInt(colors[2]);
+                        groupParam->getInt("R Channel") = ofToInt(colors[0]);
+                        groupParam->getInt("G Channel") = ofToInt(colors[1]);
+                        groupParam->getInt("B Channel") = ofToInt(colors[2]);
                         isColorLoaded = true;
                     }
                 }
                 else{
-                    string noSpaces = groupParam.getGroup(j).getName();
+                    string noSpaces = groupParam->getGroup(j).getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam.getName(), "master"))
-                        groupParam.getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam.getGroup(j).getInt(1));
+                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                        groupParam->getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam->getGroup(j).getInt(1));
                 }
             }
             //Jump one label before in xml structure
             xml.setToParent();
             //reset Phasor
-            if(ofSplitString(groupParam.getName(), " ")[0] == "phasor")
-                groupParam.getBool("Reset Phase") = false;
+            if(ofSplitString(groupParam->getName(), " ")[0] == "phasor")
+                groupParam->getBool("Reset Phase") = false;
         }
     }
     
-    auto &materGroupParam = parameterGroups[parameterGroups.size()-1];
-    if(!isColorLoaded || materGroupParam.getBool("Randomize Color")){
-        int availableSteps = parameterGroups[parameterGroups.size()-1].getInt("Rnd Color Steps");
+    auto &masterGroupParam = parameterGroups[parameterGroups.size()-1];
+    if(!isColorLoaded || masterGroupParam->getBool("Randomize Color")){
+        int availableSteps = parameterGroups[parameterGroups.size()-1]->getInt("Rnd Color Steps");
         vector<int> colorComponents = {0,0,0};
         for(auto &component : colorComponents)
             component = ofMap(floor(ofRandom(0, availableSteps+1)), 0, availableSteps, 0, 255);
@@ -585,9 +585,9 @@ void parametersControl::loadPreset(int presetNum, string bank){
         if(max_element(colorComponents.begin(), colorComponents.end())[0] != 255)
             colorComponents[floor(ofRandom(0, 3))] = 255;
         
-        materGroupParam.getInt("R Channel") = colorComponents[0];
-        materGroupParam.getInt("G Channel") = colorComponents[1];
-        materGroupParam.getInt("B Channel") = colorComponents[2];
+        masterGroupParam->getInt("R Channel") = colorComponents[0];
+        masterGroupParam->getInt("G Channel") = colorComponents[1];
+        masterGroupParam->getInt("B Channel") = colorComponents[2];
     }
     
     
@@ -603,8 +603,8 @@ void parametersControl::loadPreset(int presetNum, string bank){
     oscSender.sendMessage(m);
     
     for(auto groupParam : parameterGroups){
-        if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
-            groupParam.getBool("Reset_Phase") = 0;
+        if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
+            groupParam->getBool("Reset_Phase") = 0;
     }
 }
 
@@ -617,8 +617,8 @@ void parametersControl::loadPresetWithFade(int presetNum, string bank){
         m.setAddress("bankSelect");
         m.addStringArg(bank);
         oscSender.sendMessage(m);
-        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
-        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
         isFading = true;
     }
 }
@@ -626,8 +626,8 @@ void parametersControl::loadPresetWithFade(int presetNum, string bank){
 void parametersControl::loadPresetWhenFadeOutCompletes(float *arg){
     if(*arg == 0){
         loadPreset(presetToLoad, bankToLoad);
-        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
-         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1].getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
+         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
     }
     else if(*arg == 1.0f){
         isFading = false;
@@ -640,8 +640,8 @@ void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
             string nameNoGlobal = e.target->getName();
             ofStringReplace(nameNoGlobal, "Global ", "");
             for(auto groupParam : parameterGroups){
-                if(ofStringTimesInString(groupParam.getName(), "phasor") != 0)
-                    groupParam.getBool(nameNoGlobal) = 0;
+                if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
+                    groupParam->getBool(nameNoGlobal) = 0;
             }
         }else if(e.target->getName() == "Reload Sequence"){
             e.target->setBackgroundColor(loadPresetsSequence() ? ofColor(0,50,0) : ofColor(50,0,0));
@@ -651,7 +651,7 @@ void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
 void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
     for (int i=0; i < datGuis.size() ; i++){
         if(datGuis[i]->getToggle(e.target->getName()) == e.target)
-            parameterGroups[i].getBool(e.target->getName()) = e.target->getChecked();
+            parameterGroups[i]->getBool(e.target->getName()) = e.target->getChecked();
     }
     if(e.target->getName() == "Automatic Preset"){
         autoPreset = e.checked;
@@ -673,7 +673,7 @@ void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
     else{
         for (int i=0; i < datGuis.size() ; i++){
             if(datGuis[i]->getDropdown(e.target->getName()) == e.target){
-                parameterGroups[i].getGroup(e.target->getName()).getInt(1) = e.child;
+                parameterGroups[i]->getGroup(e.target->getName()).getInt(1) = e.child;
                 //            if(datGuis[i]->getHeight() > ofGetHeight())
                 //                ofSetWindowShape(ofGetWidth(), datGuis[i]->getHeight());
             }
@@ -696,8 +696,8 @@ void parametersControl::onGuiSliderEvent(ofxDatGuiSliderEvent e){
         string nameNoGlobal = e.target->getName();
         ofStringReplace(nameNoGlobal, "Global ", "");
         for(auto groupParam : parameterGroups){
-            if(ofStringTimesInString(groupParam.getName(), "phasor") != 0 && groupParam.getFloat(nameNoGlobal).getName() == nameNoGlobal)
-                groupParam.getFloat(nameNoGlobal) = e.value;
+            if(ofStringTimesInString(groupParam->getName(), "phasor") != 0 && groupParam->getFloat(nameNoGlobal).getName() == nameNoGlobal)
+                groupParam->getFloat(nameNoGlobal) = e.value;
         }
     }
     if(e.target->getName() == "Beats Period")
@@ -707,14 +707,14 @@ void parametersControl::onGuiSliderEvent(ofxDatGuiSliderEvent e){
 void parametersControl::onGuiTextInputEvent(ofxDatGuiTextInputEvent e){
     for (int i=0; i < datGuis.size() ; i++){
         if(datGuis[i]->getTextInput(e.target->getName()) == e.target)
-            parameterGroups[i].getString(e.target->getName()) = e.text;
+            parameterGroups[i]->getString(e.target->getName()) = e.text;
     }
 }
 
 void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
     for (int i=0; i < datGuis.size() ; i++){
         if(datGuis[i]->getColorPicker(e.target->getName()) == e.target)
-            parameterGroups[i].getColor(e.target->getName()) = e.color;
+            parameterGroups[i]->getColor(e.target->getName()) = e.color;
     }
 }
 
@@ -722,12 +722,12 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
     if(e.down == 1){
         for (int i=0; i < datGuis.size() ; i++){
             if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target)
-                connections.push_back(nodeConnection(e.target, &parameterGroups[i].get(e.target->getName())));
+                connections.push_back(nodeConnection(e.target, &parameterGroups[i]->get(e.target->getName())));
         }
     }else{
         for (int i=0; i < datGuis.size() ; i++){
             if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target)
-                connections.back().connectTo(e.target, &parameterGroups[i].get(e.target->getName()));
+                connections.back().connectTo(e.target, &parameterGroups[i]->get(e.target->getName()));
         }
     }
 }
@@ -763,16 +763,17 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     nodeConnection* validConnection = nullptr;
     
     if(e.getName() == "Phasor Monitor"){
-        return;
+        //return;
     }
-    
     
     auto parent = e.getGroupHierarchyNames()[0];
     int parentIndex = 0;
     ofStringReplace(parent, "_", " ");
     for(int i = 0; i<parameterGroups.size(); i++){
-        if(parameterGroups[i].getName() == parent)
+        if(parameterGroups[i]->getName() == parent){
             parentIndex = i;
+            break;
+        }
     }
     
     //ParameterBinding
@@ -790,7 +791,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         ofParameter<float> castedParam = e.cast<float>();
         normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
         toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 127);
-        position = parameterGroups[parentIndex].getPosition(e.getName());
+        position = parameterGroups[parentIndex]->getPosition(e.getName());
         position += parentIndex*20;
         
         if(castedParam.getName() == "BPM")
@@ -810,7 +811,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
             toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, range/ceil((float)range/(float)128));
         
         normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
-        position = parameterGroups[parentIndex].getPosition(e.getName());
+        position = parameterGroups[parentIndex]->getPosition(e.getName());
         position += parentIndex*20;
         
         if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
@@ -824,7 +825,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         ofParameter<bool> castedParam = e.cast<bool>();
         toMidiVal = castedParam ? 127 : 0;
         normalizedVal = castedParam ? 1 : 0;
-        position = parameterGroups[parentIndex].getPosition(e.getName());
+        position = parameterGroups[parentIndex]->getPosition(e.getName());
         position += parentIndex*20;
         
         //Update to datGuis
@@ -848,7 +849,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         
         datGuis[parentIndex]->getColorPicker(castedParam.getName())->setColor(castedParam);
     }else if(e.type() == typeid(ofParameterGroup).name()){
-        ofParameter<int> castedParam = parameterGroups[parentIndex].getGroup(e.getName()).getInt(1);
+        ofParameter<int> castedParam = parameterGroups[parentIndex]->getGroup(e.getName()).getInt(1);
         datGuis[parentIndex]->getDropdown(e.getName())->select(castedParam);
     }else{
         if(validConnection != nullptr)
@@ -895,6 +896,14 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
 
 void parametersControl::setFromSameTypeValue(ofAbstractParameter* source, ofAbstractParameter* sink){
     if(source->type() == sink->type()){
+        if(source->type() == typeid(ofParameter<vector<int>>).name())
+            sink->cast<vector<int>>() = source->cast<vector<int>>();
+
+        else if(source->type() == typeid(ofParameter<vector<vector<int>>>).name())
+            sink->cast<vector<vector<int>>>() = source->cast<vector<vector<int>>>();
+        
+        else if(source->type() == typeid(ofParameter<vector<vector<ofColor>>>).name())
+            sink->cast<vector<vector<ofColor>>>() = source->cast<vector<vector<ofColor>>>();
         
     }else{
         int i = 0;

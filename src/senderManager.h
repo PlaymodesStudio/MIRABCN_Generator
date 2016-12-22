@@ -39,7 +39,7 @@ private:
     
     ofxOscSender*       oscSender;
     
-    ofParameterGroup    parameters;
+    ofParameterGroup*    parameters;
     ofParameter<bool>   enableOsc;
     ofParameter<bool>   enableSyphon;
     

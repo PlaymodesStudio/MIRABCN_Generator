@@ -29,13 +29,13 @@ public:
     
     void tintTexture(ofFbo &tex);
     
-    ofParameterGroup getParameterGroup(){return parameters;};
+    ofParameterGroup* getParameterGroup(){return parameters;};
     
     void onColorPickerChanged(ofColor &color);
     void onColorSlidersChanged(int &component);
     
 private:
-    ofParameterGroup        parameters;
+    ofParameterGroup*        parameters;
     ofParameter<float>      masterFader;
     ofParameter<bool>       previewTex;
     ofParameter<int>        inversionType;

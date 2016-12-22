@@ -9,32 +9,33 @@
 #include "masterControl.h"
 
 void masterControl::setup(int index){
-    parameters.setName("master " + ofToString(index));
+    parameters = new ofParameterGroup;
+    parameters->setName("master " + ofToString(index));
     
-    parameters.add(masterFader.set("Master Fader", 1, 0, 1));
-    parameters.add(previewTex.set("Preview Texutre", 0));
+    parameters->add(masterFader.set("Master Fader", 1, 0, 1));
+    parameters->add(previewTex.set("Preview Texutre", 0));
     
     ofParameterGroup invertDropDown;
     invertDropDown.setName("Inversion Type");
     ofParameter<string> tempInvStrParam("Options", "no-|-position inverse-|-value inverse");
     invertDropDown.add(tempInvStrParam);
     invertDropDown.add(inversionType.set("Inversion Type", 0, 0, 3));
-    parameters.add(invertDropDown);
+    parameters->add(invertDropDown);
     
-    parameters.add(colorPickerParam.set("LedsColor", ofColor::white));
-    parameters.add(colorRParam.set("R Channel", colorPickerParam.get().r, 0, 255));
-    parameters.add(colorGParam.set("G Channel", colorPickerParam.get().g, 0, 255));
-    parameters.add(colorBParam.set("B Channel", colorPickerParam.get().b, 0, 255));
-    parameters.add(randomColorStepsParam.set("Rnd Color Steps", 4, 0, 255));
-    parameters.add(randomizeColorParam.set("Randomize Color", true));
+    parameters->add(colorPickerParam.set("LedsColor", ofColor::white));
+    parameters->add(colorRParam.set("R Channel", colorPickerParam.get().r, 0, 255));
+    parameters->add(colorGParam.set("G Channel", colorPickerParam.get().g, 0, 255));
+    parameters->add(colorBParam.set("B Channel", colorPickerParam.get().b, 0, 255));
+    parameters->add(randomColorStepsParam.set("Rnd Color Steps", 4, 0, 255));
+    parameters->add(randomizeColorParam.set("Randomize Color", true));
     
     colorPickerParam.addListener(this, &masterControl::onColorPickerChanged);
     colorRParam.addListener(this, &masterControl::onColorSlidersChanged);
     colorGParam.addListener(this, &masterControl::onColorSlidersChanged);
     colorBParam.addListener(this, &masterControl::onColorSlidersChanged);
     
-    parameters.add(drawCurve_param.set("Draw Curve", 0));
-    parameters.add(applyCurve_param.set("Apply Curve", 0));
+    parameters->add(drawCurve_param.set("Draw Curve", 0));
+    parameters->add(applyCurve_param.set("Apply Curve", 0));
     
 }
 

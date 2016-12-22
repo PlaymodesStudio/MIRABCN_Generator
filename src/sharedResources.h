@@ -34,9 +34,9 @@ public:
 //        parameters.add(textInput.set(name, options[0]));
 //    }
     
-    static void addDropdownToParameterGroupFromParameters(ofParameterGroup &parameterGroup, string name, vector<string> options, ofParameter<int> dropdownSelector){
+    static void addDropdownToParameterGroupFromParameters(ofParameterGroup* parameterGroup, string name, vector<string> options, ofParameter<int> dropdownSelector){
         ofParameterGroup tempDropdown;
-        parameterGroup.setName(name + " Select");
+        tempDropdown.setName(name + " Select");
         string  tempStr;
         ofParameter<string> tempStrParam("Options");
         for(auto opt : options)
@@ -47,7 +47,7 @@ public:
         
         tempDropdown.add(tempStrParam);
         tempDropdown.add(dropdownSelector.set(name +" Select", 0, 0, options.size()));
-        parameterGroup.add(tempDropdown);
+        parameterGroup->add(tempDropdown);
     }
 };
 

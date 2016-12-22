@@ -9,14 +9,14 @@
 #include "senderManager.h"
 
 senderManager::senderManager(){
-    
-    parameters.setName("senderManager " + ofToString(1));
-    parameters.add(enableSyphon.set("Enable Syphon", 0));
-    parameters.add(grayscaleSyphonName.set("Grayscale Server Name", "Gen_Grayscale"));
-    parameters.add(colorSyphonName.set("Color Server Name", "Gen_Color"));
-    parameters.add(enableOsc.set("Enable OSC", 0));
-    parameters.add(oscHost.set("Host", "127.0.0.1"));
-    parameters.add(oscPort.set("Port", "1234"));
+    parameters = new ofParameterGroup;
+    parameters->setName("senderManager " + ofToString(1));
+    parameters->add(enableSyphon.set("Enable Syphon", 0));
+    parameters->add(grayscaleSyphonName.set("Grayscale Server Name", "Gen_Grayscale"));
+    parameters->add(colorSyphonName.set("Color Server Name", "Gen_Color"));
+    parameters->add(enableOsc.set("Enable OSC", 0));
+    parameters->add(oscHost.set("Host", "127.0.0.1"));
+    parameters->add(oscPort.set("Port", "1234"));
     
     parametersControl::getInstance().createGuiFromParams(parameters);
     

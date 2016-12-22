@@ -15,18 +15,19 @@ phasorClass::phasorClass()
 }
 
 void phasorClass::setup(int index){
-    parameters.setName("phasor " + ofToString(index));
-    parameters.add(bpm_Param.set("BPM", 120, 0, 999));
-    parameters.add(beatsDiv_Param.set("Beats Div", 1, 1, 64));
-    parameters.add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
-    parameters.add(quant_Param.set("Quantization", 40, 1, 40));
-    parameters.add(initPhase_Param.set("Initial Phase", 0, 0, 1));
-    parameters.add(minVal_Param.set("Min Value", 0, 0, 1));
-    parameters.add(maxVal_Param.set("Max Value", 1, 0, 1));
-    parameters.add(resetPhase_Param.set("Reset Phase", false));
-    parameters.add(loop_Param.set("Loop", true));
-    parameters.add(bounce_Param.set("Bounce", false));
-    parameters.add(phasorMonitor.set("Phasor Monitor", 0));
+    parameters = new ofParameterGroup;
+    parameters->setName("phasor " + ofToString(index));
+    parameters->add(bpm_Param.set("BPM", 120, 0, 999));
+    parameters->add(beatsDiv_Param.set("Beats Div", 1, 1, 64));
+    parameters->add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
+    parameters->add(quant_Param.set("Quantization", 40, 1, 40));
+    parameters->add(initPhase_Param.set("Initial Phase", 0, 0, 1));
+    parameters->add(minVal_Param.set("Min Value", 0, 0, 1));
+    parameters->add(maxVal_Param.set("Max Value", 1, 0, 1));
+    parameters->add(resetPhase_Param.set("Reset Phase", false));
+    parameters->add(loop_Param.set("Loop", true));
+    parameters->add(bounce_Param.set("Bounce", false));
+    parameters->add(phasorMonitor.set("Phasor Monitor", 0, 0, 1));
     
     
     resetPhase_Param.addListener(this, &phasorClass::resetPhasor);

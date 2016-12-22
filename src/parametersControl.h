@@ -97,7 +97,7 @@ public:
         return instance;
     }
     
-    void createGuiFromParams(ofParameterGroup paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+    void createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
     
     void setup();
     void update();
@@ -146,7 +146,7 @@ private:
     ofxDatGuiDropdown* bankSelect;
     
     vector<ofxDatGui*> datGuis;
-    vector<ofParameterGroup> parameterGroups;
+    vector<ofParameterGroup*> parameterGroups;
     
     ofParameter<bool> autoPreset;
     ofParameter<float> presetChangeBeatsPeriod;

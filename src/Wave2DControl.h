@@ -30,8 +30,8 @@ public:
     
     bool loadDropdownOptions(string filename, vector<string> &options);
     
-    ofParameterGroup getParameterGroup(){return parameters;};
-    ofParameterGroup getGeneratorParameterGroup(){return manualGenerator.getParameterGroup();};
+    ofParameterGroup* getParameterGroup(){return parameters;};
+    ofParameterGroup* getGeneratorParameterGroup(){return manualGenerator.getParameterGroup();};
     
     void createDropdownAndStringInput(string name, vector<string> options, ofParameter<string> textInput, ofParameter<int> dropDownSelector);
     
@@ -40,7 +40,7 @@ public:
 private:
     
     //Parameters
-    ofParameterGroup    parameters;
+    ofParameterGroup*    parameters;
     ofParameter<bool>   invert_Param;
     ofParameter<int>    symmetryX_Param;
     ofParameter<int>    symmetryY_Param;

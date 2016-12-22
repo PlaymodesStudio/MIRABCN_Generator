@@ -25,10 +25,10 @@ public:
     void audioIn(float * input, int bufferSize, int nChannels);
     void loopChanged(bool &val);
     
-    ofParameterGroup getParameterGroup(){return parameters;};
+    ofParameterGroup* getParameterGroup(){return parameters;};
     
 private:
-    ofParameterGroup    parameters;
+    ofParameterGroup*    parameters;
     ofParameter<double>  phasor;
     ofParameter<double>  phasorMod;
     ofParameter<float>  bpm_Param;

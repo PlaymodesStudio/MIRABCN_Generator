@@ -59,11 +59,12 @@ void Wave2DControl::setup(int _width, int _height, int index){
     reindexSelected.resize(height*width, 0);
     
     //Add parameters in parameters group
-    parameters.setName("wave2D " + ofToString(index));
-    parameters.add(invert_Param.set("Invert 2D", false));
-//    parameters.add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
-//    parameters.add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
-    parameters.add(phaseScale_Param.set("Phase Scale", 1, 0, 4));
+    parameters = new ofParameterGroup;
+    parameters->setName("wave2D " + ofToString(index));
+    parameters->add(invert_Param.set("Invert 2D", false));
+//    parameters->add(symmetryX_Param.set("SymmetryX", 0, 0, _width));
+//    parameters->add(symmetryY_Param.set("SymmetryY", 0, 0, _height));
+    parameters->add(phaseScale_Param.set("Phase Scale", 1, 0, 4));
     
 
     
@@ -71,10 +72,10 @@ void Wave2DControl::setup(int _width, int _height, int index){
     if(loadDropdownOptions("Functions.xml", waveFormulaOptions))
         createDropdownAndStringInput("Wave Formula", waveFormulaOptions, waveFormulaInput_Param, waveFormulaChooser_Param);
     
-    parameters.add(a_Param.set("Variable a", 1, -4, 4));
-    parameters.add(b_Param.set("Variable b", 1, -4, 4));
-    parameters.add(c_Param.set("Variable c", 1, -4, 4));
-    parameters.add(d_Param.set("Variable d", 1, -4, 4));
+    parameters->add(a_Param.set("Variable a", 1, -4, 4));
+    parameters->add(b_Param.set("Variable b", 1, -4, 4));
+    parameters->add(c_Param.set("Variable c", 1, -4, 4));
+    parameters->add(d_Param.set("Variable d", 1, -4, 4));
     
     if(loadDropdownOptions("Orders.xml", orderOptions))
         createDropdownAndStringInput("Order", orderOptions, orderInput_Param, orderChooser_Param);
@@ -215,8 +216,8 @@ void Wave2DControl::createDropdownAndStringInput(string name, vector<string> opt
 
     tempDropdown.add(tempStrParam);
     tempDropdown.add(dropDownSelector.set(name +" Select", 0, 0, options.size()));
-    parameters.add(tempDropdown);
+    parameters->add(tempDropdown);
     ofParameter<string> label("INSERT "+name+"_label", " ");
-    parameters.add(label);
-    parameters.add(textInput.set(name, options[0]));
+    parameters->add(label);
+    parameters->add(textInput.set(name, options[0]));
 }

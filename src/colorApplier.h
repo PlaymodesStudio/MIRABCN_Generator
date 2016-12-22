@@ -21,7 +21,7 @@ public:
     
     
 private:
-    ofParameterGroup        parameters;
+    ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
     ofParameter<ofColor>    colorPickerParam[2];
     ofParameter<float>        colorRParam[2];
