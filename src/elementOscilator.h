@@ -29,7 +29,7 @@ public:
     
     void setup(int index = 0);
     
-    void computeFunc(float *infoVec, float phasor, float modulation = -1);
+    void computeFunc(float &phasor);
     void computeMultiplyMod(float* value);
     
     void indexRandChanged(float &val);
@@ -40,7 +40,7 @@ public:
     
 private:
     //Parameters
-    ofParameterGroup*    parameters;
+    ofParameterGroup*   parameters;
     ofParameter<float>  phasorIn;
     ofParameter<float>  freq_Param; //Desphase Quantity
     ofParameter<int>    pow_Param; //Pow of the funcion, working on sin, cos....
@@ -61,12 +61,7 @@ private:
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
     ofParameter<float>  masterFader_Param;
-    ofParameter<int>    modulatorSelect_Param1;
-    ofParameter<float>  modulatorMin_Param1;
-    ofParameter<float>  modulatorMax_Param1;
-    ofParameter<int>    modulatorSelect_Param2;
-    ofParameter<float>  modulatorMin_Param2;
-    ofParameter<float>  modulatorMax_Param2;
+    ofParameter<vector<float>> oscillatorOut;
     
     
     vector<float>       infoVec_preMod;
@@ -77,11 +72,6 @@ private:
     
     float               oldPhasor;
     int                 prevIndex;
-    
-    int                 previousModulation1;
-    float               modulatedParameter_noModValue1;
-    int                 previousModulation2;
-    float               modulatedParameter_noModValue2;
 };
 
 #endif /* elementOscilator_h */

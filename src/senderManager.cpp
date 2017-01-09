@@ -31,7 +31,7 @@ void senderManager::send(ofFbo &grayscaleFbo, ofFbo &colorFbo){
         colorSyphonServer->publishTexture(&colorFbo.getTexture());
 }
 
-void senderManager::send( vector<vector<float>> &grayscaleInfo, vector<vector<ofColor>> &colorInfo){
+void senderManager::send(vector<vector<float>> &grayscaleInfo, vector<vector<ofColor>> &colorInfo){
     if(enableOsc){
         ofxOscMessage* messageGrayscale = new ofxOscMessage();
         messageGrayscale->setAddress("info/grayscale");

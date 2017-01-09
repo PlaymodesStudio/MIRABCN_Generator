@@ -90,7 +90,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    //Update paramsControl, becouse it also handles osc and midi
+    //Update paramsControl, because it also handles osc and midi
     paramsControl->update();
     
     waveLinear.begin();
@@ -111,7 +111,7 @@ void ofApp::update(){
         for (int j = 0; j < ROW_BARS ; j++){
             int index = waveControl.getIndexFromPosition(j, i);
             //Calculation of the oscilators for each element, with phasor info and modulation info
-            singleGenerator.computeFunc(bankDatas[index].data(), update_Phasor, modValues[j][i]);
+//            singleGenerator.computeFunc(bankDatas[index].data(), update_Phasor, modValues[j][i]);
             //We use this indo to fill the output texture
             masterModule.computeOutTex(pixelContent, pixelContent_tinted, bankDatas[index], index);
             masterModule.computeWaveTex(waveGrid, modValues[j][i], ofPoint(i, j));
@@ -120,7 +120,7 @@ void ofApp::update(){
     }
     
     //We compute one more time without modifiers to have a representation what tha bank of oscillators originaly was
-    singleGenerator.computeFunc(infoVec.data(), update_Phasor);
+    //singleGenerator.computeFunc(infoVec.data(), update_Phasor);
     
     senderModule->send(bankDatas);
     senderModule->send(pixelContent, pixelContent_tinted);

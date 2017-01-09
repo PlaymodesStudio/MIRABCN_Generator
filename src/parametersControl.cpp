@@ -158,6 +158,7 @@ void parametersControl::setup(){
 
 
 void parametersControl::update(){
+        
     Tweenzor::update(ofGetElapsedTimeMillis());
     
     while(oscReceiver.hasWaitingMessages()){
@@ -751,7 +752,6 @@ void parametersControl::mouseDragged(ofMouseEventArgs &e){
         if(!connections.back().closedLine)
             connections.back().moveLine(e);
     }
-
 }
 
 void parametersControl::bpmChangedListener(float &bpm){
@@ -760,7 +760,7 @@ void parametersControl::bpmChangedListener(float &bpm){
 
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;
-    nodeConnection* validConnection = nullptr;
+    vector<nodeConnection*> validConnections;
     
     if(e.getName() == "Phasor Monitor"){
         //return;
@@ -780,7 +780,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     for(auto &connection : connections){
         ofAbstractParameter* possibleSource = connection.getSourceParameter();
         if(possibleSource == &e && connection.closedLine){
-            validConnection = &connection;
+            validConnections.push_back(&connection);
         }
     }
     
@@ -797,7 +797,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         if(castedParam.getName() == "BPM")
             periodTime = presetChangeBeatsPeriod / castedParam * 60.;
         
-        if(validConnection != nullptr)
+        for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
         
     }
@@ -818,7 +818,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
             datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
         }
         
-        if(validConnection != nullptr)
+        for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<bool>).name()){
@@ -831,7 +831,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         //Update to datGuis
         datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
         
-        if(validConnection != nullptr)
+        for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<string>).name()){
@@ -840,7 +840,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         
         datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
         
-        if(validConnection != nullptr)
+        for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
     }
     else if(e.type() == typeid(ofParameter<ofColor>).name()){
@@ -852,7 +852,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         ofParameter<int> castedParam = parameterGroups[parentIndex]->getGroup(e.getName()).getInt(1);
         datGuis[parentIndex]->getDropdown(e.getName())->select(castedParam);
     }else{
-        if(validConnection != nullptr)
+        for(auto validConnection : validConnections)
             setFromSameTypeValue(validConnection->getSourceParameter(), validConnection->getSinkParameter());
     }
     

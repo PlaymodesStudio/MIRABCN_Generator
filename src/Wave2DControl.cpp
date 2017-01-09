@@ -115,7 +115,7 @@ vector<vector<float>> Wave2DControl::computeWave(float phasor){
     vector<float> wave1d_values;
     wave1d_values.resize((width*height), 0);
     
-    manualGenerator.computeFunc(wave1d_values.data(), phasor);
+    //manualGenerator.computeFunc(wave1d_values.data(), phasor);
 
     //reorder the info with the manual Order, overwrite when the value is higher, keep when it's lower;
     vector<float> wave1d_values_copy;

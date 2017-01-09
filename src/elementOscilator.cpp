@@ -14,8 +14,6 @@ elementOscilator::elementOscilator(){
     pow_Param = 1;
     invert_Param = false;
     symmetry_Param = 0;
-    previousModulation1 = 0;
-    previousModulation2 = 0;
 }
 
 void elementOscilator::setup(int index){
@@ -44,39 +42,10 @@ void elementOscilator::setup(int index){
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
-    
-    vector<string> modulationOptions;
-    for(int i=0 ; i<parameters->size(); i++){
-        modulationOptions.push_back(parameters->get(i).getName());
-    }
-    string modulationOptionsString = "None-|-";
-    for(auto opt : modulationOptions)
-        modulationOptionsString += opt + "-|-";
-    
-    modulationOptionsString.erase(modulationOptionsString.end()-3, modulationOptionsString.end());
-
-    ofParameterGroup modulationDropDown1;
-    modulationDropDown1.setName("Modulation1 Select");
-    ofParameter<string> temp2StrParam("Options", modulationOptionsString);
-    modulationDropDown1.add(temp2StrParam);
-    modulationDropDown1.add(modulatorSelect_Param1.set("Modulation1 Select", 0, 0, modulationOptions.size()));
-    parameters->add(modulationDropDown1);
-    ofParameter<string> label1("MODULATOR1 MIIN MAX_label", " ");
-    parameters->add(label1);
-    parameters->add(modulatorMin_Param1.set("Modulator1 Min", 0, 0, 1));
-    parameters->add(modulatorMax_Param1.set("Modulator1 Max", 1, 0, 1));
-    
-    ofParameterGroup modulationDropDown2;
-    modulationDropDown2.setName("Modulation2 Select");
-    modulationDropDown2.add(temp2StrParam);
-    modulationDropDown2.add(modulatorSelect_Param2.set("Modulation2 Select", 0, 0, modulationOptions.size()));
-    parameters->add(modulationDropDown2);
-    ofParameter<string> label2("MODULATOR2 MIIN MAX_label", " ");
-    parameters->add(label2);
-    parameters->add(modulatorMin_Param2.set("Modulator2 Min", 0, 0, 1));
-    parameters->add(modulatorMax_Param2.set("Modulator2 Max", 1, 0, 1));
+    parameters->add(oscillatorOut.set("Oscillator Out", {0}));
     
     indexRand_Param.addListener(this, &elementOscilator::indexRandChanged);
+    phasorIn.addListener(this, &elementOscilator::computeFunc);
     
     infoVec_preMod.resize(indexCount_Param, 0);
     pastRandom.resize(indexCount_Param, 0);
@@ -87,50 +56,9 @@ void elementOscilator::setup(int index){
     indexRand_Param_previous = 0;
 }
 
-void elementOscilator::computeFunc(float *infoVec, float phasor, float modulation){
-    //TODO: Directily modulate the parameters it's not the best way, becouse we loose the value, in gui and for the other iterations of the same func.
-    // a Way could be to duplicate the values (don't think is the best way.
-    // another way could be to copy the value that it's modulated before it's modulated, and then return that value to the parameter once exit the function.
-    if(modulation != -1 && modulatorSelect_Param1 != 0){
-        ofAbstractParameter &absParam = parameters->get(modulatorSelect_Param1-1);
-            if(absParam.type() == typeid(ofParameter<float>).name()){
-                ofParameter<float> castedParam = parameters->getFloat(modulatorSelect_Param1-1);
-                float min_modulated = ofMap(modulatorMin_Param1, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                float max_modulated = ofMap(modulatorMax_Param1, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                float modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
-                modulatedParameter_noModValue1 = castedParam;
-                castedParam.setWithoutEventNotifications(modulation_scaled);
-            }
-            else if(absParam.type() == typeid(ofParameter<int>).name()){
-                ofParameter<int> castedParam = parameters->getInt(modulatorSelect_Param1-1);
-                int min_modulated = ofMap(modulatorMin_Param1, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                int max_modulated = ofMap(modulatorMax_Param1, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                int modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
-                modulatedParameter_noModValue1 = castedParam;
-                castedParam.setWithoutEventNotifications(modulation_scaled);
-            }
-    }
-    
-    if(modulation != -1 && modulatorSelect_Param2 != 0){
-        ofAbstractParameter &absParam = parameters->get(modulatorSelect_Param2-1);
-        if(absParam.type() == typeid(ofParameter<float>).name()){
-            ofParameter<float> castedParam = parameters->getFloat(modulatorSelect_Param2-1);
-            float min_modulated = ofMap(modulatorMin_Param2, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-            float max_modulated = ofMap(modulatorMax_Param2, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-            float modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
-            modulatedParameter_noModValue2 = castedParam;
-            castedParam.setWithoutEventNotifications(modulation_scaled);
-        }
-        else if(absParam.type() == typeid(ofParameter<int>).name()){
-            ofParameter<int> castedParam = parameters->getInt(modulatorSelect_Param2-1);
-            int min_modulated = ofMap(modulatorMin_Param2, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-            int max_modulated = ofMap(modulatorMax_Param2, 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-            int modulation_scaled = ofMap(modulation, 0, 1, min_modulated, max_modulated);
-            modulatedParameter_noModValue2 = castedParam;
-            castedParam.setWithoutEventNotifications(modulation_scaled);
-        }
-    }
-    
+void elementOscilator::computeFunc(float &phasor){
+    vector<float> infoVec;
+    infoVec.resize(indexCount_Param, 0);
     prevIndex = -1;
     
     for (int i = 0; i < indexCount_Param ; i++){
@@ -267,29 +195,7 @@ void elementOscilator::computeFunc(float *infoVec, float phasor, float modulatio
         infoVec[i] = val;
         prevIndex = index;
     }
-    
-    if(modulation != -1 && modulatorSelect_Param1 != 0){
-        ofAbstractParameter &absParam = parameters->get(modulatorSelect_Param1-1);
-        if(absParam.type() == typeid(ofParameter<float>).name()){
-            ofParameter<float> castedParam = parameters->getFloat(modulatorSelect_Param1-1);
-            castedParam.setWithoutEventNotifications(modulatedParameter_noModValue1);
-        }
-        else if(absParam.type() == typeid(ofParameter<int>).name()){
-            ofParameter<int> castedParam = parameters->getInt(modulatorSelect_Param1-1);
-            castedParam.setWithoutEventNotifications(modulatedParameter_noModValue1);
-        }
-    }
-    if(modulation != -1 && modulatorSelect_Param2 != 0){
-        ofAbstractParameter &absParam = parameters->get(modulatorSelect_Param2-1);
-        if(absParam.type() == typeid(ofParameter<float>).name()){
-            ofParameter<float> castedParam = parameters->getFloat(modulatorSelect_Param2-1);
-            castedParam.setWithoutEventNotifications(modulatedParameter_noModValue2);
-        }
-        else if(absParam.type() == typeid(ofParameter<int>).name()){
-            ofParameter<int> castedParam = parameters->getInt(modulatorSelect_Param2-1);
-            castedParam.setWithoutEventNotifications(modulatedParameter_noModValue2);
-        }
-    }
+    oscillatorOut = infoVec;
 }
 
 void elementOscilator::computeMultiplyMod(float *value){

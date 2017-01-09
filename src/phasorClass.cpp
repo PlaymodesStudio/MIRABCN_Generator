@@ -36,7 +36,7 @@ void phasorClass::setup(int index){
 
 
 float phasorClass::getPhasor(){
-    phasorMonitor = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
+    parameters->getFloat("Phasor Monitor") = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
     return (float)ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
 }
 
