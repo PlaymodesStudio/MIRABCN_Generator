@@ -16,12 +16,11 @@ public:
     baseIndexer(int numIndexs);
     ~baseIndexer(){};
     
-    
-    
 protected:
-    ofParameterGroup* parameters;
+    ofParameterGroup*   parameters;
     
     vector<float>       indexs;
+    virtual void        newIndexs(){};
     
 private:
     void parametersListener(ofAbstractParameter &absParam){recomputeIndexs();};
@@ -40,7 +39,7 @@ private:
     int                 indexCount; //The max number you will get from index
     
     vector<int>         indexRand;
-    int indexRand_Param_previous;
+    int                 indexRand_Param_previous;
 };
 
 #endif /* baseIndexer_h */

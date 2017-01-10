@@ -31,7 +31,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     if(datGuis.size() == 0)
         tempDatGui->setPosition(0, 0);
     else
-        tempDatGui->setPosition((datGuis[datGuis.size()-1]->getPosition().x + datGuis[datGuis.size()-1]->getWidth()), 0);
+        tempDatGui->setPosition((datGuis[datGuis.size()-1]->getPosition().x + datGuis[datGuis.size()-1]->getWidth()) + 20, 0);
     
     for(int i=0 ; i<paramGroup->size(); i++){
         ofAbstractParameter &absParam = paramGroup->get(i);

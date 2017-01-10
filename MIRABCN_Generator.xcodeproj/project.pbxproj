@@ -45,6 +45,9 @@
 		9F235E841DF039CE00793A42 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F235E831DF039CE00793A42 /* aubio.framework */; };
 		9F235E891DF040F100793A42 /* colorApplier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F235E871DF040F100793A42 /* colorApplier.cpp */; };
 		9F235E8C1DF0423400793A42 /* senderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F235E8A1DF0423400793A42 /* senderManager.cpp */; };
+		9F3977121E25022600CD8BEE /* baseOscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3977101E25022600CD8BEE /* baseOscillator.cpp */; };
+		9F3977171E25148A00CD8BEE /* ofExpandableParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3977151E25148A00CD8BEE /* ofExpandableParameter.cpp */; };
+		9F39771B1E25553E00CD8BEE /* waveScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3977191E25553E00CD8BEE /* waveScope.cpp */; };
 		9FB82D8D1E23F6A700D6CCF2 /* oscillatorBank.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FB82D8B1E23F6A700D6CCF2 /* oscillatorBank.cpp */; };
 		9FB82D901E23FD8E00D6CCF2 /* baseIndexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FB82D8E1E23FD8E00D6CCF2 /* baseIndexer.cpp */; };
 		A0F842B90C48CC33F069DFDE /* masterControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93873127F6C0FCF3F7EDFBB1 /* masterControl.cpp */; };
@@ -176,6 +179,12 @@
 		9F235E881DF040F100793A42 /* colorApplier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = colorApplier.h; sourceTree = "<group>"; };
 		9F235E8A1DF0423400793A42 /* senderManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = senderManager.cpp; sourceTree = "<group>"; };
 		9F235E8B1DF0423400793A42 /* senderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = senderManager.h; sourceTree = "<group>"; };
+		9F3977101E25022600CD8BEE /* baseOscillator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = baseOscillator.cpp; sourceTree = "<group>"; };
+		9F3977111E25022600CD8BEE /* baseOscillator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = baseOscillator.h; sourceTree = "<group>"; };
+		9F3977151E25148A00CD8BEE /* ofExpandableParameter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofExpandableParameter.cpp; sourceTree = "<group>"; };
+		9F3977181E25164A00CD8BEE /* ofExpandableParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofExpandableParameter.h; sourceTree = "<group>"; };
+		9F3977191E25553E00CD8BEE /* waveScope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = waveScope.cpp; sourceTree = "<group>"; };
+		9F39771A1E25553E00CD8BEE /* waveScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = waveScope.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
 		9FB82D8B1E23F6A700D6CCF2 /* oscillatorBank.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscillatorBank.cpp; sourceTree = "<group>"; };
 		9FB82D8C1E23F6A700D6CCF2 /* oscillatorBank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscillatorBank.h; sourceTree = "<group>"; };
@@ -678,6 +687,12 @@
 				9FB82D8C1E23F6A700D6CCF2 /* oscillatorBank.h */,
 				9FB82D8E1E23FD8E00D6CCF2 /* baseIndexer.cpp */,
 				9FB82D8F1E23FD8E00D6CCF2 /* baseIndexer.h */,
+				9F3977101E25022600CD8BEE /* baseOscillator.cpp */,
+				9F3977111E25022600CD8BEE /* baseOscillator.h */,
+				9F3977151E25148A00CD8BEE /* ofExpandableParameter.cpp */,
+				9F3977181E25164A00CD8BEE /* ofExpandableParameter.h */,
+				9F3977191E25553E00CD8BEE /* waveScope.cpp */,
+				9F39771A1E25553E00CD8BEE /* waveScope.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -861,9 +876,11 @@
 				CABA2A99CFDFE993141568F9 /* CurveLut.cpp in Sources */,
 				368CCF86BF3EF63BAFDFA84A /* ofxCurvesTool.cpp in Sources */,
 				4A277DA746402C76CE307770 /* ofxDatGuiComponent.cpp in Sources */,
+				9F3977171E25148A00CD8BEE /* ofExpandableParameter.cpp in Sources */,
 				646DF4D56CE728133610A7F6 /* ofxSmartFont.cpp in Sources */,
 				BE7DAF3CB982C2BD0FE44648 /* ofxDatGui.cpp in Sources */,
 				BCC8D420CBA9217E437D2D76 /* ofxRtMidiIn.cpp in Sources */,
+				9F39771B1E25553E00CD8BEE /* waveScope.cpp in Sources */,
 				3AEFE4FA8AD5C72671AD07F8 /* ofxRtMidiOut.cpp in Sources */,
 				1A86B7721CAEBC6F1C572C45 /* ofxBaseMidi.cpp in Sources */,
 				63F9FE1D90234FA6DE6F509E /* ofxMidi.cpp in Sources */,
@@ -872,6 +889,7 @@
 				83D9F930112E0944444124EE /* ofxMidiOut.cpp in Sources */,
 				63D0FD8734D5760B8080C901 /* RtMidi.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,
+				9F3977121E25022600CD8BEE /* baseOscillator.cpp in Sources */,
 				5864AD82E20F15536D054EA3 /* ofxOscMessage.cpp in Sources */,
 				9F235E8C1DF0423400793A42 /* senderManager.cpp in Sources */,
 				4ADB88E2FB52E76A471065DE /* ofxOscParameterSync.cpp in Sources */,

@@ -3,19 +3,22 @@
 #include "ofMain.h"
 #include "phasorClass.h"
 #include "ofxSyphon.h"
-#include "elementOscilator.h"
-#include "Wave2DControl.h"
+//#include "elementOscilator.h"
+//#include "Wave2DControl.h"
 #include "parametersControl.h"
 #include "ofxCurvesTool.h"
 #include "bufferLoggerChannel.h"
 #include "masterControl.h"
 #include "colorApplier.h"
 #include "senderManager.h"
+#include "oscillatorBank.h"
 
 static const int NUM_BARS = 24;
 static const int PIXEL_X_BAR = 162;
 static const int ROW_BARS = 4;
 static const int COL_BARS = 3;
+
+
 
 class ofApp : public ofBaseApp{
 
@@ -62,8 +65,9 @@ private:
     ofxSyphonServer tintedSyphon;
     
     vector<phasorClass> phasors;
-    elementOscilator singleGenerator;
-    Wave2DControl   waveControl;
+//    elementOscilator singleGenerator;
+    oscillatorBank* oscillators;
+//    Wave2DControl   waveControl;
     parametersControl* paramsControl;
     masterControl   masterModule;
     senderManager* senderModule;

@@ -28,6 +28,8 @@ baseIndexer::baseIndexer(int numIndexs){
     parameters->add(modulo_Param.set("Modulo", indexCount, 1, indexCount));
     
     ofAddListener(parameters->parameterChangedE(), this, &baseIndexer::parametersListener);
+    
+    recomputeIndexs();
 }
 
 void baseIndexer::recomputeIndexs(){
@@ -76,7 +78,7 @@ void baseIndexer::recomputeIndexs(){
         
         indexs[i] = index;
     }
-    
+    newIndexs();
 }
 
 void baseIndexer::indexRandChanged(float &val){

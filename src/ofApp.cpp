@@ -7,17 +7,17 @@ void ofApp::setup(){
     ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
     
     //Set the FrameRate to be 40, that is the frame rate of the Pixel Bars
-    ofSetFrameRate(40);
+    ofSetFrameRate(60);
     
     //Initialize our pixelNum var to have all the pixels in one bar
     pixelNum = PIXEL_X_BAR;
     
     //Setup the generator of waves and pass it the numbers of items it will have
-    singleGenerator.setIndexCount(pixelNum);
-    singleGenerator.setup(1);
+//    singleGenerator.setIndexCount(pixelNum);
+//    singleGenerator.setup(1);
     
     //Function that generates the wave(2D Wave) that modifies the bank of oscillators
-    waveControl.setup(COL_BARS, ROW_BARS, 1);
+//    waveControl.setup(COL_BARS, ROW_BARS, 1);
     
     masterModule.setup(1);
     
@@ -61,12 +61,13 @@ void ofApp::setup(){
     // - ofParameter<int> and ofParameter<string> inside a ofParameterGroup -> creates a dropdown list with elements in ofParameter<string> delimeted by "-|-"
     paramsControl = &parametersControl::getInstance();
     paramsControl->createGuiFromParams(phasors[0].getParameterGroup(), ofColor::mediumVioletRed);
-    paramsControl->createGuiFromParams(singleGenerator.getParameterGroup(), ofColor::mediumVioletRed);
-    paramsControl->createGuiFromParams(phasors[1].getParameterGroup(), ofColor::blueSteel);
-    paramsControl->createGuiFromParams(waveControl.getParameterGroup(), ofColor::blueSteel);
-    paramsControl->createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
-    paramsControl->createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
+//    paramsControl->createGuiFromParams(singleGenerator.getParameterGroup(), ofColor::mediumVioletRed);
+//    paramsControl->createGuiFromParams(phasors[1].getParameterGroup(), ofColor::blueSteel);
+//    paramsControl->createGuiFromParams(waveControl.getParameterGroup(), ofColor::blueSteel);
+//    paramsControl->createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
+//    paramsControl->createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
     
+    oscillators = new oscillatorBank(pixelNum);
     colorModule = new colorApplier();
     senderModule = new senderManager();
     //Create main gui, and add listeners when all guis are created
@@ -103,19 +104,19 @@ void ofApp::update(){
     float update_Phasor = phasors[0].getPhasor();
     
     //We get the values that we will use to modulate our bank of oscillators, we get them as a matrix to get them clear so we understand it like the space it has to be installed
-    vector<vector<float>> modValues =  waveControl.computeWave(phasors[1].getPhasor());
+//    vector<vector<float>> modValues =  waveControl.computeWave(phasors[1].getPhasor());
     
     
     //We iterate for each column, and we compute it's value;
     for(int i = 0; i < COL_BARS ; i++){
         for (int j = 0; j < ROW_BARS ; j++){
-            int index = waveControl.getIndexFromPosition(j, i);
+//            int index = waveControl.getIndexFromPosition(j, i);
             //Calculation of the oscilators for each element, with phasor info and modulation info
 //            singleGenerator.computeFunc(bankDatas[index].data(), update_Phasor, modValues[j][i]);
             //We use this indo to fill the output texture
-            masterModule.computeOutTex(pixelContent, pixelContent_tinted, bankDatas[index], index);
-            masterModule.computeWaveTex(waveGrid, modValues[j][i], ofPoint(i, j));
-            masterModule.computeLinWaveTex(waveLinear, modValues[j][i], index);
+//            masterModule.computeOutTex(pixelContent, pixelContent_tinted, bankDatas[index], index);
+//            masterModule.computeWaveTex(waveGrid, modValues[j][i], ofPoint(i, j));
+//            masterModule.computeLinWaveTex(waveLinear, modValues[j][i], index);
         }
     }
     
