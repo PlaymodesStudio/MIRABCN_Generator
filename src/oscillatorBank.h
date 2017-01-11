@@ -21,6 +21,16 @@ private:
     virtual void newIndexs();
     void oscillatorResult(pair<int, float> &oscInfo);
     void newPhasorIn(float &f);
+    void newPowParam(int &i);
+    void newPwmParam(float &f);
+    void newHoldTimeParam(float &f);
+    void newPhaseOffsetParam(float &f);
+    void newQuantParam(int &i);
+    void newScaleParam(float &f);
+    void newOffsetParam(float &f);
+    void newRandomAddParam(float &f);
+    void newWaveSelectParam(int &i);
+    void newAmplitudeParam(float &f);
     
     vector<baseOscillator*> oscillators;
     

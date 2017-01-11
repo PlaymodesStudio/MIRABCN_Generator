@@ -32,13 +32,6 @@ public:
     
     ofEvent<pair<int,float>> resultGenerated;
     ofParameter<float>  phasorIn;
-
-private:
-    void computeFunc(float &phasor);
-    void computeMultiplyMod(float* value);
-
-    int oscId;
-    ofParameterGroup*   parameters;
     ofParameter<int>    pow_Param; //Pow of the funcion, working on sin, cos....
     ofParameter<float>  pwm_Param;
     ofParameter<float>  holdTime_Param; //The duration of the hold in percentage (0.5) --> 50% of the cycle is the phase in initPhase
@@ -49,6 +42,14 @@ private:
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
     ofParameter<float>  amplitude_Param;
+
+private:
+    void computeFunc(float &phasor);
+    void computeMultiplyMod(float* value);
+
+    int oscId;
+    ofParameterGroup*   parameters;
+
     
     float oldPhasor;
     float oldValuePreMod;

@@ -38,6 +38,15 @@ oscillatorBank::oscillatorBank(int nOscillators) : baseIndexer(nOscillators){
     
     parametersControl::getInstance().createGuiFromParams(parameters);
     phasorIn.addListener(this, &oscillatorBank::newPhasorIn);
+    phaseOffset_Param.addListener(this, &oscillatorBank::newPhaseOffsetParam);
+    randomAdd_Param.addListener(this, &oscillatorBank::newRandomAddParam);
+    scale_Param.addListener(this, &oscillatorBank::newScaleParam);
+    offset_Param.addListener(this, &oscillatorBank::newOffsetParam);
+    pow_Param.addListener(this, &oscillatorBank::newPowParam);
+    quant_Param.addListener(this, &oscillatorBank::newQuantParam);
+    amplitude_Param.addListener(this, &oscillatorBank::newAmplitudeParam);
+    waveSelect_Param.addListener(this, &oscillatorBank::newWaveSelectParam);
+    pwm_Param.addListener(this, &oscillatorBank::newPwmParam);
 }
 
 void oscillatorBank::newIndexs(){
@@ -59,5 +68,65 @@ void oscillatorBank::oscillatorResult(pair<int, float> &oscInfo){
 void oscillatorBank::newPhasorIn(float &f){
     for(auto &oscillator : oscillators){
         oscillator->phasorIn = f;
+    }
+}
+
+void oscillatorBank::newPowParam(int &i){
+    for(auto &oscillator : oscillators){
+        oscillator->pow_Param = i;
+    }
+}
+
+void oscillatorBank::newPwmParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->pwm_Param = f;
+    }
+}
+
+void oscillatorBank::newHoldTimeParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->holdTime_Param = f;
+    }
+}
+
+void oscillatorBank::newPhaseOffsetParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->phaseOffset_Param = f;
+    }
+}
+
+void oscillatorBank::newQuantParam(int &i){
+    for(auto &oscillator : oscillators){
+        oscillator->quant_Param = i;
+    }
+}
+
+void oscillatorBank::newScaleParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->scale_Param = f;
+    }
+}
+
+void oscillatorBank::newOffsetParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->offset_Param = f;
+    }
+}
+
+void oscillatorBank::newRandomAddParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->randomAdd_Param = f;
+    }
+}
+
+void oscillatorBank::newWaveSelectParam(int &i){
+    for(auto &oscillator : oscillators){
+        oscillator->waveSelect_Param = i;
+    }
+}
+
+void oscillatorBank::newAmplitudeParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->amplitude_Param = f;
     }
 }

@@ -83,7 +83,7 @@ void baseIndexer::recomputeIndexs(){
         if(modulo_Param != modulo_Param.getMax())
             index %= modulo_Param;
         
-        indexs[i] = (float)index/(float)indexCount;
+        indexs[i] = ((float)index/(float)newNumOfPixels)*numWaves_Param;
     }
     newIndexs();
 }
