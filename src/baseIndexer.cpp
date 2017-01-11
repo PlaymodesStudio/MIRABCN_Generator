@@ -27,7 +27,14 @@ baseIndexer::baseIndexer(int numIndexs){
     parameters->add(combination_Param.set("Combination", 0, 0, 1));
     parameters->add(modulo_Param.set("Modulo", indexCount, 1, indexCount));
     
-    ofAddListener(parameters->parameterChangedE(), this, &baseIndexer::parametersListener);
+    numWaves_Param.addListener(this, &baseIndexer::parameterFloatListener);
+    invert_Param.addListener(this, &baseIndexer::parameterBoolListener);
+    symmetry_Param.addListener(this, &baseIndexer::parameterIntListener);
+    indexRand_Param.addListener(this, &baseIndexer::parameterFloatListener);
+    indexOffset_Param.addListener(this, &baseIndexer::parameterIntListener);
+    indexQuant_Param.addListener(this, &baseIndexer::parameterIntListener);
+    combination_Param.addListener(this, &baseIndexer::parameterFloatListener);
+    modulo_Param.addListener(this, &baseIndexer::parameterIntListener);
     
     recomputeIndexs();
 }
@@ -76,7 +83,7 @@ void baseIndexer::recomputeIndexs(){
         if(modulo_Param != modulo_Param.getMax())
             index %= modulo_Param;
         
-        indexs[i] = index;
+        indexs[i] = (float)index/(float)indexCount;
     }
     newIndexs();
 }

@@ -9,6 +9,21 @@
 #ifndef waveScope_h
 #define waveScope_h
 
-#include <stdio.h>
+#include "ofMain.h"
+#include "parametersControl.h"
+
+class waveScope{
+public:
+    waveScope();
+    ~waveScope(){};
+    
+    void draw();
+private:
+    ofFbo computeLinWaveTex(vector<float> values);
+    
+    ofParameterGroup* parameters;
+    vector<ofParameter<vector<float>>> oscillatorBankIns;
+    ofParameter<vector<vector<float>>> mainOutIn;
+};
 
 #endif /* waveScope_h */

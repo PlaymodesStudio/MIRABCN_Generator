@@ -23,7 +23,9 @@ protected:
     virtual void        newIndexs(){};
     
 private:
-    void parametersListener(ofAbstractParameter &absParam){recomputeIndexs();};
+    void parameterBoolListener(bool &b){recomputeIndexs();};
+    void parameterFloatListener(float &f){recomputeIndexs();};
+    void parameterIntListener(int &i){recomputeIndexs();};
     void recomputeIndexs();
     void indexRandChanged(float &val);
     

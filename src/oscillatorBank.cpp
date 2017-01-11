@@ -53,7 +53,6 @@ void oscillatorBank::oscillatorResult(pair<int, float> &oscInfo){
     if(resultFilledChecker.size() == accumulate(resultFilledChecker.begin(), resultFilledChecker.end(), 0)){
         parameters->get("Oscillator Out").cast<vector<float>>() = result;
         fill(resultFilledChecker.begin(), resultFilledChecker.end(), 0);
-        cout<<"Oscillator filled"<<endl;
     }
 }
 

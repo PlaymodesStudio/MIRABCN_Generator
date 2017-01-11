@@ -896,9 +896,15 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
 
 void parametersControl::setFromSameTypeValue(ofAbstractParameter* source, ofAbstractParameter* sink){
     if(source->type() == sink->type()){
-        if(source->type() == typeid(ofParameter<vector<int>>).name())
-            sink->cast<vector<int>>() = source->cast<vector<int>>();
+        if(source->type() == typeid(ofParameter<vector<float>>).name())
+            sink->cast<vector<float>>() = source->cast<vector<float>>();
 
+        else if(source->type() == typeid(ofParameter<vector<vector<float>>>).name())
+            sink->cast<vector<vector<float>>>() = source->cast<vector<vector<float>>>();
+        
+        else if(source->type() == typeid(ofParameter<vector<int>>).name())
+            sink->cast<vector<int>>() = source->cast<vector<int>>();
+        
         else if(source->type() == typeid(ofParameter<vector<vector<int>>>).name())
             sink->cast<vector<vector<int>>>() = source->cast<vector<vector<int>>>();
         

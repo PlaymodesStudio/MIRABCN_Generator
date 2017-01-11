@@ -12,6 +12,7 @@
 #include "colorApplier.h"
 #include "senderManager.h"
 #include "oscillatorBank.h"
+#include "waveScope.h"
 
 static const int NUM_BARS = 24;
 static const int PIXEL_X_BAR = 162;
@@ -71,6 +72,7 @@ private:
     parametersControl* paramsControl;
     masterControl   masterModule;
     senderManager* senderModule;
+    waveScope*      preview;
     
     int guiWidth;
     

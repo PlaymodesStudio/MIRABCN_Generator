@@ -70,6 +70,7 @@ void ofApp::setup(){
     oscillators = new oscillatorBank(pixelNum);
     colorModule = new colorApplier();
     senderModule = new senderManager();
+    preview = new waveScope();
     //Create main gui, and add listeners when all guis are created
     paramsControl->setup();
     
@@ -156,68 +157,69 @@ void ofApp::exit(){
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){
-    //This functions is the implementation of the draw event on second window (preview window)
-    
-    ofBackground(0);
-    ofSetColor(255);
-    int contentWidth = 2*ofGetWidth()/3;
-    //Draw the fbo
-    pixelContent.getTexture().draw(0, 0, contentWidth, ofGetHeight()/3);
-    ofPushStyle();
-    ofSetColor(ofColor::indianRed);
-    ofNoFill();
-    ofSetLineWidth(2);
-    ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
-    ofPopStyle();
-    
-    waveGrid.getTexture().draw(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
-    ofPushStyle();
-    ofSetColor(ofColor::indianRed);
-    ofNoFill();
-    ofSetLineWidth(2);
-    ofDrawRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
-    ofPopStyle();
-    
-    //Draw the Bars
-    float wid = (float)contentWidth/pixelNum;
-    float hei = ofGetHeight()/3;
-    for(int i = 0; i < pixelNum; i++)
-        ofDrawRectangle((i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
-    ofPushStyle();
-    ofSetColor(ofColor::indianRed);
-    ofNoFill();
-    ofSetLineWidth(2);
-    ofDrawRectangle(0, ofGetHeight()/3, contentWidth, ofGetHeight()/3);
-    ofPopStyle();
-    
-    
-    //Draw the Bars2
-    waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
-    ofPushStyle();
-    ofSetColor(ofColor::indianRed);
-    ofNoFill();
-    ofSetLineWidth(2);
-    ofDrawRectangle(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
-    ofPopStyle();
-    
-    //Draw another time the grid
-    //waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
-    
-    
-    //Draw notifiers
-    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
-    
-    while(logBuffer->getSize()*15 > 2*ofGetHeight()/3) logBuffer->eraseLastLine();
-    
-    for (int i = 0; i < logBuffer->getSize(); i++){
-        string line = logBuffer->getLine(i);
-        ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (15*(i+1)));
-    }
-    
-    
-    //Draw the framerate
-    ofSetColor(255, 0,0);
-    ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
+    preview->draw();
+//    //This functions is the implementation of the draw event on second window (preview window)
+//    
+//    ofBackground(0);
+//    ofSetColor(255);
+//    int contentWidth = 2*ofGetWidth()/3;
+//    //Draw the fbo
+//    pixelContent.getTexture().draw(0, 0, contentWidth, ofGetHeight()/3);
+//    ofPushStyle();
+//    ofSetColor(ofColor::indianRed);
+//    ofNoFill();
+//    ofSetLineWidth(2);
+//    ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
+//    ofPopStyle();
+//    
+//    waveGrid.getTexture().draw(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
+//    ofPushStyle();
+//    ofSetColor(ofColor::indianRed);
+//    ofNoFill();
+//    ofSetLineWidth(2);
+//    ofDrawRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
+//    ofPopStyle();
+//    
+//    //Draw the Bars
+//    float wid = (float)contentWidth/pixelNum;
+//    float hei = ofGetHeight()/3;
+//    for(int i = 0; i < pixelNum; i++)
+//        ofDrawRectangle((i*wid), (1-infoVec[i])*hei+hei, wid, infoVec[i]*hei);
+//    ofPushStyle();
+//    ofSetColor(ofColor::indianRed);
+//    ofNoFill();
+//    ofSetLineWidth(2);
+//    ofDrawRectangle(0, ofGetHeight()/3, contentWidth, ofGetHeight()/3);
+//    ofPopStyle();
+//    
+//    
+//    //Draw the Bars2
+//    waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
+//    ofPushStyle();
+//    ofSetColor(ofColor::indianRed);
+//    ofNoFill();
+//    ofSetLineWidth(2);
+//    ofDrawRectangle(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
+//    ofPopStyle();
+//    
+//    //Draw another time the grid
+//    //waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
+//    
+//    
+//    //Draw notifiers
+//    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
+//    
+//    while(logBuffer->getSize()*15 > 2*ofGetHeight()/3) logBuffer->eraseLastLine();
+//    
+//    for (int i = 0; i < logBuffer->getSize(); i++){
+//        string line = logBuffer->getLine(i);
+//        ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (15*(i+1)));
+//    }
+//    
+//    
+//    //Draw the framerate
+//    ofSetColor(255, 0,0);
+//    ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
 }
 
 void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
