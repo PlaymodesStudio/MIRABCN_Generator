@@ -25,14 +25,31 @@ void waveScope::draw(){
     ofBackground(0);
     ofSetColor(255);
     int contentWidth = 2*ofGetWidth()/3;
-//    //Draw the fbo
-//    pixelContent.getTexture().draw(0, 0, contentWidth, ofGetHeight()/3);
-//    ofPushStyle();
-//    ofSetColor(ofColor::indianRed);
-//    ofNoFill();
-//    ofSetLineWidth(2);
-//    ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
-//    ofPopStyle();
+    
+    ofFbo outTex;
+    outTex.allocate(mainOutIn.get().size(), mainOutIn.get()[0].size());
+    
+    
+    outTex.begin();
+    for( int i = 0; i < mainOutIn.get().size(); i++){
+        for(int j = 0; j < mainOutIn.get()[i].size(); j++){
+            int valueInByte = mainOutIn.get()[i][j]*255;
+            
+            ofSetColor(valueInByte);
+            ofDrawRectangle(i,j, 1, 1);
+            
+        }
+    }
+    outTex.end();
+    
+    //Draw the fbo
+    outTex.getTexture().draw(0, 0, contentWidth, ofGetHeight()/3);
+    ofPushStyle();
+    ofSetColor(ofColor::indianRed);
+    ofNoFill();
+    ofSetLineWidth(2);
+    ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
+    ofPopStyle();
 //    
 //    waveGrid.getTexture().draw(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
 //    ofPushStyle();
@@ -80,9 +97,9 @@ void waveScope::draw(){
 //    }
 //    
 //    
-//    //Draw the framerate
-//    ofSetColor(255, 0,0);
-//    ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
+    //Draw the framerate
+    ofSetColor(255, 0,0);
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
 }
 
 ofFbo waveScope::computeLinWaveTex(vector<float> values){

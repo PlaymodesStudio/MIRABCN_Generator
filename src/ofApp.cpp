@@ -67,6 +67,7 @@ void ofApp::setup(){
 //    paramsControl->createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
 //    paramsControl->createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
     
+    oscBankGroup = new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS);
     oscillators = new oscillatorBank(pixelNum);
     colorModule = new colorApplier();
     senderModule = new senderManager();

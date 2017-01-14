@@ -8,8 +8,8 @@
 
 #include "oscillatorBank.h"
 
-oscillatorBank::oscillatorBank(int nOscillators) : baseIndexer(nOscillators){
-//    oscillators.resize(nOscillators, new baseOscillator());
+oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId) : baseIndexer(nOscillators){
+    bankId = _bankId;
     for(int i=0 ; i < nOscillators ; i++){
         oscillators.push_back(new baseOscillator(i));
         oscillators[i]->setIndexNormalized(indexs[i]);
@@ -36,7 +36,9 @@ oscillatorBank::oscillatorBank(int nOscillators) : baseIndexer(nOscillators){
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     parameters->add(oscillatorOut.set("Oscillator Out", {0}));
     
-    parametersControl::getInstance().createGuiFromParams(parameters);
+    if(gui)
+        parametersControl::getInstance().createGuiFromParams(parameters);
+    
     phasorIn.addListener(this, &oscillatorBank::newPhasorIn);
     phaseOffset_Param.addListener(this, &oscillatorBank::newPhaseOffsetParam);
     randomAdd_Param.addListener(this, &oscillatorBank::newRandomAddParam);
@@ -62,6 +64,11 @@ void oscillatorBank::oscillatorResult(pair<int, float> &oscInfo){
     if(resultFilledChecker.size() == accumulate(resultFilledChecker.begin(), resultFilledChecker.end(), 0)){
         parameters->get("Oscillator Out").cast<vector<float>>() = result;
         fill(resultFilledChecker.begin(), resultFilledChecker.end(), 0);
+//        static pair<int, vector<float>> toSend;
+//        toSend.first = bankId;
+//        toSend.second = result;
+//        ofNotifyEvent(eventInGroup, toSend, this);
+        ofNotifyEvent(eventInGroup, bankId, this);
     }
 }
 

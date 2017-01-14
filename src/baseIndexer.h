@@ -16,6 +16,15 @@ public:
     baseIndexer(int numIndexs);
     ~baseIndexer(){};
     
+    ofParameter<float>  numWaves_Param; //Desphase Quantity
+    ofParameter<bool>   invert_Param;
+    ofParameter<int>    symmetry_Param;
+    ofParameter<float>  indexRand_Param;
+    ofParameter<int>    indexOffset_Param;
+    ofParameter<int>    indexQuant_Param;
+    ofParameter<float>  combination_Param;
+    ofParameter<int>    modulo_Param;
+    
 protected:
     ofParameterGroup*   parameters;
     
@@ -29,14 +38,7 @@ private:
     void recomputeIndexs();
     void indexRandChanged(float &val);
     
-    ofParameter<float>  numWaves_Param; //Desphase Quantity
-    ofParameter<bool>   invert_Param;
-    ofParameter<int>    symmetry_Param;
-    ofParameter<float>  indexRand_Param;
-    ofParameter<int>    indexOffset_Param;
-    ofParameter<int>    indexQuant_Param;
-    ofParameter<float>  combination_Param;
-    ofParameter<int>    modulo_Param;
+   
     
     int                 indexCount; //The max number you will get from index
     

@@ -13,6 +13,7 @@
 #include "senderManager.h"
 #include "oscillatorBank.h"
 #include "waveScope.h"
+#include "oscillatorBankGroup.h"
 
 static const int NUM_BARS = 24;
 static const int PIXEL_X_BAR = 162;
@@ -73,6 +74,7 @@ private:
     masterControl   masterModule;
     senderManager* senderModule;
     waveScope*      preview;
+    oscillatorBankGroup* oscBankGroup;
     
     int guiWidth;
     
