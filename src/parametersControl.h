@@ -104,7 +104,7 @@ public:
         return instance;
     }
     
-    void createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
+    void createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)), ofPoint pos = ofPoint(-1, -1));
     
     void setup();
     void update(ofEventArgs &args);

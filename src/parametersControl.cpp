@@ -9,7 +9,7 @@
 #include "parametersControl.h"
 #include <random>
 
-void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor){
+void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor, ofPoint pos){
     
     ofxDatGuiLog::quiet();
     ofxDatGui::setAssetPath("");
@@ -28,10 +28,14 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     tempDatGui->setWidth(290);
     tempDatGui->addHeader(paramGroup->getName());
     tempDatGui->addFooter();
-    if(datGuis.size() == 0)
-        tempDatGui->setPosition(0, 0);
-    else
-        tempDatGui->setPosition((datGuis[datGuis.size()-1]->getPosition().x + datGuis[datGuis.size()-1]->getWidth()) + 20, 0);
+    if(pos == ofPoint(-1, -1)){
+        if(datGuis.size() == 0)
+            tempDatGui->setPosition(0, 0);
+        else
+            tempDatGui->setPosition((datGuis[datGuis.size()-1]->getPosition().x + datGuis[datGuis.size()-1]->getWidth()) + 20, 0);
+    }else{
+        tempDatGui->setPosition(pos.x, pos.y);
+    }
     
     for(int i=0 ; i<paramGroup->size(); i++){
         ofAbstractParameter &absParam = paramGroup->get(i);
@@ -56,6 +60,20 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
             tempDatGui->addLabel(absParam.getName());
         }
     }
+    
+    //GUIS EVENT LISTERNERS
+    tempDatGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
+    tempDatGui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
+    tempDatGui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
+    //        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
+    tempDatGui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
+    tempDatGui->onColorPickerEvent(this, &parametersControl::onGuiColorPickerEvent);
+    tempDatGui->onRightClickEvent(this, &parametersControl::onGuiRightClickEvent);
+
+    
+    //OF PARAMETERS LISTERENRS
+    ofAddListener(paramGroup->parameterChangedE(), this, &parametersControl::listenerFunction);
+    
     datGuis.push_back(tempDatGui);
 }
 
@@ -112,21 +130,6 @@ void parametersControl::setup(){
     datGui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
     datGui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
 
-    //GUIS EVENT LISTERNERS
-    for(auto gui : datGuis){
-        gui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
-        gui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
-        gui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
-//        gui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
-        gui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
-        gui->onColorPickerEvent(this, &parametersControl::onGuiColorPickerEvent);
-        gui->onRightClickEvent(this, &parametersControl::onGuiRightClickEvent);
-    }
-    
-    //OF PARAMETERS LISTERENRS
-    for(auto paramGroup : parameterGroups){
-        ofAddListener(paramGroup->parameterChangedE(), this, &parametersControl::listenerFunction);
-    }
     
     //OSC
     ofLog() << "OSC Info:";
@@ -164,6 +167,7 @@ void parametersControl::setup(){
     ///POP UP MENuS
     popUpMenu = new ofxDatGui();
     popUpMenu->setVisible(false);
+    popUpMenu->setPosition(guiWindow->getWidth(), guiWindow->getHeight());
     ofColor randColor2 =  ofColor::indianRed;
     theme->color.slider.fill = randColor2;
     theme->color.textInput.text = randColor2;
@@ -758,9 +762,9 @@ void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
     ofNotifyEvent(createNewModule, pairToSend, this);
     
     popUpMenu->setVisible(false);
+    popUpMenu->setPosition(guiWindow->getWidth(), guiWindow->getHeight());
     ofxDatGuiDropdown* drop = popUpMenu->getDropdown("Choose module");
     drop->setLabel("Choose module");
-    drop->expand();
 }
 
 
@@ -793,6 +797,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         cout<<"New menu"<<endl;
         popUpMenu->setPosition(e.x, e.y);
         popUpMenu->setVisible(true);
+        popUpMenu->getDropdown("Choose module")->expand();
     }
 }
 

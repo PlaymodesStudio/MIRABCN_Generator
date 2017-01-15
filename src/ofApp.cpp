@@ -47,9 +47,8 @@ void ofApp::setup(){
     waveLinear.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
     //Setup of the phasors, wich controls the oscilator generator and other parameters
-    phasors.resize(2);
-    for(int i=0; i<phasors.size(); i++)
-        phasors[i].setup(i+1);
+    for(int i=0; i<2; i++)
+        phasors.push_back(new phasorClass(i+1));
     
     //Take the parameter groups and pass them to create the gui.
     //ParamsControl can handle a gui creation with a parameterGroup that has all the parameters needed to be modified
@@ -60,15 +59,14 @@ void ofApp::setup(){
     // - ofParameter<string> whose name ends with "_label" -> creates a label
     // - ofParameter<int> and ofParameter<string> inside a ofParameterGroup -> creates a dropdown list with elements in ofParameter<string> delimeted by "-|-"
     paramsControl = &parametersControl::getInstance();
-    paramsControl->createGuiFromParams(phasors[0].getParameterGroup(), ofColor::mediumVioletRed);
 //    paramsControl->createGuiFromParams(singleGenerator.getParameterGroup(), ofColor::mediumVioletRed);
 //    paramsControl->createGuiFromParams(phasors[1].getParameterGroup(), ofColor::blueSteel);
 //    paramsControl->createGuiFromParams(waveControl.getParameterGroup(), ofColor::blueSteel);
 //    paramsControl->createGuiFromParams(waveControl.getGeneratorParameterGroup(), ofColor::blueSteel);
 //    paramsControl->createGuiFromParams(masterModule.getParameterGroup(), ofColor::greenYellow);
     
-    oscBankGroup = new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS);
-    oscillators = new oscillatorBank(pixelNum);
+    oscBankGroup.push_back(new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS));
+    oscillators.push_back(new oscillatorBank(pixelNum, true, 1));
     colorModule = new colorApplier();
     senderModule = new senderManager();
     preview = new waveScope();
@@ -96,9 +94,24 @@ void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
     switch (info.first) {
         case phasor_module:
             cout<<"new phasor"<<endl;
-//            phasors.push_back(phasor());
+            phasors.push_back(new phasorClass(phasors.size()+1, info.second));
             break;
-            
+        case oscillator_module:
+            break;
+        case oscillatorBank_module:
+        {
+            int nOscillators = ofToInt(ofSystemTextBoxDialog("How many oscillators?"));
+            oscillators.push_back(new oscillatorBank(nOscillators, true, oscillators.size()+1, info.second));
+            break;
+        }
+        case oscillatorBankGroup_module:
+        {
+            vector<string> bankGroupSizeInfo = ofSplitString(ofSystemTextBoxDialog("Bank group size, expressed as 161x12"), "x");
+            if(bankGroupSizeInfo.size() == 2)
+                oscBankGroup.push_back(new oscillatorBankGroup(ofToInt(bankGroupSizeInfo[0]), ofToInt(bankGroupSizeInfo[1])));
+            else
+                ofSystemAlertDialog("Wrong entered info");
+        }
         default:
             break;
     }
@@ -108,13 +121,9 @@ void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
 void ofApp::update(){
 
     //Phasor updates automatically at audio rate, but we need to take the value for this update so the phasor is the same along all the time update is being called
-    float update_Phasor = phasors[0].getPhasor();
-    
-    //We compute one more time without modifiers to have a representation what tha bank of oscillators originaly was
-    //singleGenerator.computeFunc(infoVec.data(), update_Phasor);
-    
-//    senderModule->send(bankDatas);
-//    senderModule->send(pixelContent, pixelContent_tinted);
+    //this has to be done in another thread
+    for(auto &phasor : phasors)
+        phasor->getPhasor();
 }
 
 //--------------------------------------------------------------
@@ -213,7 +222,7 @@ void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     for(auto phasor : phasors)
-        phasor.audioIn(input, bufferSize, nChannels);
+        phasor->audioIn(input, bufferSize, nChannels);
     
     bpmControl::getInstance().audioIn(input, bufferSize, nChannels);
 }

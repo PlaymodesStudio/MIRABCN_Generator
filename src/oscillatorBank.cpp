@@ -8,7 +8,7 @@
 
 #include "oscillatorBank.h"
 
-oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId) : baseIndexer(nOscillators){
+oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint pos) : baseIndexer(nOscillators){
     bankId = _bankId;
     for(int i=0 ; i < nOscillators ; i++){
         oscillators.push_back(new baseOscillator(i));
@@ -18,7 +18,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId) : baseIn
     result.resize(nOscillators, 0);
     resultFilledChecker.resize(nOscillators, 0);
     
-    parameters->setName("Oscillator Bank");
+    parameters->setName("oscillator bank "+ ofToString(_bankId));
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     parameters->add(phaseOffset_Param.set("Phase Offset", 0, 0, 1));
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
@@ -37,7 +37,8 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId) : baseIn
     parameters->add(oscillatorOut.set("Oscillator Out", {0}));
     
     if(gui)
-        parametersControl::getInstance().createGuiFromParams(parameters);
+        parametersControl::getInstance().createGuiFromParams(parameters, ofColor::red, pos);
+        
     
     phasorIn.addListener(this, &oscillatorBank::newPhasorIn);
     phaseOffset_Param.addListener(this, &oscillatorBank::newPhaseOffsetParam);

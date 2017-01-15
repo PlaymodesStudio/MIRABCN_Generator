@@ -69,15 +69,15 @@ private:
     ofxSyphonServer syphonServer;
     ofxSyphonServer tintedSyphon;
     
-    vector<phasorClass> phasors;
+    vector<phasorClass*> phasors;
 //    elementOscilator singleGenerator;
-    oscillatorBank* oscillators;
+    vector<oscillatorBank*> oscillators;
 //    Wave2DControl   waveControl;
     parametersControl* paramsControl;
     masterControl   masterModule;
     senderManager* senderModule;
     waveScope*      preview;
-    oscillatorBankGroup* oscBankGroup;
+    vector<oscillatorBankGroup*> oscBankGroup;
     
     int guiWidth;
     

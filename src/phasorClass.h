@@ -13,9 +13,10 @@
 
 #include "ofMain.h"
 
+
 class phasorClass{
 public:
-    phasorClass();
+    phasorClass(int index = 0, ofPoint pos = ofPoint(-1, -1));
     ~phasorClass(){};
     void setup(int index = 0);
     

@@ -15,7 +15,7 @@
 //This class will contain a set of oscillators and has to inherit the indexer class (or bank class)
 class oscillatorBank : public baseIndexer{
 public:
-    oscillatorBank(int nOscillators, bool gui = true, int bankId = 0);
+    oscillatorBank(int nOscillators, bool gui = true, int bankId = 0, ofPoint pos = ofPoint(-1, -1));
     ~oscillatorBank(){};
     
 //     ofEvent<pair<int, vector<float>>> eventInGroup;
