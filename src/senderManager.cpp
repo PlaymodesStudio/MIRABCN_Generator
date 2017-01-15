@@ -14,14 +14,69 @@ senderManager::senderManager(){
     parameters->add(enableSyphon.set("Enable Syphon", 0));
     parameters->add(grayscaleSyphonName.set("Grayscale Server Name", "Gen_Grayscale"));
     parameters->add(colorSyphonName.set("Color Server Name", "Gen_Color"));
+
     parameters->add(enableOsc.set("Enable OSC", 0));
     parameters->add(oscHost.set("Host", "127.0.0.1"));
     parameters->add(oscPort.set("Port", "1234"));
+    
+    parameters->add(grayScaleIn.set("Grayscale In", {{0}}));
+    parameters->add(colorIn.set("Color In", {{ofColor::white}}));
+    
+    grayScaleIn.addListener(this, &senderManager::sendGrayScale);
+    colorIn.addListener(this, &senderManager::sendColor);
+    
+    
+                    
     
     parametersControl::getInstance().createGuiFromParams(parameters);
     
     enableOsc.addListener(this, &senderManager::enableOscListener);
     enableSyphon.addListener(this, &senderManager::enableSyphonListener);
+}
+
+void senderManager::sendGrayScale(vector<vector<float> > &info){
+    if(enableOsc){
+        ofxOscMessage* messageGrayscale = new ofxOscMessage();
+        messageGrayscale->setAddress("info/grayscale");
+        
+        for(int i = 0 ; i < info.size() ; i++){
+            for (int j = 0 ; j < info[i].size() ; j++){
+                messageGrayscale->addFloatArg(info[i][j]);
+            }
+        }
+        oscSender->sendMessage(*messageGrayscale);
+    }
+    if(grayscaleSyphonServer != NULL && enableSyphon){
+        if(grayScaleTexToSend.getWidth() != info.size() || grayScaleTexToSend.getHeight() != info[0].size())
+            grayScaleTexToSend.allocate(info.size(), info[0].size());
+        
+        grayScaleTexToSend.begin();
+        for( int i = 0; i < info.size(); i++){
+            for(int j = 0; j < info[i].size(); j++){
+                ofSetColor(info[i][j]*255);
+                ofDrawRectangle(i,j, 1, 1);
+                
+            }
+        }
+        grayScaleTexToSend.end();
+        grayscaleSyphonServer->publishTexture(&grayScaleTexToSend.getTexture());
+    }
+}
+
+void senderManager::sendColor(vector<vector<ofColor> > &info){
+    if(enableOsc){
+        ofxOscMessage* messageColor = new ofxOscMessage();
+        messageColor->setAddress("info/color");
+        
+        for(int i = 0 ; i < info.size() ; i++){
+            for (int j = 0 ; j < info[i].size() ; j++){
+                messageColor->addFloatArg((float)info[i][j].r);
+                messageColor->addFloatArg((float)info[i][j].g);
+                messageColor->addFloatArg((float)info[i][j].b);
+            }
+        }
+        oscSender->sendMessage(*messageColor);
+    }
 }
 
 void senderManager::send(ofFbo &grayscaleFbo, ofFbo &colorFbo){

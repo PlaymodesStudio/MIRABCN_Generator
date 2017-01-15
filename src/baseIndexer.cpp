@@ -13,7 +13,7 @@ baseIndexer::baseIndexer(int numIndexs){
     indexs.resize(indexCount, 0);
     indexRand.resize(indexCount , 0);
     for(int i = 0; i < indexRand.size(); i++)
-        indexRand[i] = i-(indexRand.size()/2);
+        indexRand[i] = i-((float)indexRand.size()/2.f);
     indexRand_Param_previous = 0;
     
     parameters = new ofParameterGroup;
@@ -35,6 +35,9 @@ baseIndexer::baseIndexer(int numIndexs){
     indexQuant_Param.addListener(this, &baseIndexer::parameterIntListener);
     combination_Param.addListener(this, &baseIndexer::parameterFloatListener);
     modulo_Param.addListener(this, &baseIndexer::parameterIntListener);
+    
+    indexRand_Param.addListener(this, &baseIndexer::indexRandChanged);
+
     
     recomputeIndexs();
 }
@@ -71,6 +74,7 @@ void baseIndexer::recomputeIndexs(){
         if(invert_Param)
             index = ((float)indexCount-(float)index);
         
+        //random
         index += indexRand[index-1]*indexRand_Param;
         if(index > indexCount)
             index - indexCount;

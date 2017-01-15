@@ -8,7 +8,7 @@
 
 #include "baseOscillator.h"
 
-baseOscillator::baseOscillator(int id){
+baseOscillator::baseOscillator(int id, bool gui){
     oscId = id;
     parameters = new ofParameterGroup();
     parameters->setName("oscillator " + ofToString(index));
@@ -29,6 +29,9 @@ baseOscillator::baseOscillator(int id){
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     
     phasorIn.addListener(this, &baseOscillator::computeFunc);
+    
+    if(gui)
+        parametersControl::getInstance().createGuiFromParams(parameters);
     
     oldPhasor = 0;
     oldValuePreMod = 0;

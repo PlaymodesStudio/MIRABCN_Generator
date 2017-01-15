@@ -16,6 +16,13 @@
 #include "ofxTweenzor.h"
 #include "bpmControl.h"
 
+enum moduleType{
+    phasor_module = 1,
+    oscillator_module = 2,
+    oscillatorBank_module = 3,
+    oscillatorBankGroup_module = 4
+};
+
 static const int NUM_PRESETS = 40;
 
 class nodeConnection{
@@ -100,8 +107,8 @@ public:
     void createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)));
     
     void setup();
-    void update();
-    void draw();
+    void update(ofEventArgs &args);
+    void draw(ofEventArgs &args);
     
     int getGuiWidth(){return datGui->getWidth();};
     
@@ -114,8 +121,19 @@ public:
     void onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e);
     void onGuiRightClickEvent(ofxDatGuiRightClickEvent e);
     
+    void newModuleListener(ofxDatGuiDropdownEvent e);
+    
+    void keyPressed(ofKeyEventArgs &e);
+    void keyReleased(ofKeyEventArgs &e);
+    void mouseMoved(ofMouseEventArgs &e);
     void mouseDragged(ofMouseEventArgs &e);
+    void mousePressed(ofMouseEventArgs &e);
     void mouseReleased(ofMouseEventArgs &e);
+    void mouseScrolled(ofMouseEventArgs &e);
+    void mouseEntered(ofMouseEventArgs &e);
+    void mouseExited(ofMouseEventArgs &e);
+    
+    
     
     void bpmChangedListener(float &bpm);
     
@@ -136,6 +154,8 @@ public:
     
     void setWindows(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){this->guiWindow = guiWindow; this->prevWindow = prevWindow;};
     
+    ofEvent<pair<moduleType, ofPoint>> createNewModule;
+    
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
@@ -147,6 +167,8 @@ private:
     
     vector<ofxDatGui*> datGuis;
     vector<ofParameterGroup*> parameterGroups;
+    
+    ofxDatGui *popUpMenu;
     
     ofParameter<bool> autoPreset;
     ofParameter<float> presetChangeBeatsPeriod;
@@ -186,6 +208,8 @@ private:
     
     //node
     vector<nodeConnection>  connections;
+    
+    bool commandPressed = false;
 };
 
 

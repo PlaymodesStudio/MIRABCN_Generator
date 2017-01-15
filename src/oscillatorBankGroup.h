@@ -50,23 +50,23 @@ private:
     //Vectorized
     //INDEX
     ofParameter<vector<float>>  numWaves_vecParam;
-    ofParameter<vector<bool>>   invert_vecParam;
-    ofParameter<vector<int>>    symmetry_vecParam;
+    ofParameter<vector<float>>   invert_vecParam;
+    ofParameter<vector<float>>    symmetry_vecParam;
     ofParameter<vector<float>>  indexRand_vecParam;
-    ofParameter<vector<int>>    indexOffset_vecParam;
-    ofParameter<vector<int>>    indexQuant_vecParam;
+    ofParameter<vector<float>>    indexOffset_vecParam;
+    ofParameter<vector<float>>    indexQuant_vecParam;
     ofParameter<vector<float>>  combination_vecParam;
-    ofParameter<vector<int>>    modulo_vecParam;
+    ofParameter<vector<float>>    modulo_vecParam;
     //OSCILLATROS
-    ofParameter<vector<int>>    pow_vecParam;
+    ofParameter<vector<float>>    pow_vecParam;
     ofParameter<vector<float>>  pwm_vecParam;
     ofParameter<vector<float>>  holdTime_vecParam;
     ofParameter<vector<float>>  phaseOffset_vecParam;
-    ofParameter<vector<int>>    quant_vecParam;
+    ofParameter<vector<float>>    quant_vecParam;
     ofParameter<vector<float>>  scale_vecParam;
     ofParameter<vector<float>>  offset_vecParam;
     ofParameter<vector<float>>  randomAdd_vecParam;
-    ofParameter<vector<int>>    waveSelect_vecParam;
+    ofParameter<vector<float>>    waveSelect_vecParam;
     ofParameter<vector<float>>  amplitude_vecParam;
     
     

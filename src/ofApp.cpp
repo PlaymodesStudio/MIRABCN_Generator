@@ -89,54 +89,37 @@ void ofApp::setup(){
     masterModule.setCurve(outputCurve);
     
     ofAddListener(outputCurve.curHoverUpdate, this, &ofApp::outputCurveListener);
+    ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
+}
+
+void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
+    switch (info.first) {
+        case phasor_module:
+            cout<<"new phasor"<<endl;
+//            phasors.push_back(phasor());
+            break;
+            
+        default:
+            break;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    //Update paramsControl, because it also handles osc and midi
-    paramsControl->update();
-    
-    waveLinear.begin();
-    ofSetColor(0);
-    ofDrawRectangle(0, 0, waveLinear.getWidth(), waveLinear.getHeight());
-    waveLinear.end();
 
-    
     //Phasor updates automatically at audio rate, but we need to take the value for this update so the phasor is the same along all the time update is being called
     float update_Phasor = phasors[0].getPhasor();
-    
-    //We get the values that we will use to modulate our bank of oscillators, we get them as a matrix to get them clear so we understand it like the space it has to be installed
-//    vector<vector<float>> modValues =  waveControl.computeWave(phasors[1].getPhasor());
-    
-    
-    //We iterate for each column, and we compute it's value;
-    for(int i = 0; i < COL_BARS ; i++){
-        for (int j = 0; j < ROW_BARS ; j++){
-//            int index = waveControl.getIndexFromPosition(j, i);
-            //Calculation of the oscilators for each element, with phasor info and modulation info
-//            singleGenerator.computeFunc(bankDatas[index].data(), update_Phasor, modValues[j][i]);
-            //We use this indo to fill the output texture
-//            masterModule.computeOutTex(pixelContent, pixelContent_tinted, bankDatas[index], index);
-//            masterModule.computeWaveTex(waveGrid, modValues[j][i], ofPoint(i, j));
-//            masterModule.computeLinWaveTex(waveLinear, modValues[j][i], index);
-        }
-    }
     
     //We compute one more time without modifiers to have a representation what tha bank of oscillators originaly was
     //singleGenerator.computeFunc(infoVec.data(), update_Phasor);
     
-    senderModule->send(bankDatas);
-    senderModule->send(pixelContent, pixelContent_tinted);
-
-    //Pass texture to syphon
-//    syphonServer.publishTexture(&pixelContent.getTexture());
-//    tintedSyphon.publishTexture(&pixelContent_tinted.getTexture());
+//    senderModule->send(bankDatas);
+//    senderModule->send(pixelContent, pixelContent_tinted);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0);
-    paramsControl->draw();
     
     if(masterModule.drawCurve()){
         outputCurve.useMouse(true);

@@ -25,7 +25,7 @@ enum oscTypes{
 
 class baseOscillator{
 public:
-    baseOscillator(int id = 0);
+    baseOscillator(int id = 0, bool gui = false);
     ~baseOscillator(){};
     
     void setIndexNormalized(float index){indexNormalized = index;};

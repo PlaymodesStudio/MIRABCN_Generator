@@ -61,8 +61,13 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
 
 void parametersControl::setup(){
     
-    ofAddListener(ofEvents().mouseReleased, this, &parametersControl::mouseReleased);
-    ofAddListener(ofEvents().mouseDragged, this, &parametersControl::mouseDragged);
+    ofAddListener(ofEvents().update, this, &parametersControl::update);
+    ofAddListener(ofEvents().draw, this, &parametersControl::draw);
+    
+    ofRegisterKeyEvents(this);
+    ofRegisterMouseEvents(this);
+    
+    
     //DatGui
     
     ofxDatGuiLog::quiet();
@@ -154,10 +159,23 @@ void parametersControl::setup(){
     
     beatTracker = &bpmControl::getInstance();
     beatTracker->setup();
+    
+    
+    ///POP UP MENuS
+    popUpMenu = new ofxDatGui();
+    popUpMenu->setVisible(false);
+    ofColor randColor2 =  ofColor::indianRed;
+    theme->color.slider.fill = randColor2;
+    theme->color.textInput.text = randColor2;
+    theme->color.icons = randColor2;
+    popUpMenu->setTheme(theme);
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group"})->expand();
+    
+    popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
 
 
-void parametersControl::update(){
+void parametersControl::update(ofEventArgs &args){
         
     Tweenzor::update(ofGetElapsedTimeMillis());
     
@@ -283,7 +301,7 @@ void parametersControl::update(){
 
 }
 
-void parametersControl::draw(){
+void parametersControl::draw(ofEventArgs &args){
     ofPushStyle();
     ofSetColor(ofColor::white);
     ofSetLineWidth(2);
@@ -733,6 +751,51 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
     }
 }
 
+void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
+    pair<moduleType, ofPoint> pairToSend;
+    pairToSend.first = static_cast<moduleType>(e.child + 1);
+    pairToSend.second = popUpMenu->getPosition();
+    ofNotifyEvent(createNewModule, pairToSend, this);
+    
+    popUpMenu->setVisible(false);
+    ofxDatGuiDropdown* drop = popUpMenu->getDropdown("Choose module");
+    drop->setLabel("Choose module");
+    drop->expand();
+}
+
+
+
+#pragma mark --Keyboard and mouse Listenerrs--
+
+void parametersControl::keyPressed(ofKeyEventArgs &e){
+    if(e.key == OF_KEY_COMMAND)
+        commandPressed = true;
+}
+
+void parametersControl::keyReleased(ofKeyEventArgs &e){
+    if(e.key == OF_KEY_COMMAND)
+        commandPressed = false;
+}
+
+void parametersControl::mouseMoved(ofMouseEventArgs &e){
+    
+}
+
+void parametersControl::mouseDragged(ofMouseEventArgs &e){
+    if(e.button == 2 && connections.size() > 0){
+        if(!connections.back().closedLine)
+            connections.back().moveLine(e);
+    }
+}
+
+void parametersControl::mousePressed(ofMouseEventArgs &e){
+    if(commandPressed){
+        cout<<"New menu"<<endl;
+        popUpMenu->setPosition(e.x, e.y);
+        popUpMenu->setVisible(true);
+    }
+}
+
 void parametersControl::mouseReleased(ofMouseEventArgs &e){
 //    if(e.button == 0 && connections.size() > 0){
 //        for(auto connection : connections){
@@ -747,13 +810,20 @@ void parametersControl::mouseReleased(ofMouseEventArgs &e){
     }
 }
 
-void parametersControl::mouseDragged(ofMouseEventArgs &e){
-    if(e.button == 2 && connections.size() > 0){
-        if(!connections.back().closedLine)
-            connections.back().moveLine(e);
-    }
+void parametersControl::mouseScrolled(ofMouseEventArgs &e){
+    
 }
 
+void parametersControl::mouseEntered(ofMouseEventArgs &e){
+    
+}
+
+void parametersControl::mouseExited(ofMouseEventArgs &e){
+    
+}
+
+
+#pragma mark --parameter listenerrs--
 void parametersControl::bpmChangedListener(float &bpm){
     newBpm = bpm;
 }

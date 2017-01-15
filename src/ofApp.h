@@ -52,6 +52,9 @@ class ofApp : public ofBaseApp{
     
     
 private:
+    
+    void newModuleListener(pair<moduleType, ofPoint> &info);
+    
     int pixelNum;
     
     vector<float> infoVec;

@@ -34,6 +34,9 @@ public:
     void syphonNameListener(string &s);
     
 private:
+    void sendGrayScale(vector<vector<float>> &info);
+    void sendColor(vector<vector<ofColor>> &info);
+    
     ofxSyphonServer*    grayscaleSyphonServer;
     ofxSyphonServer*    colorSyphonServer;
     
@@ -48,6 +51,12 @@ private:
     
     ofParameter<string> oscHost;
     ofParameter<string> oscPort;
+    
+    ofParameter<vector<vector<float>>>  grayScaleIn;
+    ofParameter<vector<vector<ofColor>>>    colorIn;
+    
+    ofFbo colorTexToSend;
+    ofFbo grayScaleTexToSend;
 };
 
 #endif /* senderManager_h */
