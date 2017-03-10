@@ -10,6 +10,7 @@ You need at least openframeworks 0.9.3, in 0.9.2 ofxExprtk is not working
 - [ofxOsc]()
 - [ofxSyphon]()
 - [ofxCurvesTool](https://github.com/charlesveasey/ofxCurvesTool)
+- [ofxTweenzor](https://github.com/NickHardeman/ofxTweenzor)
 
 
 ### Preview Window explanation
