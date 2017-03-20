@@ -19,6 +19,8 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
         
     ofxDatGui* tempDatGui = new ofxDatGui();
     
+    tempDatGui->setTransformMatrix(transformMatrix);
+    
     ofxDatGuiTheme* theme = new ofxDatGuiThemeCharcoal;
     theme->color.slider.fill = guiColor;
     theme->color.textInput.text = guiColor;
@@ -121,7 +123,7 @@ void parametersControl::setup(){
     datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
-    datGui->setPosition(0, 0);
+    datGui->setPosition(ofxDatGuiAnchor::BOTTOM_LEFT);
     
     //ControlGui Events
     datGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
@@ -304,6 +306,8 @@ void parametersControl::update(ofEventArgs &args){
 }
 
 void parametersControl::draw(ofEventArgs &args){
+    ofPushMatrix();
+    ofMultMatrix(transformMatrix);
     ofPushStyle();
     ofSetColor(ofColor::white);
     ofSetLineWidth(2);
@@ -311,6 +315,7 @@ void parametersControl::draw(ofEventArgs &args){
         connection.getPolyline().draw();
     }
     ofPopStyle();
+    ofPopMatrix();
 }
 
 void parametersControl::saveGuiArrangement(){
@@ -756,7 +761,10 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
     pair<moduleType, ofPoint> pairToSend;
     pairToSend.first = static_cast<moduleType>(e.child + 1);
-    pairToSend.second = popUpMenu->getPosition();
+    ofVec4f transformedPos = popUpMenu->getPosition();
+    transformedPos -= transformMatrix.getTranslation();
+    transformedPos = transformMatrix.getInverse().postMult(transformedPos);
+    pairToSend.second = transformedPos;
     ofNotifyEvent(createNewModule, pairToSend, this);
     
     popUpMenu->setVisible(false);
@@ -784,18 +792,38 @@ void parametersControl::mouseMoved(ofMouseEventArgs &e){
 }
 
 void parametersControl::mouseDragged(ofMouseEventArgs &e){
+    ofVec4f transformedPos = e;
+    transformedPos -= transformMatrix.getTranslation();
+    transformedPos = transformMatrix.getInverse().postMult(transformedPos);
     if(e.button == 2 && connections.size() > 0){
-        if(!connections.back().closedLine)
-            connections.back().moveLine(e);
+        if(!connections.back().closedLine){
+            connections.back().moveLine(transformedPos);
+        }
+    }else if(e.button == 0 && ofGetKeyPressed(' ')){
+        transformMatrix.translate(e - dragCanvasInitialPoint);
+        for(auto &gui : datGuis)
+            gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+        dragCanvasInitialPoint = e;
     }
 }
 
 void parametersControl::mousePressed(ofMouseEventArgs &e){
+    ofVec4f transformedPos = e;
+    transformedPos -= transformMatrix.getTranslation();
+    transformedPos = transformMatrix.postMult(transformedPos);
     if(commandPressed){
-        cout<<"New menu"<<endl;
+       if(e.button == 0){
         popUpMenu->setPosition(e.x, e.y);
         popUpMenu->setVisible(true);
         popUpMenu->getDropdown("Choose module")->expand();
+       }
+       else if(e.button == 1){
+           transformMatrix = ofMatrix4x4::newTranslationMatrix(transformMatrix.getTranslation());
+           for(auto &gui : datGuis)
+               gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+       }
+    }else if(ofGetKeyPressed(' ')){
+        dragCanvasInitialPoint = e;
     }
 }
 
@@ -814,7 +842,12 @@ void parametersControl::mouseReleased(ofMouseEventArgs &e){
 }
 
 void parametersControl::mouseScrolled(ofMouseEventArgs &e){
-    
+    cout<<e.scrollY<<endl;
+    if(commandPressed){
+        transformMatrix.glScale(ofVec3f(1-(e.scrollY/100), 1-(e.scrollY/100), 1));
+        for(auto &gui : datGuis)
+            gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+    }
 }
 
 void parametersControl::mouseEntered(ofMouseEventArgs &e){

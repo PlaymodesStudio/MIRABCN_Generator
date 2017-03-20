@@ -43,10 +43,10 @@ public:
     
     void moveLine(ofPoint p){
         points[1] = p;
-        float distance = points[0].distance(points[1]);
+        float distance = abs(points[0].x - points[1].x);
         path.clear();
         path.moveTo(points[0]);
-        path.bezierTo(points[0]+ofPoint(distance/5,0), points[1]-ofPoint(distance/5,0), points[1]);
+        path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
     }
     
     void connectTo(ofxDatGuiComponent* c, ofAbstractParameter* p){
@@ -54,10 +54,10 @@ public:
         points[1].y = c->getY() + c->getHeight()/2;
         bindedComponents[1] = c;
         bindedParameters[1] = p;
-        float distance = points[0].distance(points[1]);
+        float distance = abs(points[0].x - points[1].x);
         path.clear();
         path.moveTo(points[0]);
-        path.bezierTo(points[0]+ofPoint(distance/5,0), points[1]-ofPoint(distance/5,0), points[1]);
+        path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
         closedLine = true;
     }
     
@@ -70,10 +70,11 @@ public:
             p2.x = bindedComponents[1]->getX();
             p2.y = bindedComponents[1]->getY() + bindedComponents[1]->getHeight()/2;
             if(p1 != points[0] || p2 != points[1]){
-                float distance = p1.distance(p2);
+                points = {p1, p2};
+                float distance = abs(points[0].x - points[1].x);
                 path.clear();
                 path.moveTo(p1);
-                path.bezierTo(p1+ofPoint(distance/5,0), p2-ofPoint(distance/5,0), p2);
+                path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
             }
         }
         
@@ -221,6 +222,9 @@ private:
     vector<nodeConnection>  connections;
     
     bool commandPressed = false;
+    
+    ofMatrix4x4 transformMatrix;
+    ofPoint dragCanvasInitialPoint;
 };
 
 
