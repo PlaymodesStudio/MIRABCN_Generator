@@ -38,7 +38,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     
     if(gui)
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::red, pos);
-        
+    
     
     phasorIn.addListener(this, &oscillatorBank::newPhasorIn);
     phaseOffset_Param.addListener(this, &oscillatorBank::newPhaseOffsetParam);

@@ -7,14 +7,12 @@
 //
 
 #include "phasorClass.h"
+#include "parametersControl.h"
 
 
-phasorClass::phasorClass()
+phasorClass::phasorClass(int index, ofPoint pos)
 {
     phasor = 0;
-}
-
-void phasorClass::setup(int index){
     parameters = new ofParameterGroup;
     parameters->setName("phasor " + ofToString(index));
     parameters->add(bpm_Param.set("BPM", 120, 0, 999));
@@ -32,8 +30,9 @@ void phasorClass::setup(int index){
     
     resetPhase_Param.addListener(this, &phasorClass::resetPhasor);
     loop_Param.addListener(this, &phasorClass::loopChanged);
+    
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green, pos);
 }
-
 
 float phasorClass::getPhasor(){
     parameters->getFloat("Phasor Monitor") = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);

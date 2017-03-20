@@ -9,6 +9,8 @@
 #include "waveScope.h"
 
 waveScope::waveScope(){
+    logBuffer = make_shared<bufferLoggerChannel>();
+    ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
     
     oscillatorBankIns.resize(2);
     

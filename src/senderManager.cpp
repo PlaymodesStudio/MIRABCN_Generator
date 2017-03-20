@@ -35,6 +35,8 @@ senderManager::senderManager(){
 }
 
 void senderManager::sendGrayScale(vector<vector<float> > &info){
+    int w = info.size();
+    int h = info[0].size();
     if(enableOsc){
         ofxOscMessage* messageGrayscale = new ofxOscMessage();
         messageGrayscale->setAddress("info/grayscale");
@@ -47,19 +49,29 @@ void senderManager::sendGrayScale(vector<vector<float> > &info){
         oscSender->sendMessage(*messageGrayscale);
     }
     if(grayscaleSyphonServer != NULL && enableSyphon){
-        if(grayScaleTexToSend.getWidth() != info.size() || grayScaleTexToSend.getHeight() != info[0].size())
-            grayScaleTexToSend.allocate(info.size(), info[0].size());
-        
-        grayScaleTexToSend.begin();
-        for( int i = 0; i < info.size(); i++){
-            for(int j = 0; j < info[i].size(); j++){
-                ofSetColor(info[i][j]*255);
-                ofDrawRectangle(i,j, 1, 1);
-                
-            }
+        ofTexture tex;
+        unsigned char *data = new unsigned char[w * h];
+        for(int i = 0 ; i < w ; i++){
+            for ( int j = 0; j < h ; j++)
+                data[i+w*j] = info[i][j];
         }
-        grayScaleTexToSend.end();
-        grayscaleSyphonServer->publishTexture(&grayScaleTexToSend.getTexture());
+        tex.loadData(data, w, h, GL_LUMINANCE);
+//        if(grayScaleTexToSend.getWidth() != info.size() || grayScaleTexToSend.getHeight() != info[0].size()){
+//            grayScaleTexToSend.allocate(info.size(), info[0].size());
+////            grayScaleTexToSend.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+////            colorTexToSend.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+//        }
+//        
+//        grayScaleTexToSend.begin();
+//        for( int i = 0; i < info.size(); i++){
+//            for(int j = 0; j < info[i].size(); j++){
+//                ofSetColor(info[i][j]*255);
+//                ofDrawRectangle(i,j, 1, 1);
+//                
+//            }
+//        }
+//        grayScaleTexToSend.end();
+        grayscaleSyphonServer->publishTexture(&tex);
     }
 }
 

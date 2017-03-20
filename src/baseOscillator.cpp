@@ -8,7 +8,7 @@
 
 #include "baseOscillator.h"
 
-baseOscillator::baseOscillator(int id, bool gui){
+baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     oscId = id;
     parameters = new ofParameterGroup();
     parameters->setName("oscillator " + ofToString(index));
@@ -27,11 +27,12 @@ baseOscillator::baseOscillator(int id, bool gui){
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
+    parameters->add(output.set("Output", 0, 0, 1));
     
     phasorIn.addListener(this, &baseOscillator::computeFunc);
     
     if(gui)
-        parametersControl::getInstance().createGuiFromParams(parameters);
+        parametersControl::getInstance().createGuiFromParams(parameters, ofColor::orange, pos);
     
     oldPhasor = 0;
     oldValuePreMod = 0;
@@ -86,30 +87,32 @@ void baseOscillator::computeFunc(float &phasor){
         }
         case rand1Osc:
         {
-//            if(phasor < oldPhasor){
+//            srand(linPhase*100000000);
+//            val = ofRandomuf();
+            if(phasor < oldPhasor){
 //                if(index != prevIndex)
-//                    val = ofRandom(1);
+                    val = ofRandom(1);
 //                else
 //                    val = infoVec_preMod[i-1];
-//            }
-//            else
-//                val = infoVec_preMod[i];
+            }
+            else
+                val = oldValuePreMod;
             
             break;
         }
         case rand2Osc:
         {
-//            if(phasor < oldPhasor){
-//                if(i == 0) pastRandom = newRandom;
+            if(phasor < oldPhasor){
+                pastRandom = newRandom;
 //                if(index != prevIndex)
-//                    newRandom[i] = ofRandom(1);
+                    newRandom = ofRandom(1);
 //                else
 //                    newRandom[i] = newRandom[i-1];
 //                
-//                val = pastRandom[i];
-//            }
-//            else
-//                val = pastRandom[i]*(1-phasor) + newRandom[i]*phasor;
+                val = pastRandom;
+            }
+            else
+                val = pastRandom*(1-phasor) + newRandom*phasor;
             
             break;
         }
@@ -123,6 +126,7 @@ void baseOscillator::computeFunc(float &phasor){
     
     oldPhasor = phasor;
     
+    parameters->getFloat("Output") = val;
     pair<int, float> toSend;
     toSend.first = oscId;
     toSend.second = val;

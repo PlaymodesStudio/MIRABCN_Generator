@@ -34,13 +34,19 @@ public:
         points[0].y = c->getY() + c->getHeight()/2;
         bindedComponents[0] = c;
         bindedParameters[0] = p;
-        polyline.addVertex(points[0]);
-        polyline.addVertex(points[0]);
+        path.setFilled(false);
+        path.setStrokeColor(ofColor::white);
+        path.setStrokeWidth(1);
+        path.setCurveResolution(50);
+        path.moveTo(points[0]);
     }
     
     void moveLine(ofPoint p){
         points[1] = p;
-        polyline.getVertices()[1] = p;
+        float distance = points[0].distance(points[1]);
+        path.clear();
+        path.moveTo(points[0]);
+        path.bezierTo(points[0]+ofPoint(distance/5,0), points[1]-ofPoint(distance/5,0), points[1]);
     }
     
     void connectTo(ofxDatGuiComponent* c, ofAbstractParameter* p){
@@ -48,11 +54,14 @@ public:
         points[1].y = c->getY() + c->getHeight()/2;
         bindedComponents[1] = c;
         bindedParameters[1] = p;
-        polyline.getVertices()[1] = points[1];
+        float distance = points[0].distance(points[1]);
+        path.clear();
+        path.moveTo(points[0]);
+        path.bezierTo(points[0]+ofPoint(distance/5,0), points[1]-ofPoint(distance/5,0), points[1]);
         closedLine = true;
     }
     
-    ofPolyline getPolyline(){
+    ofPath getPolyline(){
         if(closedLine){
             ofPoint p1;
             p1.x = bindedComponents[0]->getX() + bindedComponents[0]->getWidth();
@@ -61,12 +70,14 @@ public:
             p2.x = bindedComponents[1]->getX();
             p2.y = bindedComponents[1]->getY() + bindedComponents[1]->getHeight()/2;
             if(p1 != points[0] || p2 != points[1]){
-                polyline.getVertices()[0] = p1;
-                polyline.getVertices()[1] = p2;
+                float distance = p1.distance(p2);
+                path.clear();
+                path.moveTo(p1);
+                path.bezierTo(p1+ofPoint(distance/5,0), p2-ofPoint(distance/5,0), p2);
             }
         }
         
-        return polyline;
+        return path;
     }
     
     bool hitTest(ofPoint p){
@@ -85,7 +96,7 @@ public:
     
 private:
     vector<ofPoint> points;
-    ofPolyline polyline;
+    ofPath path;
     ofxDatGuiComponent* bindedComponents[2];
     ofAbstractParameter* bindedParameters[2];
     ofColor color = ofColor::white;

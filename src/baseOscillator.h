@@ -25,7 +25,7 @@ enum oscTypes{
 
 class baseOscillator{
 public:
-    baseOscillator(int id = 0, bool gui = false);
+    baseOscillator(int id = 0, bool gui = false, ofPoint pos = ofPoint(-1, -1));
     ~baseOscillator(){};
     
     void setIndexNormalized(float index){indexNormalized = index;};
@@ -42,6 +42,7 @@ public:
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
     ofParameter<float>  amplitude_Param;
+    ofParameter<float>  output;
 
 private:
     void computeFunc(float &phasor);
@@ -54,6 +55,8 @@ private:
     float oldPhasor;
     float oldValuePreMod;
     float indexNormalized;
+    float pastRandom;
+    float newRandom;
 };
 
 #endif /* baseOscillator_h */

@@ -13,7 +13,7 @@ void masterControl::setup(int index){
     parameters->setName("master " + ofToString(index));
     
     parameters->add(masterFader.set("Master Fader", 1, 0, 1));
-    parameters->add(previewTex.set("Preview Texutre", 0));
+    parameters->add(previewTex.set("Preview Texutre", 1));
     
     ofParameterGroup invertDropDown;
     invertDropDown.setName("Inversion Type");
