@@ -780,6 +780,8 @@ void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
 void parametersControl::keyPressed(ofKeyEventArgs &e){
     if(e.key == OF_KEY_COMMAND)
         commandPressed = true;
+    else if(e.key == OF_KEY_BACKSPACE)
+        popUpMenu->setVisible(false);
 }
 
 void parametersControl::keyReleased(ofKeyEventArgs &e){
@@ -810,7 +812,7 @@ void parametersControl::mouseDragged(ofMouseEventArgs &e){
 void parametersControl::mousePressed(ofMouseEventArgs &e){
     ofVec4f transformedPos = e;
     transformedPos -= transformMatrix.getTranslation();
-    transformedPos = transformMatrix.postMult(transformedPos);
+    transformedPos = transformMatrix.getInverse().postMult(transformedPos);
     if(commandPressed){
        if(e.button == 0){
         popUpMenu->setPosition(e.x, e.y);
@@ -842,8 +844,11 @@ void parametersControl::mouseReleased(ofMouseEventArgs &e){
 }
 
 void parametersControl::mouseScrolled(ofMouseEventArgs &e){
-    cout<<e.scrollY<<endl;
+    ofVec4f transformedPos = e;
+    transformedPos -= transformMatrix.getTranslation();
+    transformedPos = transformMatrix.getInverse().postMult(transformedPos);
     if(commandPressed){
+        transformMatrix.translate(transformedPos * transformMatrix.getScale()*e.scrollY/100);
         transformMatrix.glScale(ofVec3f(1-(e.scrollY/100), 1-(e.scrollY/100), 1));
         for(auto &gui : datGuis)
             gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
