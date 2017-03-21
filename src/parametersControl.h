@@ -61,6 +61,12 @@ public:
         closedLine = true;
     }
     
+    void disconnect(){
+        closedLine = false;
+        bindedParameters[1] = nullptr;
+        bindedComponents[1] = nullptr;
+    }
+    
     ofPath getPolyline(){
         if(closedLine){
             ofPoint p1;
@@ -73,7 +79,7 @@ public:
                 points = {p1, p2};
                 float distance = abs(points[0].x - points[1].x);
                 path.clear();
-                path.moveTo(p1);
+                path.moveTo(points[0]);
                 path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
             }
         }
@@ -81,14 +87,7 @@ public:
         return path;
     }
     
-    bool hitTest(ofPoint p){
-//        float angleBetweenVectors = (p-points[0]).angle(points[1]-points[0]);
-//        float margin = 2;
-//        float dotLine = points[0].dot(points[1]);
-//        float dotLinePoint = (p-points[0]).dot(points[1]-points[0]);
-//        if(angleBetweenVectors < margin && 0 < dotLinePoint && dotLinePoint < dotLine) return true;
-//        else return false;
-    }
+    
     
     ofAbstractParameter* getSourceParameter(){return bindedParameters[0];};
     ofAbstractParameter* getSinkParameter(){return bindedParameters[1];};
@@ -219,7 +218,7 @@ private:
     
     
     //node
-    vector<nodeConnection>  connections;
+    vector<shared_ptr<nodeConnection>>  connections;
     
     bool commandPressed = false;
     

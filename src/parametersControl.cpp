@@ -312,7 +312,7 @@ void parametersControl::draw(ofEventArgs &args){
     ofSetColor(ofColor::white);
     ofSetLineWidth(2);
     for(auto connection : connections){
-        connection.getPolyline().draw();
+        connection->getPolyline().draw();
     }
     ofPopStyle();
     ofPopMatrix();
@@ -747,13 +747,34 @@ void parametersControl::onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e){
 void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
     if(e.down == 1){
         for (int i=0; i < datGuis.size() ; i++){
-            if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target)
-                connections.push_back(nodeConnection(e.target, &parameterGroups[i]->get(e.target->getName())));
+            if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target){
+                ofAbstractParameter &parameter = parameterGroups[i]->get(e.target->getName());
+                bool foundParameter = false;
+                for(int i = 0 ; i < connections.size() ; i++){
+                    if(connections[i]->getSinkParameter() == &parameter){
+                        swap(connections[i], connections.back());
+                        connections.back()->disconnect();
+                        foundParameter = true;
+                        break;
+                    }
+                }
+                if(!foundParameter)
+                    connections.push_back((shared_ptr<nodeConnection>)new nodeConnection(e.target, &parameter));
+            }
         }
-    }else{
+    }else if(connections.size() > 0){
         for (int i=0; i < datGuis.size() ; i++){
-            if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target)
-                connections.back().connectTo(e.target, &parameterGroups[i]->get(e.target->getName()));
+            if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target
+               && !connections.back()->closedLine
+               && connections.back()->getSourceParameter() != &parameterGroups[i]->get(e.target->getName())){
+                connections.back()->connectTo(e.target, &parameterGroups[i]->get(e.target->getName()));
+                for(int i = 0; i<connections.size()-1 ; i++){
+                    if(connections.back()->getSinkParameter() == connections[i]->getSourceParameter() ||
+                       connections.back()->getSinkParameter() == connections[i]->getSinkParameter() ||
+                       connections.back()->getSourceParameter() == connections[i]->getSinkParameter())
+                        connections.erase(connections.begin()+i);
+                }
+            }
         }
     }
 }
@@ -798,8 +819,8 @@ void parametersControl::mouseDragged(ofMouseEventArgs &e){
     transformedPos -= transformMatrix.getTranslation();
     transformedPos = transformMatrix.getInverse().postMult(transformedPos);
     if(e.button == 2 && connections.size() > 0){
-        if(!connections.back().closedLine){
-            connections.back().moveLine(transformedPos);
+        if(!connections.back()->closedLine){
+            connections.back()->moveLine(transformedPos);
         }
     }else if(e.button == 0 && ofGetKeyPressed(' ')){
         transformMatrix.translate(e - dragCanvasInitialPoint);
@@ -838,7 +859,7 @@ void parametersControl::mouseReleased(ofMouseEventArgs &e){
 //    }
     
     if(e.button == 2 && connections.size() > 0){
-        if(!connections.back().closedLine)
+        if(!connections.back()->closedLine)
             connections.pop_back();
     }
 }
@@ -871,7 +892,7 @@ void parametersControl::bpmChangedListener(float &bpm){
 
 void parametersControl::listenerFunction(ofAbstractParameter& e){
     int position = 0;
-    vector<nodeConnection*> validConnections;
+    vector<shared_ptr<nodeConnection>> validConnections;
     
     if(e.getName() == "Phasor Monitor"){
         //return;
@@ -889,9 +910,9 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     
     //ParameterBinding
     for(auto &connection : connections){
-        ofAbstractParameter* possibleSource = connection.getSourceParameter();
-        if(possibleSource == &e && connection.closedLine){
-            validConnections.push_back(&connection);
+        ofAbstractParameter* possibleSource = connection->getSourceParameter();
+        if(possibleSource == &e && connection->closedLine){
+            validConnections.push_back(connection);
         }
     }
     
@@ -1025,7 +1046,7 @@ void parametersControl::setFromSameTypeValue(ofAbstractParameter* source, ofAbst
     }else{
         int i = 0;
         for(auto &connection : connections){
-            if(connection.getSourceParameter() == source && connection.getSinkParameter() == sink){
+            if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
                 connections.erase(connections.begin() + i);
                 break;
             }
