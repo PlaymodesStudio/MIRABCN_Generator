@@ -34,15 +34,15 @@ senderManager::senderManager(){
     enableSyphon.addListener(this, &senderManager::enableSyphonListener);
 }
 
-void senderManager::sendGrayScale(vector<vector<float> > &info){
+void senderManager::sendGrayScale(vector<vector<float>> &info){
     int w = info.size();
     int h = info[0].size();
     if(enableOsc){
         ofxOscMessage* messageGrayscale = new ofxOscMessage();
         messageGrayscale->setAddress("info/grayscale");
         
-        for(int i = 0 ; i < info.size() ; i++){
-            for (int j = 0 ; j < info[i].size() ; j++){
+        for(int i = 0 ; i < w ; i++){
+            for (int j = 0 ; j < h ; j++){
                 messageGrayscale->addFloatArg(info[i][j]);
             }
         }
@@ -53,41 +53,41 @@ void senderManager::sendGrayScale(vector<vector<float> > &info){
         unsigned char *data = new unsigned char[w * h];
         for(int i = 0 ; i < w ; i++){
             for ( int j = 0; j < h ; j++)
-                data[i+w*j] = info[i][j];
+                data[i+w*j] = info[i][j]*255;
         }
         tex.loadData(data, w, h, GL_LUMINANCE);
-//        if(grayScaleTexToSend.getWidth() != info.size() || grayScaleTexToSend.getHeight() != info[0].size()){
-//            grayScaleTexToSend.allocate(info.size(), info[0].size());
-////            grayScaleTexToSend.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-////            colorTexToSend.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-//        }
-//        
-//        grayScaleTexToSend.begin();
-//        for( int i = 0; i < info.size(); i++){
-//            for(int j = 0; j < info[i].size(); j++){
-//                ofSetColor(info[i][j]*255);
-//                ofDrawRectangle(i,j, 1, 1);
-//                
-//            }
-//        }
-//        grayScaleTexToSend.end();
         grayscaleSyphonServer->publishTexture(&tex);
     }
 }
 
 void senderManager::sendColor(vector<vector<ofColor> > &info){
+    int w = info.size();
+    int h = info[0].size();
     if(enableOsc){
         ofxOscMessage* messageColor = new ofxOscMessage();
         messageColor->setAddress("info/color");
         
-        for(int i = 0 ; i < info.size() ; i++){
-            for (int j = 0 ; j < info[i].size() ; j++){
+        for(int i = 0 ; i < w ; i++){
+            for (int j = 0 ; j < h ; j++){
                 messageColor->addFloatArg((float)info[i][j].r);
                 messageColor->addFloatArg((float)info[i][j].g);
                 messageColor->addFloatArg((float)info[i][j].b);
             }
         }
         oscSender->sendMessage(*messageColor);
+    }
+    if(colorSyphonServer != NULL && enableSyphon){
+        ofTexture tex;
+        unsigned char *data = new unsigned char[w * h*3];
+        for(int i = 0 ; i < w*3 ; i = i+3){
+            for ( int j = 0; j < h ; j++){
+                data[i+w*j] = info[i][j].r*255;
+                data[(i+w*j)+1] = info[i][j].g*255;
+                data[(i+w*j)+2] = info[i][j].b*255;
+            }
+        }
+        tex.loadData(data, w, h, GL_RGB);
+        colorSyphonServer->publishTexture(&tex);
     }
 }
 
