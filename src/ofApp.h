@@ -32,8 +32,6 @@ class ofApp : public ofBaseApp{
     
     void drawSecondWindow(ofEventArgs & args);
     void keyPressedOnSecondWindow(ofKeyEventArgs & args);
-    void setWindowsToParamsControl(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){parametersControl::getInstance().setWindows(guiWindow, prevWindow);};
-    
     void audioIn(float * input, int bufferSize, int nChannels);
 
 
@@ -55,21 +53,19 @@ private:
     void newModuleListener(pair<moduleType, ofPoint> &info);
 
 
-    vector<phasorClass*> phasors;
-//    elementOscilator singleGenerator;
-    vector<oscillatorBank*> oscillators;
-    vector<baseOscillator*> monoOscillator;
+    vector<phasorClass*>        phasors;
+    vector<oscillatorBank*>     oscillators;
+    vector<baseOscillator*>     monoOscillator;
 //    Wave2DControl   waveControl;
-    parametersControl* paramsControl;
-    masterControl   masterModule;
-    senderManager* senderModule;
-    waveScope*      preview;
+    parametersControl*          paramsControl;
+    masterControl               masterModule;
+    senderManager*              senderModule;
+    waveScope*                  preview;
+    colorApplier*               colorModule;
     vector<oscillatorBankGroup*> oscBankGroup;
     
     ofSoundStream soundStream;
     
-    
     shared_ptr<bufferLoggerChannel> logBuffer;
     
-    colorApplier*   colorModule;
 };

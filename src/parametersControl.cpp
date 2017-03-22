@@ -167,7 +167,7 @@ void parametersControl::setup(){
     ///POP UP MENuS
     popUpMenu = new ofxDatGui();
     popUpMenu->setVisible(false);
-    popUpMenu->setPosition(guiWindow->getWidth(), guiWindow->getHeight());
+    popUpMenu->setPosition(-1, -1);
     ofColor randColor2 =  ofColor::indianRed;
     theme->color.slider.fill = randColor2;
     theme->color.textInput.text = randColor2;
@@ -319,6 +319,7 @@ void parametersControl::draw(ofEventArgs &args){
 }
 
 void parametersControl::saveGuiArrangement(){
+    /*
     //xml.load("Preset_"+ofToString(presetNum)+".xml");
     xml.clear();
     
@@ -360,11 +361,12 @@ void parametersControl::saveGuiArrangement(){
         xml.setToParent();
     }
     xml.save("GuiArrangement_"+bankSelect->getSelected()->getName()+".xml");
+    */
 }
 
 void parametersControl::loadGuiArrangement(){
     //Test if there is no problem with the file
-    if(!xml.load("GuiArrangement_"+bankSelect->getSelected()->getName()+".xml"))
+    /*if(!xml.load("GuiArrangement_"+bankSelect->getSelected()->getName()+".xml"))
         return;
     
     if(xml.exists("GuiWindow")){
@@ -396,6 +398,7 @@ void parametersControl::loadGuiArrangement(){
     }
     
     ofLog()<<"Load Arrangement_" + bankSelect->getSelected()->getName();
+     */
 }
 
 bool parametersControl::loadPresetsSequence(){
@@ -789,7 +792,7 @@ void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
     ofNotifyEvent(createNewModule, pairToSend, this);
     
     popUpMenu->setVisible(false);
-    popUpMenu->setPosition(guiWindow->getWidth(), guiWindow->getHeight());
+    popUpMenu->setPosition(-1, -1);
     ofxDatGuiDropdown* drop = popUpMenu->getDropdown("Choose module");
     drop->setLabel("Choose module");
 }
@@ -841,6 +844,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         popUpMenu->getDropdown("Choose module")->expand();
        }
        else if(e.button == 1){
+           transformMatrix.translate(-transformedPos * (1-transformMatrix.getScale()));
            transformMatrix = ofMatrix4x4::newTranslationMatrix(transformMatrix.getTranslation());
            for(auto &gui : datGuis)
                gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
@@ -860,14 +864,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
     }
 }
 
-void parametersControl::mouseReleased(ofMouseEventArgs &e){
-//    if(e.button == 0 && connections.size() > 0){
-//        for(auto connection : connections){
-//            //connection.getPolyline();
-//            //connection.hitTest(e);
-//        }
-//    }
-    
+void parametersControl::mouseReleased(ofMouseEventArgs &e){    
     if(e.button == 2 && connections.size() > 0){
         if(!connections.back()->closedLine)
             connections.pop_back();
@@ -927,15 +924,10 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }
     
     //Midi and to gui
-    int toMidiVal = 0;
     float normalizedVal = 0;
     if(e.type() == typeid(ofParameter<float>).name()){
         ofParameter<float> castedParam = e.cast<float>();
         normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
-        toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 127);
-        position = parameterGroups[parentIndex]->getPosition(e.getName());
-        position += parentIndex*20;
-        
         if(castedParam.getName() == "BPM")
             periodTime = presetChangeBeatsPeriod / castedParam * 60.;
         
@@ -945,16 +937,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }
     else if(e.type() == typeid(ofParameter<int>).name()){
         ofParameter<int> castedParam = e.cast<int>();
-        int range = castedParam.getMax()-castedParam.getMin();
-        //TODO: Review, map is from 0 127 not 0 1;
-        if(range < 128)
-            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, ((int)(128/(range))*range));
-        else
-            toMidiVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, range/ceil((float)range/(float)128));
-        
         normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
-        position = parameterGroups[parentIndex]->getPosition(e.getName());
-        position += parentIndex*20;
         
         if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
             datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
@@ -965,10 +948,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }
     else if(e.type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e.cast<bool>();
-        toMidiVal = castedParam ? 127 : 0;
         normalizedVal = castedParam ? 1 : 0;
-        position = parameterGroups[parentIndex]->getPosition(e.getName());
-        position += parentIndex*20;
         
         //Update to datGuis
         datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
@@ -978,7 +958,6 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }
     else if(e.type() == typeid(ofParameter<string>).name()){
         ofParameter<string> castedParam = e.cast<string>();
-        position = -1;
         
         datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
         
@@ -987,7 +966,6 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }
     else if(e.type() == typeid(ofParameter<ofColor>).name()){
         ofParameter<ofColor> castedParam = e.cast<ofColor>();
-        position = -1;
         
         datGuis[parentIndex]->getColorPicker(castedParam.getName())->setColor(castedParam);
     }else if(e.type() == typeid(ofParameterGroup).name()){

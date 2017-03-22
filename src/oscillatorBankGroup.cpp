@@ -10,6 +10,7 @@
 
 oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscillatorBanks){
     
+    //Last one is for preview, vector modulation does not affect this one
     for(int i=0 ; i < numOfOscillatorBanks + 1 ; i++){
         oscillatorBanks.push_back(new oscillatorBank(oscillatorBankSize, false, i));
         ofAddListener(oscillatorBanks[i]->eventInGroup, this, &oscillatorBankGroup::oscillatorBankResult);

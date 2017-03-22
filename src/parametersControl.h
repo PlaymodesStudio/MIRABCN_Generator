@@ -46,9 +46,12 @@ public:
     void moveLine(ofPoint p){
         points[1] = p;
         float distance = abs(points[0].x - points[1].x);
+        float x =(points[0].y - points[1].y);
+        float controlPointShift = 20*x/(pow(x,2)+0.1)+1;
         path.clear();
         path.moveTo(points[0]);
         path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
+//        path.bezierTo(points[0]+ofPoint(distance/3,controlPointShift*10), points[1]-ofPoint(distance/3,controlPointShift*10), points[1]);
     }
     
     void connectTo(ofxDatGuiComponent* c, ofAbstractParameter* p){
@@ -62,9 +65,12 @@ public:
         bindedComponents[1] = c;
         bindedParameters[1] = p;
         float distance = abs(points[0].x - points[1].x);
+        float x =(points[0].y - points[1].y);
+        float controlPointShift = 0;//20*x/(pow(x,2)+0.1)+2;
         path.clear();
         path.moveTo(points[0]);
-        path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
+        path.bezierTo(points[0]+ofPoint(distance/3,controlPointShift*10), points[1]-ofPoint(distance/3,controlPointShift*10), points[1]);
+
         closedLine = true;
     }
     
@@ -88,9 +94,11 @@ public:
                 if(gui->getVisible() == true) toggleGui(false);
                 points = {p1, p2};
                 float distance = abs(points[0].x - points[1].x);
+                float x =(points[0].y - points[1].y);
+                float controlPointShift = 0;//20*x/(pow(x,2)+0.5)-2;
                 path.clear();
                 path.moveTo(points[0]);
-                path.bezierTo(points[0]+ofPoint(distance/3,0), points[1]-ofPoint(distance/3,0), points[1]);
+                path.bezierTo(points[0]+ofPoint(distance/3,controlPointShift*10), points[1]-ofPoint(distance/3,controlPointShift*10), points[1]);
             }
         }
         
@@ -168,8 +176,6 @@ public:
     void update(ofEventArgs &args);
     void draw(ofEventArgs &args);
     
-    int getGuiWidth(){return datGui->getWidth();};
-    
     void onGuiButtonEvent(ofxDatGuiButtonEvent e);
     void onGuiToggleEvent(ofxDatGuiToggleEvent e);
     void onGuiDropdownEvent(ofxDatGuiDropdownEvent e);
@@ -210,10 +216,7 @@ public:
     
     void loadPresetWhenFadeOutCompletes(float *arg);
     
-    void setWindows(shared_ptr<ofAppBaseWindow> guiWindow, shared_ptr<ofAppBaseWindow> prevWindow){this->guiWindow = guiWindow; this->prevWindow = prevWindow;};
-    
     ofEvent<pair<moduleType, ofPoint>> createNewModule;
-    
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
@@ -254,10 +257,6 @@ private:
     string bankToLoad;
     
     bool isFading;
-    
-    shared_ptr<ofAppBaseWindow> guiWindow;
-    shared_ptr<ofAppBaseWindow> prevWindow;
-    
     
     //BPM Detect
     bpmControl *beatTracker;

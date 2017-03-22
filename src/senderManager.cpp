@@ -60,7 +60,7 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
     }
 }
 
-void senderManager::sendColor(vector<vector<ofColor> > &info){
+void senderManager::sendColor(vector<vector<ofColor>> &info){
     int w = info.size();
     int h = info[0].size();
     if(enableOsc){
@@ -87,16 +87,6 @@ void senderManager::sendColor(vector<vector<ofColor> > &info){
             }
         }
         tex.loadData(data, w, h, GL_RGB);
-//        ofPixels pix;
-//        pix.allocate(w, h, GL_RGB);
-//        for(int i = 0 ; i < w ; i++){
-//            for ( int j = 0; j < h ; j++){
-//                pix[i+w*j];//.set(0, 255, 0);// = 0;//info[i][j].r*255;
-////                pix[i+w*j].g = 255;//info[i][j].g*255;
-////                pix[i+w*j].b = 0;//info[i][j].b*255;
-//            }
-//        }
-//        tex.loadData(pix);
         colorSyphonServer->publishTexture(&tex);
     }
 }
