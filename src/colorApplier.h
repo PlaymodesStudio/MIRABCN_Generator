@@ -21,6 +21,9 @@ public:
     
     
 private:
+    void applyColor(vector<vector<float>> &inputVec);
+    
+    
     ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
     ofParameter<ofColor>    colorPickerParam[2];
@@ -32,6 +35,7 @@ private:
     ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
     //in and outs
+    ofParameter<vector<vector<float>>>  grayScaleIn;
     ofParameter<vector<float>>  indexs;
     ofParameter<vector<vector<ofColor>>> colorizedValues;
 };

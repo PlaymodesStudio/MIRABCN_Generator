@@ -79,14 +79,24 @@ void senderManager::sendColor(vector<vector<ofColor> > &info){
     if(colorSyphonServer != NULL && enableSyphon){
         ofTexture tex;
         unsigned char *data = new unsigned char[w * h*3];
-        for(int i = 0 ; i < w*3 ; i = i+3){
+        for(int i = 0 ; i < w ; i++){
             for ( int j = 0; j < h ; j++){
-                data[i+w*j] = info[i][j].r*255;
-                data[(i+w*j)+1] = info[i][j].g*255;
-                data[(i+w*j)+2] = info[i][j].b*255;
+                data[(i*3)+w*3*j] = info[i][j].r;
+                data[(i*3)+(w*3*j)+1] = info[i][j].g;
+                data[(i*3)+(w*3*j)+2] = info[i][j].b;
             }
         }
         tex.loadData(data, w, h, GL_RGB);
+//        ofPixels pix;
+//        pix.allocate(w, h, GL_RGB);
+//        for(int i = 0 ; i < w ; i++){
+//            for ( int j = 0; j < h ; j++){
+//                pix[i+w*j];//.set(0, 255, 0);// = 0;//info[i][j].r*255;
+////                pix[i+w*j].g = 255;//info[i][j].g*255;
+////                pix[i+w*j].b = 0;//info[i][j].b*255;
+//            }
+//        }
+//        tex.loadData(pix);
         colorSyphonServer->publishTexture(&tex);
     }
 }

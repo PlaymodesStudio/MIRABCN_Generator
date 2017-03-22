@@ -25,8 +25,25 @@ colorApplier::colorApplier(){
     parameters->add(randomColorStepsParam.set("Rnd Color Steps", 4, 0, 255));
     sharedResources::addDropdownToParameterGroupFromParameters(parameters, "Rnd ChangeTypes", {"no", "on presset", "onTrigger"}, randomizeTypeColorParam);
     
-    parameters->add(indexs.set("Indexs", {0}));
+//    parameters->add(indexs.set("Indexs", {0}));
+    parameters->add(grayScaleIn.set("Input", {{0}}));
     parameters->add(colorizedValues.set("Output", {{ofColor::white}}));
+    
     parametersControl::getInstance().createGuiFromParams(parameters);
+    
+    grayScaleIn.addListener(this, &colorApplier::applyColor);
 }
 
+void colorApplier::applyColor(vector<vector<float>> &inputVec){
+    int w = inputVec.size();
+    int h = inputVec[0].size();
+    vector<vector<ofColor>> tempColors;
+    tempColors.resize(w, vector<ofColor>(h));
+    
+    for(int i = 0 ; i < w ; i++){
+        for (int j = 0 ; j < h ; j++){
+            tempColors[i][j] = colorPickerParam[0].get() * inputVec[i][j];
+        }
+    }
+    parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+}
