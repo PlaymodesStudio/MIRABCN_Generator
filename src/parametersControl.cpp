@@ -312,7 +312,7 @@ void parametersControl::draw(ofEventArgs &args){
     ofSetColor(ofColor::white);
     ofSetLineWidth(2);
     for(auto connection : connections){
-        connection->getPolyline().draw();
+        connection->getPath().draw();
     }
     ofPopStyle();
     ofPopMatrix();
@@ -847,6 +847,16 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
        }
     }else if(ofGetKeyPressed(' ')){
         dragCanvasInitialPoint = e;
+    }else if(ofGetKeyPressed(OF_KEY_CONTROL)){
+        bool cablePressed = false;
+        for(auto connection : connections){
+            if(connection->hitTest(transformedPos) && !cablePressed){
+                connection->toggleGui(true, e);
+                cablePressed = true;
+            }
+            else
+                connection->toggleGui(false);
+        }
     }
 }
 
@@ -930,7 +940,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
             periodTime = presetChangeBeatsPeriod / castedParam * 60.;
         
         for(auto validConnection : validConnections)
-            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
+            setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
         
     }
     else if(e.type() == typeid(ofParameter<int>).name()){
@@ -951,7 +961,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         }
         
         for(auto validConnection : validConnections)
-            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
+            setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
     }
     else if(e.type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e.cast<bool>();
@@ -964,7 +974,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);
         
         for(auto validConnection : validConnections)
-            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
+            setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
     }
     else if(e.type() == typeid(ofParameter<string>).name()){
         ofParameter<string> castedParam = e.cast<string>();
@@ -973,7 +983,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
         
         for(auto validConnection : validConnections)
-            setFromNormalizedValue(validConnection->getSinkParameter(), normalizedVal);
+            setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
     }
     else if(e.type() == typeid(ofParameter<ofColor>).name()){
         ofParameter<ofColor> castedParam = e.cast<ofColor>();
@@ -983,16 +993,15 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     }else if(e.type() == typeid(ofParameterGroup).name()){
         ofParameter<int> castedParam = parameterGroups[parentIndex]->getGroup(e.getName()).getInt(1);
         datGuis[parentIndex]->getDropdown(e.getName())->select(castedParam);
-    }else{
+        
+        normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
+        
         for(auto validConnection : validConnections)
-            setFromSameTypeValue(validConnection->getSourceParameter(), validConnection->getSinkParameter());
+            setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
+    }else{
+        for(auto &validConnection : validConnections)
+            setFromSameTypeValue(validConnection);
     }
-    
-    
-    if(position != -1)
-        midiOut.sendControlChange(1, position, normalizedVal);
-    
-//    cout<<"Para Change: "<< e.getName() << " |pos: " << position << " |val: " << e  << " |MIDI: " << normalizedVal << endl;
 }
 
 void parametersControl::newMidiMessage(ofxMidiMessage &eventArgs){
@@ -1026,23 +1035,46 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
     }
 }
 
-void parametersControl::setFromSameTypeValue(ofAbstractParameter* source, ofAbstractParameter* sink){
+void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connection){
+    ofAbstractParameter* source = connection->getSourceParameter();
+    ofAbstractParameter* sink = connection->getSinkParameter();
     if(source->type() == sink->type()){
-        if(source->type() == typeid(ofParameter<vector<float>>).name())
-            sink->cast<vector<float>>() = source->cast<vector<float>>();
-
-        else if(source->type() == typeid(ofParameter<vector<vector<float>>>).name())
-            sink->cast<vector<vector<float>>>() = source->cast<vector<vector<float>>>();
-        
-        else if(source->type() == typeid(ofParameter<vector<int>>).name())
-            sink->cast<vector<int>>() = source->cast<vector<int>>();
-        
-        else if(source->type() == typeid(ofParameter<vector<vector<int>>>).name())
-            sink->cast<vector<vector<int>>>() = source->cast<vector<vector<int>>>();
-        
-        else if(source->type() == typeid(ofParameter<vector<vector<ofColor>>>).name())
-            sink->cast<vector<vector<ofColor>>>() = source->cast<vector<vector<ofColor>>>();
-        
+        if(source->type() == typeid(ofParameter<vector<float>>).name()){
+            vector<float> tempVec = source->cast<vector<float>>();
+            for (auto &pos : tempVec)
+                pos = ofMap(pos, 0, 1, connection->getMin(), connection->getMax());
+            sink->cast<vector<float>>() = tempVec;
+        }
+        else if(source->type() == typeid(ofParameter<vector<vector<float>>>).name()){
+            vector<vector<float>> tempVec = source->cast<vector<vector<float>>>();
+            for (auto &pos : tempVec){
+                for(auto &pos2 : pos)
+                    pos2 = ofMap(pos2, 0, 1, connection->getMin(), connection->getMax());
+            }
+            sink->cast<vector<vector<float>>>() = tempVec;
+        }
+        else if(source->type() == typeid(ofParameter<vector<int>>).name()){
+            vector<int> tempVec = source->cast<vector<int>>();
+            for (auto &pos : tempVec)
+                pos = ofMap(pos, 0, 1, connection->getMin(), connection->getMax());
+            sink->cast<vector<int>>() = tempVec;
+        }
+        else if(source->type() == typeid(ofParameter<vector<vector<int>>>).name()){
+            vector<vector<int>> tempVec = source->cast<vector<vector<int>>>();
+            for (auto &pos : tempVec){
+                for(auto &pos2 : pos)
+                    pos2 = ofMap(pos2, 0, 1, connection->getMin(), connection->getMax());
+            }
+            sink->cast<vector<vector<int>>>() = tempVec;
+        }
+        else if(source->type() == typeid(ofParameter<vector<vector<ofColor>>>).name()){
+            vector<vector<ofColor>> tempVec = source->cast<vector<vector<ofColor>>>();
+            for (auto &pos : tempVec){
+                for(auto &pos2 : pos)
+                    pos2.setHue(ofMap(pos2.getHue(), 0, 1, connection->getMin(), connection->getMax()));
+            }
+            sink->cast<vector<vector<ofColor>>>() = tempVec;
+        }
     }else{
         int i = 0;
         for(auto &connection : connections){

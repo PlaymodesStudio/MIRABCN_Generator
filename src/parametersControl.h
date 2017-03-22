@@ -29,6 +29,8 @@ class nodeConnection{
 public:
     nodeConnection(){};
     nodeConnection(ofxDatGuiComponent* c, ofAbstractParameter* p){
+        min.set("Min", 0, 0, 1);
+        max.set("Max", 1, 0, 1);
         points.resize(2);
         points[0].x = c->getX() + c->getWidth();
         points[0].y = c->getY() + c->getHeight()/2;
@@ -50,6 +52,11 @@ public:
     }
     
     void connectTo(ofxDatGuiComponent* c, ofAbstractParameter* p){
+        gui = new ofxDatGui();
+        gui->setVisible(false);
+        gui->addLabel(bindedParameters[0]->getName() + " ==> " + p->getName());
+        gui->addSlider(min);
+        gui->addSlider(max);
         points[1].x = c->getX();
         points[1].y = c->getY() + c->getHeight()/2;
         bindedComponents[1] = c;
@@ -65,9 +72,11 @@ public:
         closedLine = false;
         bindedParameters[1] = nullptr;
         bindedComponents[1] = nullptr;
+        toggleGui(false);
+        delete gui;
     }
     
-    ofPath getPolyline(){
+    ofPath getPath(){
         if(closedLine){
             ofPoint p1;
             p1.x = bindedComponents[0]->getX() + bindedComponents[0]->getWidth();
@@ -76,6 +85,7 @@ public:
             p2.x = bindedComponents[1]->getX();
             p2.y = bindedComponents[1]->getY() + bindedComponents[1]->getHeight()/2;
             if(p1 != points[0] || p2 != points[1]){
+                if(gui->getVisible() == true) toggleGui(false);
                 points = {p1, p2};
                 float distance = abs(points[0].x - points[1].x);
                 path.clear();
@@ -87,19 +97,56 @@ public:
         return path;
     }
     
+    bool hitTest(ofPoint p){
+        int margin = 10;
+        bool c = false;
+        if(closedLine){
+            for (auto polyline : path.getOutline()){
+                for(int i = -margin; i < margin; i++){
+                    for ( int j = -margin; j < margin; j++){
+                        if(polyline.inside(p+ofPoint(i, j)))
+                            c = true;
+                    }
+                }
+            }
+        }
+        return c;
+    }
+    
+    void toggleGui(bool visible, ofPoint pos = ofPoint(-1, -1)){
+        if(gui != nullptr){
+            if(visible){
+                path.setStrokeWidth(3);
+                path.setStrokeColor(ofColor::lightGray);
+                gui->setVisible(true);
+                if(pos != ofPoint(-1, -1));
+                   gui->setPosition(pos.x, pos.y);
+            }else{
+                path.setStrokeWidth(1);
+                path.setStrokeColor(ofColor::white);
+                gui->setVisible(false);
+            }
+        }
+    }
     
     
     ofAbstractParameter* getSourceParameter(){return bindedParameters[0];};
     ofAbstractParameter* getSinkParameter(){return bindedParameters[1];};
     
+    float getMin(){return min;};
+    float getMax(){return max;};
+    
     bool closedLine = false;
     
 private:
+    ofxDatGui*  gui;
     vector<ofPoint> points;
     ofPath path;
     ofxDatGuiComponent* bindedComponents[2];
     ofAbstractParameter* bindedParameters[2];
     ofColor color = ofColor::white;
+    ofParameter<float> min = 0;
+    ofParameter<float> max = 1;
 };
 
 
@@ -170,7 +217,7 @@ public:
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
-    void setFromSameTypeValue(ofAbstractParameter* source, ofAbstractParameter* sink);
+    void setFromSameTypeValue(shared_ptr<nodeConnection> connection);
     
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;
