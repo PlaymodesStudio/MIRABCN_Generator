@@ -8,19 +8,18 @@
 
 #include "waveScope.h"
 
-waveScope::waveScope(){
-    logBuffer = make_shared<bufferLoggerChannel>();
-    ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
+waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numBankScopes, ofPoint pos){
+    logBuffer = logBuffer_;
     
-    oscillatorBankIns.resize(2);
+    oscillatorBankIns.resize(numBankScopes);
     
     parameters = new ofParameterGroup();
     parameters->setName("WaveScope");
     parameters->add(mainOutIn.set("Master Scope", {{0}}));
-    parameters->add(oscillatorBankIns[0].set("Osc Bank 1", {0}));
-    parameters->add(oscillatorBankIns[1].set("Osc Bank 2", {0}));
+    for(int i = 0; i < numBankScopes ; i++)
+        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ofToString(i), {0}));
 
-    parametersControl::getInstance().createGuiFromParams(parameters);
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
 }
 
 void waveScope::draw(){
@@ -52,27 +51,23 @@ void waveScope::draw(){
     ofSetLineWidth(2);
     ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
     ofPopStyle();
-//    
-//    waveGrid.getTexture().draw(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
-//    ofPushStyle();
-//    ofSetColor(ofColor::indianRed);
-//    ofNoFill();
-//    ofSetLineWidth(2);
-//    ofDrawRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
-//    ofPopStyle();
+
     
     //Draw the Bars
-    int numBars = oscillatorBankIns[0].get().size();
-    float wid = (float)contentWidth/numBars;
-    float hei = ofGetHeight()/3;
-    for(int i = 0; i < numBars; i++)
-        ofDrawRectangle((i*wid), (1-oscillatorBankIns[0].get()[i])*hei+hei, wid, oscillatorBankIns[0].get()[i]*hei);
-    ofPushStyle();
-    ofSetColor(ofColor::indianRed);
-    ofNoFill();
-    ofSetLineWidth(2);
-    ofDrawRectangle(0, ofGetHeight()/3, contentWidth, ofGetHeight()/3);
-    ofPopStyle();
+    int elementHeight = (ofGetHeight()*2/3) / oscillatorBankIns.size();
+    for(int i = 0; i < oscillatorBankIns.size(); i++){
+        int topPosition = ofGetHeight()/3 + (elementHeight * i);
+        int numBars = oscillatorBankIns[i].get().size();
+        float wid = (float)contentWidth/numBars;
+        for(int j = 0; j < numBars; j++)
+            ofDrawRectangle((j*wid), (1-oscillatorBankIns[i].get()[j])*elementHeight+topPosition, wid, oscillatorBankIns[i].get()[j]*elementHeight);
+        ofPushStyle();
+        ofSetColor(ofColor::indianRed);
+        ofNoFill();
+        ofSetLineWidth(2);
+        ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
+        ofPopStyle();
+    }
     
     
 //    //Draw the Bars2
@@ -88,17 +83,17 @@ void waveScope::draw(){
 //    //waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
 //    
 //    
-//    //Draw notifiers
-//    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
-//    
-//    while(logBuffer->getSize()*15 > 2*ofGetHeight()/3) logBuffer->eraseLastLine();
-//    
-//    for (int i = 0; i < logBuffer->getSize(); i++){
-//        string line = logBuffer->getLine(i);
-//        ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (15*(i+1)));
-//    }
-//    
-//    
+    //Draw notifiers
+    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
+    
+    while(logBuffer->getSize()*15 > 2*ofGetHeight()/3) logBuffer->eraseLastLine();
+
+    for (int i = 0; i < logBuffer->getSize(); i++){
+        string line = logBuffer->getLine(i);
+        ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (15*(i+1)));
+    }
+    
+    
     //Draw the framerate
     ofSetColor(255, 0,0);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);

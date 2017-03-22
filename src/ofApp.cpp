@@ -26,7 +26,7 @@ void ofApp::setup(){
     oscillators.push_back(new oscillatorBank(NUM_BARS, true, 1));
     colorModule = new colorApplier();
     senderModule = new senderManager();
-    preview = new waveScope();
+    preview = new waveScope(logBuffer, 3);
     //Create main gui, and add listeners when all guis are created
     paramsControl->setup();
     

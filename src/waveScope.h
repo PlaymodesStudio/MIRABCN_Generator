@@ -15,7 +15,7 @@
 
 class waveScope{
 public:
-    waveScope();
+    waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr,  int numBankScopes = 2, ofPoint pos = ofPoint(-1, -1));
     ~waveScope(){};
     
     void draw();
