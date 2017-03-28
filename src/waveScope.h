@@ -20,7 +20,6 @@ public:
     
     void draw();
 private:
-    ofFbo computeLinWaveTex(vector<float> values);
     
     ofParameterGroup* parameters;
     vector<ofParameter<vector<float>>> oscillatorBankIns;

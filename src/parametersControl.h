@@ -28,13 +28,14 @@ static const int NUM_PRESETS = 40;
 class nodeConnection{
 public:
     nodeConnection(){};
-    nodeConnection(ofxDatGuiComponent* c, ofAbstractParameter* p){
+    nodeConnection(ofxDatGuiComponent* c, ofxDatGui* g, ofAbstractParameter* p){
         min.set("Min", 0, 0, 1);
         max.set("Max", 1, 0, 1);
         points.resize(2);
         points[0].x = c->getX() + c->getWidth();
         points[0].y = c->getY() + c->getHeight()/2;
         bindedComponents[0] = c;
+        bindedComponentsParent[0] = g;
         bindedParameters[0] = p;
         path.setFilled(false);
         path.setStrokeColor(ofColor::white);
@@ -54,7 +55,7 @@ public:
 //        path.bezierTo(points[0]+ofPoint(distance/3,controlPointShift*10), points[1]-ofPoint(distance/3,controlPointShift*10), points[1]);
     }
     
-    void connectTo(ofxDatGuiComponent* c, ofAbstractParameter* p){
+    void connectTo(ofxDatGuiComponent* c, ofxDatGui* g, ofAbstractParameter* p){
         gui = new ofxDatGui();
         gui->setVisible(false);
         gui->addLabel(bindedParameters[0]->getName() + " ==> " + p->getName());
@@ -63,6 +64,7 @@ public:
         points[1].x = c->getX();
         points[1].y = c->getY() + c->getHeight()/2;
         bindedComponents[1] = c;
+        bindedComponentsParent[1] = g;
         bindedParameters[1] = p;
         float distance = abs(points[0].x - points[1].x);
         float x =(points[0].y - points[1].y);
@@ -85,11 +87,22 @@ public:
     ofPath getPath(){
         if(closedLine){
             ofPoint p1;
-            p1.x = bindedComponents[0]->getX() + bindedComponents[0]->getWidth();
-            p1.y = bindedComponents[0]->getY() + bindedComponents[0]->getHeight()/2;
+            if(bindedComponentsParent[0]->getExpanded()){
+                p1.x = bindedComponents[0]->getX() + bindedComponents[0]->getWidth();
+                p1.y = bindedComponents[0]->getY() + bindedComponents[0]->getHeight()/2;
+            }else{
+                p1.x = bindedComponentsParent[0]->getHeader()->getX() + bindedComponentsParent[0]->getHeader()->getWidth();
+                p1.y = bindedComponentsParent[0]->getHeader()->getY() + bindedComponentsParent[0]->getHeader()->getHeight()/2;
+            }
             ofPoint p2;
-            p2.x = bindedComponents[1]->getX();
-            p2.y = bindedComponents[1]->getY() + bindedComponents[1]->getHeight()/2;
+            if(bindedComponentsParent[1]->getExpanded()){
+                p2.x = bindedComponents[1]->getX();
+                p2.y = bindedComponents[1]->getY() + bindedComponents[1]->getHeight()/2;
+            }else{
+                p2.x = bindedComponentsParent[1]->getHeader()->getX();
+                p2.y = bindedComponentsParent[1]->getHeader()->getY() + bindedComponentsParent[1]->getHeader()->getHeight()/2;
+            }
+            
             if(p1 != points[0] || p2 != points[1]){
                 if(gui->getVisible() == true) toggleGui(false);
                 points = {p1, p2};
@@ -151,6 +164,7 @@ private:
     vector<ofPoint> points;
     ofPath path;
     ofxDatGuiComponent* bindedComponents[2];
+    ofxDatGui*          bindedComponentsParent[2];
     ofAbstractParameter* bindedParameters[2];
     ofColor color = ofColor::white;
     ofParameter<float> min = 0;

@@ -15,7 +15,7 @@ void ofApp::setup(){
     
     
     //Setup of the phasors, wich controls the oscilator generator and other parameters
-    for(int i=0; i<2; i++)
+    for(int i=0; i<1; i++)
         phasors.push_back(new phasorClass(i+1));
     
     
@@ -24,7 +24,7 @@ void ofApp::setup(){
     
     oscBankGroup.push_back(new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS));
     oscillators.push_back(new oscillatorBank(NUM_BARS, true, 1));
-    colorModule = new colorApplier();
+    //colorModule = new colorApplier();
     senderModule = new senderManager();
     preview = new waveScope(logBuffer, 3);
     //Create main gui, and add listeners when all guis are created

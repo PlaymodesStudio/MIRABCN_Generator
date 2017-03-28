@@ -762,7 +762,7 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     }
                 }
                 if(!foundParameter)
-                    connections.push_back((shared_ptr<nodeConnection>)new nodeConnection(e.target, &parameter));
+                    connections.push_back((shared_ptr<nodeConnection>)new nodeConnection(e.target, datGuis[i], &parameter));
             }
         }
     }else if(connections.size() > 0){
@@ -770,7 +770,7 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
             if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target
                && !connections.back()->closedLine
                && connections.back()->getSourceParameter() != &parameterGroups[i]->get(e.target->getName())){
-                connections.back()->connectTo(e.target, &parameterGroups[i]->get(e.target->getName()));
+                connections.back()->connectTo(e.target, datGuis[i], &parameterGroups[i]->get(e.target->getName()));
                 for(int i = 0; i<connections.size()-1 ; i++){
                     if(connections.back()->getSinkParameter() == connections[i]->getSourceParameter() ||
                        connections.back()->getSinkParameter() == connections[i]->getSinkParameter() ||

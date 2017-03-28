@@ -70,20 +70,8 @@ void waveScope::draw(){
     }
     
     
-//    //Draw the Bars2
-//    waveLinear.getTexture().draw(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
-//    ofPushStyle();
-//    ofSetColor(ofColor::indianRed);
-//    ofNoFill();
-//    ofSetLineWidth(2);
-//    ofDrawRectangle(0, 2*ofGetHeight()/3, contentWidth, ofGetHeight()/3);
-//    ofPopStyle();
-//    
-//    //Draw another time the grid
-//    //waveGrid.getTexture().draw(contentWidth, 2*ofGetHeight()/3, ofGetWidth()-contentWidth, ofGetHeight()/3);
-//    
-//    
     //Draw notifiers
+    // Here will be better not to erase the messages and use mouseScrollData to get the older messages.
     ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
     
     while(logBuffer->getSize()*15 > 2*ofGetHeight()/3) logBuffer->eraseLastLine();
@@ -97,23 +85,4 @@ void waveScope::draw(){
     //Draw the framerate
     ofSetColor(255, 0,0);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
-}
-
-ofFbo waveScope::computeLinWaveTex(vector<float> values){
-    //Draw info to the FBO's
-    ofFbo tex;
-    tex.begin();
-    
-    //Draw the Bars
-    float hei = tex.getHeight();
-    //    ofSetColor(0);
-    //    ofDrawRectangle(index, hei, 1, hei);
-    
-    ofSetColor(255);
-    for(int i = 0; i<values.size(); i++)
-        ofDrawRectangle(i, (1-values[i])*hei, 1, values[i]*hei);
-    
-    tex.end();
-    
-    return tex;
 }

@@ -53,6 +53,12 @@ private:
     void newModuleListener(pair<moduleType, ofPoint> &info);
 
 
+    
+    //If you open a project file, can be a .generator file, has the following clases for all presets:
+    // - 1 PhasorClass
+    // - 1 OscillatorBankGroup with the size as parameter, probably wont need more than one in each project
+    // - 1 senderManager module (from parameters set syphon names and osc ports
+    // - 1 waveScope (from parameters set number of oscillatorBank scopes)
     vector<phasorClass*>        phasors;
     vector<oscillatorBank*>     oscillators;
     vector<baseOscillator*>     monoOscillator;
@@ -66,6 +72,6 @@ private:
     
     ofSoundStream soundStream;
     
+    //The log channel is a buffer where you post all notifications, it's used mainly in waveScope to print the debug info.
     shared_ptr<bufferLoggerChannel> logBuffer;
-    
 };
