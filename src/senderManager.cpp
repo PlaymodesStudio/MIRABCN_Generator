@@ -38,7 +38,12 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
     int w = info.size();
     int h = info[0].size();
     if(enableOsc){
-        ofxOscMessage* messageGrayscale = new ofxOscMessage();
+        unique_ptr<ofxOscMessage> messageGrayscale = unique_ptr<ofxOscMessage>(new ofxOscMessage());
+        messageGrayscale->setAddress("size");
+        messageGrayscale->addIntArg(w);
+        messageGrayscale->addIntArg(h);
+        oscSender->sendMessage(*messageGrayscale);
+        messageGrayscale = unique_ptr<ofxOscMessage>(new ofxOscMessage());
         messageGrayscale->setAddress("info/grayscale");
         
         for(int i = 0 ; i < w ; i++){
