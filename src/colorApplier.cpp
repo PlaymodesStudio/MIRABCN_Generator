@@ -9,8 +9,8 @@
 #include "colorApplier.h"
 #include "sharedResources.h"
 
-colorApplier::colorApplier(){
-    parameters = new ofParameterGroup;
+colorApplier::colorApplier(int nOscillators) : baseIndexer(nOscillators) {
+    //parameters = new ofParameterGroup;
     parameters->setName("colorApplier 1");
     parameters->add(colorPickerParam[0].set("Color 1 Picker", ofColor::white));
     parameters->add(colorRParam[0].set("Color 1 R", 1, 0, 1));
@@ -41,8 +41,9 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     tempColors.resize(w, vector<ofColor>(h));
     
     for(int i = 0 ; i < w ; i++){
+        ofColor newColor = (colorPickerParam[0].get()*indexs[i])+(colorPickerParam[1].get()*(1-indexs[i]));
         for (int j = 0 ; j < h ; j++){
-            tempColors[i][j] = colorPickerParam[0].get() * inputVec[i][j];
+            tempColors[i][j] =  newColor * inputVec[i][j];
         }
     }
     parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;

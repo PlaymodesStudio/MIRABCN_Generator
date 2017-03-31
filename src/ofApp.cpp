@@ -24,7 +24,7 @@ void ofApp::setup(){
     
     oscBankGroup.push_back(new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS));
     oscillators.push_back(new oscillatorBank(NUM_BARS, true, 1));
-    //colorModule = new colorApplier();
+    colorModule = new colorApplier(NUM_BARS);
     senderModule = new senderManager();
     preview = new waveScope(logBuffer, 3);
     //Create main gui, and add listeners when all guis are created

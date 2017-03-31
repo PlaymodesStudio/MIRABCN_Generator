@@ -10,13 +10,14 @@
 #define colorApplier_h
 
 #include "ofMain.h"
+#include "baseIndexer.h"
 #include "parametersControl.h"
 
-class colorApplier{
+class colorApplier : public baseIndexer{
     
 public:
     
-    colorApplier();
+    colorApplier(int nOscillators);
     ~colorApplier(){};
     
     
@@ -24,7 +25,7 @@ private:
     void applyColor(vector<vector<float>> &inputVec);
     
     
-    ofParameterGroup*        parameters;
+//    ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
     ofParameter<ofColor>    colorPickerParam[2];
     ofParameter<float>        colorRParam[2];
@@ -36,7 +37,6 @@ private:
     
     //in and outs
     ofParameter<vector<vector<float>>>  grayScaleIn;
-    ofParameter<vector<float>>  indexs;
     ofParameter<vector<vector<ofColor>>> colorizedValues;
 };
 
