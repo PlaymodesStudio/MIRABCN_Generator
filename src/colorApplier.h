@@ -13,7 +13,7 @@
 #include "baseIndexer.h"
 #include "parametersControl.h"
 
-class colorApplier : public baseIndexer{
+class colorApplier{
     
 public:
     
@@ -25,7 +25,7 @@ private:
     void applyColor(vector<vector<float>> &inputVec);
     
     
-//    ofParameterGroup*        parameters;
+    ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
     ofParameter<ofColor>    colorPickerParam[2];
     ofParameter<float>        colorRParam[2];
@@ -36,6 +36,7 @@ private:
     ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
     //in and outs
+    ofParameter<vector<float>>          indexIn;
     ofParameter<vector<vector<float>>>  grayScaleIn;
     ofParameter<vector<vector<ofColor>>> colorizedValues;
 };

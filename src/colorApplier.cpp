@@ -9,8 +9,8 @@
 #include "colorApplier.h"
 #include "sharedResources.h"
 
-colorApplier::colorApplier(int nOscillators) : baseIndexer(nOscillators) {
-    //parameters = new ofParameterGroup;
+colorApplier::colorApplier(int nOscillators){
+    parameters = new ofParameterGroup;
     parameters->setName("colorApplier 1");
     parameters->add(colorPickerParam[0].set("Color 1 Picker", ofColor::white));
     parameters->add(colorRParam[0].set("Color 1 R", 1, 0, 1));
@@ -25,7 +25,7 @@ colorApplier::colorApplier(int nOscillators) : baseIndexer(nOscillators) {
     parameters->add(randomColorStepsParam.set("Rnd Color Steps", 4, 0, 255));
     sharedResources::addDropdownToParameterGroupFromParameters(parameters, "Rnd ChangeTypes", {"no", "on presset", "onTrigger"}, randomizeTypeColorParam);
     
-//    parameters->add(indexs.set("Indexs", {0}));
+    parameters->add(indexIn.set("Indexs", {0}));
     parameters->add(grayScaleIn.set("Input", {{0}}));
     parameters->add(colorizedValues.set("Output", {{ofColor::white}}));
     
@@ -40,11 +40,26 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     vector<vector<ofColor>> tempColors;
     tempColors.resize(w, vector<ofColor>(h));
     
-    for(int i = 0 ; i < w ; i++){
-        ofColor newColor = (colorPickerParam[0].get()*indexs[i])+(colorPickerParam[1].get()*(1-indexs[i]));
-        for (int j = 0 ; j < h ; j++){
-            tempColors[i][j] =  newColor * inputVec[i][j];
+    if(indexIn.get().size() == w){
+        for(int i = 0 ; i < w ; i++){
+            ofColor newColor = (colorPickerParam[0].get()*indexIn.get()[i])+(colorPickerParam[1].get()*(1-indexIn.get()[i]));
+            for (int j = 0 ; j < h ; j++){
+                tempColors[i][j] =  newColor * inputVec[i][j];
+            }
         }
+        parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
     }
-    parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+    else if(indexIn.get().size() == h){
+        for(int j = 0 ; j < h ; j++){
+            ofColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
+            for (int i = 0 ; i < w ; i++){
+                tempColors[i][j] =  newColor * inputVec[i][j];
+            }
+        }
+        parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+    }
+
+    
+    
+    
 }
