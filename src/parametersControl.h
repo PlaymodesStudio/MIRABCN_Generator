@@ -28,7 +28,7 @@ static const int NUM_PRESETS = 40;
 class nodeConnection{
 public:
     nodeConnection(){};
-    nodeConnection(ofxDatGuiComponent* c, ofxDatGui* g, ofAbstractParameter* p){
+    nodeConnection(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p){
         min.set("Min", 0, 0, 1);
         max.set("Max", 1, 0, 1);
         points.resize(2);
@@ -55,7 +55,7 @@ public:
 //        path.bezierTo(points[0]+ofPoint(distance/3,controlPointShift*10), points[1]-ofPoint(distance/3,controlPointShift*10), points[1]);
     }
     
-    void connectTo(ofxDatGuiComponent* c, ofxDatGui* g, ofAbstractParameter* p){
+    void connectTo(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p){
         gui = new ofxDatGui();
         gui->setVisible(false);
         gui->addLabel(bindedParameters[0]->getName() + " ==> " + p->getName());
@@ -164,7 +164,7 @@ private:
     vector<ofPoint> points;
     ofPath path;
     ofxDatGuiComponent* bindedComponents[2];
-    ofxDatGui*          bindedComponentsParent[2];
+    shared_ptr<ofxDatGui>          bindedComponentsParent[2];
     ofAbstractParameter* bindedParameters[2];
     ofColor color = ofColor::white;
     ofParameter<float> min = 0;
@@ -231,6 +231,7 @@ public:
     void loadPresetWhenFadeOutCompletes(float *arg);
     
     ofEvent<pair<moduleType, ofPoint>> createNewModule;
+    ofEvent<string>                     destroyModule;
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
@@ -240,7 +241,7 @@ private:
     ofxDatGuiMatrix* presetMatrix;
     ofxDatGuiDropdown* bankSelect;
     
-    vector<ofxDatGui*> datGuis;
+    vector<shared_ptr<ofxDatGui>> datGuis;
     vector<ofParameterGroup*> parameterGroups;
     
     ofxDatGui *popUpMenu;

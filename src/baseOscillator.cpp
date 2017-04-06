@@ -11,7 +11,7 @@
 baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     oscId = id;
     parameters = new ofParameterGroup();
-    parameters->setName("oscillator " + ofToString(index));
+    parameters->setName("oscillator " + ofToString(id));
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     parameters->add(phaseOffset_Param.set("Phase Offset", 0, 0, 1));
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
@@ -28,6 +28,10 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     parameters->add(waveDropDown);
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     parameters->add(output.set("Output", 0, 0, 1));
+    
+    //AUTO DESTROY
+    parameters->add(autoDestroy.set("Auto Destroy"));
+    autoDestroy.addListener(this, &baseOscillator::autoDestroyTrigger);
     
     phasorIn.addListener(this, &baseOscillator::computeFunc);
     
@@ -163,5 +167,9 @@ void baseOscillator::computeMultiplyMod(float *value){
     *value = ofClamp(*value, 0, 1);
     
     *value *= amplitude_Param;
+}
+
+void baseOscillator::autoDestroyTrigger(){
+    delete this;
 }
 

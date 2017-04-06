@@ -18,7 +18,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     result.resize(nOscillators, 0);
     resultFilledChecker.resize(nOscillators, 0);
     
-    parameters->setName("oscillator bank "+ ofToString(_bankId));
+    parameters->setName("oscillatorBank " + ofToString(_bankId));
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     parameters->add(phaseOffset_Param.set("Phase Offset", 0, 0, 1));
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));

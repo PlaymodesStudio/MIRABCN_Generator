@@ -11,7 +11,7 @@
 
 colorApplier::colorApplier(int nOscillators){
     parameters = new ofParameterGroup;
-    parameters->setName("colorApplier 1");
+    parameters->setName("colorApplier");
     parameters->add(colorPickerParam[0].set("Color 1 Picker", ofColor::white));
     parameters->add(colorRParam[0].set("Color 1 R", 1, 0, 1));
     parameters->add(colorGParam[0].set("Color 1 G", 1, 0, 1));
@@ -59,7 +59,4 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
         parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
     }
 
-    
-    
-    
 }

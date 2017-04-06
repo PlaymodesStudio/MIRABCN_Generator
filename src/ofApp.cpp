@@ -16,14 +16,14 @@ void ofApp::setup(){
     
     //Setup of the phasors, wich controls the oscilator generator and other parameters
     for(int i=0; i<1; i++)
-        phasors.push_back(new phasorClass(i+1));
+        phasors.push_back(make_shared<phasorClass>(i+1));
     
     
     paramsControl = &parametersControl::getInstance();
 
     
-    oscBankGroup.push_back(new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS));
-    oscillators.push_back(new oscillatorBank(NUM_BARS, true, 1));
+    oscBankGroup = new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS);
+    oscillators.push_back(make_shared<oscillatorBank>(NUM_BARS, true, 1));
     colorModule = new colorApplier(NUM_BARS);
     senderModule = new senderManager();
     preview = new waveScope(logBuffer, 3);
@@ -36,34 +36,63 @@ void ofApp::setup(){
    
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
+    ofAddListener(paramsControl->destroyModule, this, &ofApp::deleteModuleListener);
 }
 
 void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
     switch (info.first) {
         case phasor_module:
             cout<<"new phasor"<<endl;
-            phasors.push_back(new phasorClass(phasors.size()+1, info.second));
+            phasors.push_back(make_shared<phasorClass>(phasors.size()+1, info.second));
             break;
         case oscillator_module:
-            monoOscillator.push_back(new baseOscillator(0, true, info.second));
+            monoOscillator.push_back(make_shared<baseOscillator>(0, true, info.second));
             break;
         case oscillatorBank_module:
         {
             int nOscillators = ofToInt(ofSystemTextBoxDialog("How many oscillators?"));
-            oscillators.push_back(new oscillatorBank(nOscillators, true, oscillators.size()+1, info.second));
+            oscillators.push_back(make_shared<oscillatorBank>(nOscillators, true, oscillators.size()+1, info.second));
             break;
         }
-        case oscillatorBankGroup_module:
-        {
-            vector<string> bankGroupSizeInfo = ofSplitString(ofSystemTextBoxDialog("Bank group size, expressed as 161x12"), "x");
-            if(bankGroupSizeInfo.size() == 2)
-                oscBankGroup.push_back(new oscillatorBankGroup(ofToInt(bankGroupSizeInfo[0]), ofToInt(bankGroupSizeInfo[1])));
-            else
-                ofSystemAlertDialog("Wrong entered info");
-        }
+//        case oscillatorBankGroup_module:
+//        {
+//            vector<string> bankGroupSizeInfo = ofSplitString(ofSystemTextBoxDialog("Bank group size, expressed as 161x12"), "x");
+//            if(bankGroupSizeInfo.size() == 2)
+//                oscBankGroup.push_back(new oscillatorBankGroup(ofToInt(bankGroupSizeInfo[0]), ofToInt(bankGroupSizeInfo[1])));
+//            else
+//                ofSystemAlertDialog("Wrong entered info");
+//        }
         default:
             break;
     }
+}
+
+void ofApp::deleteModuleListener(string &moduleName){
+    int id;
+    if(ofSplitString(moduleName, " ").size() > 0)
+        id = ofToInt(ofSplitString(moduleName, " ").back());
+    else
+        id = -1;
+    
+    ofStringReplace(moduleName, " " + ofToString(id), "");
+    ofLog()<<"Module Type: " << moduleName << "ID: " << id;
+    
+    if(moduleName == "phasor"){
+        phasors.erase(phasors.begin()+id-1);
+    }
+    else if(moduleName == "oscillator"){
+        monoOscillator.erase(monoOscillator.begin()+id-1);
+    }
+    else if(moduleName == "oscillatorBank"){
+        oscillators.erase(oscillators.begin()+id-1);
+    }
+    else if(moduleName == "colorAppier"){
+        delete colorModule;
+    }
+    else if(moduleName == "waveScope"){
+        delete preview;
+    }
+    
 }
 
 //--------------------------------------------------------------

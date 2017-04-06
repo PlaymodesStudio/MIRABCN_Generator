@@ -17,7 +17,7 @@ baseIndexer::baseIndexer(int numIndexs){
     indexRand_Param_previous = 0;
     
     parameters = new ofParameterGroup;
-    parameters->setName("oscillator " + ofToString(index));
+    parameters->setName("Indexer");
     parameters->add(numWaves_Param.set("Num Waves", 1, 0, indexCount));
     parameters->add(invert_Param.set("Invert", false));
     parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));

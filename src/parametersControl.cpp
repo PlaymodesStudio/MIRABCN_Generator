@@ -17,7 +17,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     //Put parameterGroup into vector
     parameterGroups.push_back(paramGroup);
         
-    ofxDatGui* tempDatGui = new ofxDatGui();
+    shared_ptr<ofxDatGui> tempDatGui = make_shared<ofxDatGui>();
     
     tempDatGui->setTransformMatrix(transformMatrix);
     
@@ -316,6 +316,12 @@ void parametersControl::draw(ofEventArgs &args){
     }
     ofPopStyle();
     ofPopMatrix();
+    if(ofGetKeyPressed('r')){
+        ofPopStyle();
+        ofSetColor(255, 0, 0, 50);
+        ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+        ofPopStyle();
+    }
 }
 
 void parametersControl::saveGuiArrangement(){
@@ -861,10 +867,20 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
             else
                 connection->toggleGui(false);
         }
+    }else if(ofGetKeyPressed('r')){
+        for(int i = 0; i<datGuis.size(); i++){
+            if(datGuis[i]->hitTest(transformedPos)){
+                datGuis.erase(datGuis.begin()+i);
+                string moduleName = parameterGroups[i]->getName();
+                ofLog()<<moduleName;
+                ofNotifyEvent(destroyModule, moduleName, this);
+                parameterGroups.erase(parameterGroups.begin()+i);
+            }
+        }
     }
 }
 
-void parametersControl::mouseReleased(ofMouseEventArgs &e){    
+void parametersControl::mouseReleased(ofMouseEventArgs &e){
     if(e.button == 2 && connections.size() > 0){
         if(!connections.back()->closedLine)
             connections.pop_back();

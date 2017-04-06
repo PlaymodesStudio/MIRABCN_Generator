@@ -10,7 +10,7 @@
 
 senderManager::senderManager(){
     parameters = new ofParameterGroup;
-    parameters->setName("senderManager " + ofToString(1));
+    parameters->setName("senderManager");
     parameters->add(enableSyphon.set("Enable Syphon", 0));
     parameters->add(grayscaleSyphonName.set("Grayscale Server Name", "Gen_Grayscale"));
     parameters->add(colorSyphonName.set("Color Server Name", "Gen_Color"));

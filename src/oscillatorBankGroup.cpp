@@ -20,7 +20,7 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     resultFilledChecker.resize(numOfOscillatorBanks, 0);
     
     parameters = new ofParameterGroup;
-    parameters->setName("oscillator " + ofToString(index));
+    parameters->setName("oscillatorGroup");
     parameters->add(numWaves_Param.set("Num Waves", 1, 0, oscillatorBankSize));
     parameters->add(invert_Param.set("Invert", false));
     parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));
