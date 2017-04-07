@@ -29,9 +29,6 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     parameters->add(output.set("Output", 0, 0, 1));
     
-    //AUTO DESTROY
-    parameters->add(autoDestroy.set("Auto Destroy"));
-    autoDestroy.addListener(this, &baseOscillator::autoDestroyTrigger);
     
     phasorIn.addListener(this, &baseOscillator::computeFunc);
     
@@ -167,9 +164,5 @@ void baseOscillator::computeMultiplyMod(float *value){
     *value = ofClamp(*value, 0, 1);
     
     *value *= amplitude_Param;
-}
-
-void baseOscillator::autoDestroyTrigger(){
-    delete this;
 }
 

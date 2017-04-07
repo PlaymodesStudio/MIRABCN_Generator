@@ -43,12 +43,10 @@ public:
     ofParameter<int>    waveSelect_Param;
     ofParameter<float>  amplitude_Param;
     ofParameter<float>  output;
-    ofParameter<void>   autoDestroy;
 
 private:
     void computeFunc(float &phasor);
     void computeMultiplyMod(float* value);
-    void autoDestroyTrigger();
 
     int oscId;
     ofParameterGroup*   parameters;

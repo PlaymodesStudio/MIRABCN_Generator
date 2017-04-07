@@ -14,7 +14,7 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numBankScop
     oscillatorBankIns.resize(numBankScopes);
     
     parameters = new ofParameterGroup();
-    parameters->setName("WaveScope");
+    parameters->setName("waveScope");
     parameters->add(mainOutIn.set("Master Scope", {{0}}));
     for(int i = 0; i < numBankScopes ; i++)
         parameters->add(oscillatorBankIns[i].set("Osc Bank "+ofToString(i), {0}));

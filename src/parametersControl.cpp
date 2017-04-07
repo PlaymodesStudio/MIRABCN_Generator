@@ -463,86 +463,64 @@ void parametersControl::savePreset(int presetNum, string bank){
     //the root element
     xml.setTo("PRESET");
     
-    //Iterate for all the three parameterGroups
-    for (auto groupParam : parameterGroups){
-        //set XML structure to parameterGroup
-        string noSpacesGroupName = groupParam->getName();
-        ofStringReplace(noSpacesGroupName, " ", "_");
-        xml.addChild(noSpacesGroupName);
-        xml.setTo(noSpacesGroupName);
-        
-        //Iterate for all parameters in parametergroup and look for the type of the parameter
-        for (int j = 0; j < groupParam->size() ; j++){
-            ofAbstractParameter &absParam = groupParam->get(j);
-            if(absParam.type() == typeid(ofParameter<float>).name()){
-                //Cast it
-                ofParameter<float> castedParam = absParam.cast<float>();
-                
-                //Replace blank spaces with underscore
-                string noSpaces = castedParam.getName();
-                ofStringReplace(noSpaces, " ", "_");
-                
-                //add the value of that parameter into xml
-                xml.addValue(noSpaces, castedParam.get());
-            }
-            else if(absParam.type() == typeid(ofParameter<int>).name()){
-                ofParameter<int> castedParam = absParam.cast<int>();
-                string noSpaces = castedParam.getName();
-                ofStringReplace(noSpaces, " ", "_");
-                xml.addValue(noSpaces, castedParam.get());
-            }
-            else if(absParam.type() == typeid(ofParameter<bool>).name()){
-                ofParameter<bool> castedParam = absParam.cast<bool>();
-                string noSpaces = castedParam.getName();
-                ofStringReplace(noSpaces, " ", "_");
-                xml.addValue(noSpaces, castedParam.get());
-            }
-            else if(absParam.type() == typeid(ofParameter<string>).name()){
-                ofParameter<string> castedParam = absParam.cast<string>();
-                string noSpaces = castedParam.getName();
-                ofStringReplace(noSpaces, " ", "_");
-                xml.addValue(noSpaces, castedParam.get());
-            }
-            else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
-                ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
-                string noSpaces = castedParam.getName();
-                ofStringReplace(noSpaces, " ", "_");
-                xml.addValue(noSpaces, ofToString((int)castedParam.get().r) + "-" + ofToString((int)castedParam.get().g) + "-" + ofToString((int)castedParam.get().b));
-            }
-            else{
-                string noSpaces = groupParam->getGroup(j).getName();
-                ofStringReplace(noSpaces, " ", "_");
-                xml.addValue(noSpaces, groupParam->getGroup(j).getInt(1).get());
-            }
+    xml.addChild("DYNAMIC_NODES");
+    xml.setTo("DYNAMIC_NODES");
+    
+    vector<ofPoint> toCreatePhasors;
+    vector<ofPoint> toCreateOscillators;
+    vector<ofPoint> toCreateOscillatorBanks;
+    int toCreateWaveScope = 0;
+    bool toCreateColorApplier = false;
+    
+    for(int i = 0; i < parameterGroups.size() ; i++){
+        string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
+        if(moduleName == "phasor"){
+            toCreatePhasors.push_back(datGuis[i]->getPosition());
         }
-        xml.setToParent();
+        else if(moduleName == "oscillator"){
+            toCreateOscillators.push_back(datGuis[i]->getPosition());
+        }
+        else if(moduleName == "oscillatorBank"){
+            toCreateOscillatorBanks.push_back(datGuis[i]->getPosition());
+        }
+        else if(moduleName == "waveScope"){
+            while(datGuis[i]->getLabel("Osc Bank "+ofToString(toCreateWaveScope))->getName() != "X")
+                toCreateWaveScope++;
+        }
+        else if(moduleName == "colorApplier"){
+            toCreateColorApplier = true;
+        }
     }
-    ofLog() <<"Save Preset_" << presetNum<< "_" << bank;
-    xml.save("Preset_"+ofToString(presetNum)+"_"+bank+".xml");
     
-    ofxOscMessage m;
-    m.setAddress("presetSave");
-    m.addIntArg(presetNum);
-    m.addStringArg(bank);
-    oscSender.sendMessage(m);
-}
-
-void parametersControl::loadPreset(int presetNum, string bank){
-    //Test if there is no problem with the file
-//    xml.clear();
+    //save Phasors
+    for(int i = 0; i < toCreatePhasors.size() ; i++){
+        xml.addValue("phasor_"+ofToString(i), ofToString(toCreatePhasors[i].x)+"_"+ofToString(toCreatePhasors[i].y));
+    }
     
-    bool isColorLoaded = false;
-
+    //save Oscillators
+    for(int i = 0; i < toCreateOscillators.size() ; i++){
+        xml.addValue("oscillator_"+ofToString(i), ofToString(toCreateOscillators[i].x)+"_"+ofToString(toCreateOscillators[i].y));
+    }
     
-    if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
-        return;
+    //save OscillatorBanks
+    for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
+        xml.addValue("oscillatorBank_"+ofToString(i), ofToString(toCreateOscillatorBanks[i].x)+"_"+ofToString(toCreateOscillatorBanks[i].y));
+    }
+    xml.addValue("waveScope", ofToString(toCreateWaveScope));
+    xml.addValue("colorApplier", ofToString(toCreateColorApplier));
+    
+    
+    xml.setToParent();
+    
+    
     
     //Iterate for all the parameterGroups
     for (auto groupParam : parameterGroups){
-        //Put xml in the place of the parametergroup
+        //set XML structure to parameterGroup
         string noSpacesGroupName = groupParam->getName();
-        ofStringReplace(noSpacesGroupName, " ", "_");
-        if(xml.exists(noSpacesGroupName)){
+        if((ofSplitString(noSpacesGroupName, " ")[0] != "waveScope" && ofSplitString(noSpacesGroupName, " ")[0] != "senderManager")){
+            ofStringReplace(noSpacesGroupName, " ", "_");
+            xml.addChild(noSpacesGroupName);
             xml.setTo(noSpacesGroupName);
             
             //Iterate for all parameters in parametergroup and look for the type of the parameter
@@ -556,74 +534,312 @@ void parametersControl::loadPreset(int presetNum, string bank){
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
                     
-                    //get the value of that parameter if it's not bpm, we don't want to lose sync
-                    if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master"))
-                        castedParam = xml.getValue(noSpaces, castedParam.get());
+                    //add the value of that parameter into xml
+                    xml.addValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<int>).name()){
                     ofParameter<int> castedParam = absParam.cast<int>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
-                        castedParam = xml.getValue(noSpaces, castedParam.get());
+                    xml.addValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<bool>).name()){
                     ofParameter<bool> castedParam = absParam.cast<bool>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
-                        castedParam = xml.getValue(noSpaces, castedParam.get());
+                    xml.addValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<string>).name()){
                     ofParameter<string> castedParam = absParam.cast<string>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
-                        castedParam.set(xml.getValue(noSpaces, castedParam.get()));
+                    xml.addValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
                     ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces)){
-                        vector<string> colors = ofSplitString(xml.getValue(noSpaces), "-");
-                        ofColor_<unsigned char> color = ofColor(ofToInt(colors[0]), ofToInt(colors[1]), ofToInt(colors[2]));
-                        //TODO: hack, arreglar
-                        groupParam->getInt("R Channel") = ofToInt(colors[0]);
-                        groupParam->getInt("G Channel") = ofToInt(colors[1]);
-                        groupParam->getInt("B Channel") = ofToInt(colors[2]);
-                        isColorLoaded = true;
-                    }
+                    xml.addValue(noSpaces, ofToString((int)castedParam.get().r) + "-" + ofToString((int)castedParam.get().g) + "-" + ofToString((int)castedParam.get().b));
                 }
-                else{
+                else if(absParam.type() == typeid(ofParameterGroup).name()){
                     string noSpaces = groupParam->getGroup(j).getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
-                        groupParam->getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam->getGroup(j).getInt(1));
+                    xml.addValue(noSpaces, groupParam->getGroup(j).getInt(1).get());
                 }
             }
-            //Jump one label before in xml structure
             xml.setToParent();
-            //reset Phasor
-            if(ofSplitString(groupParam->getName(), " ")[0] == "phasor")
-                groupParam->getBool("Reset Phase") = false;
         }
     }
     
-    auto &masterGroupParam = parameterGroups[parameterGroups.size()-1];
-    if(!isColorLoaded || masterGroupParam->getBool("Randomize Color")){
-        int availableSteps = parameterGroups[parameterGroups.size()-1]->getInt("Rnd Color Steps");
-        vector<int> colorComponents = {0,0,0};
-        for(auto &component : colorComponents)
-            component = ofMap(floor(ofRandom(0, availableSteps+1)), 0, availableSteps, 0, 255);
+    
+    xml.addChild("CONNECTIONS");
+    xml.setTo("CONNECTIONS");
+    for(int i = 0; i < connections.size(); i++){
+        vector<string> groupNames = connections[i]->getSourceParameter()->getGroupHierarchyNames();
+        xml.addValue("connection_" + ofToString(i) + "_source", groupNames[0] + "-|-" + groupNames[1]);
         
-        if(max_element(colorComponents.begin(), colorComponents.end())[0] != 255)
-            colorComponents[floor(ofRandom(0, 3))] = 255;
-        
-        masterGroupParam->getInt("R Channel") = colorComponents[0];
-        masterGroupParam->getInt("G Channel") = colorComponents[1];
-        masterGroupParam->getInt("B Channel") = colorComponents[2];
+        groupNames = connections[i]->getSinkParameter()->getGroupHierarchyNames();
+        xml.addValue("connection_" + ofToString(i) + "_sink", groupNames[0] + "-|-" + groupNames[1]);
     }
+    
+    ofLog() <<"Save Preset_" << presetNum<< "_" << bank;
+    xml.save("Preset_"+ofToString(presetNum)+"_"+bank+".xml");
+    
+    ofxOscMessage m;
+    m.setAddress("presetSave");
+    m.addIntArg(presetNum);
+    m.addStringArg(bank);
+    oscSender.sendMessage(m);
+}
+
+void parametersControl::loadPreset(int presetNum, string bank){
+    //Test if there is no problem with the file
+    
+    bool isColorLoaded = false;
+    
+    if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
+        return;
+    
+    vector<ofPoint> toCreatePhasors;
+    vector<ofPoint> toCreateOscillators;
+    vector<ofPoint> toCreateOscillatorBanks;
+    int toCreateWaveScope = 0;
+    bool toCreateColorApplier = false;
+    
+    if(xml.exists("DYNAMIC_NODES")){
+        xml.setTo("DYNAMIC_NODES");
+        //getPhasors;
+        int i = 0;
+        while(xml.getValue("phasor_"+ofToString(i)) != ""){
+            cout<<xml.getValue("phasor_"+ofToString(i))<<endl;
+            vector<string> strPoint = ofSplitString(xml.getValue("phasor_"+ofToString(i)), "_");
+            toCreatePhasors.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
+            i++;
+        }
+        //getOscillators;
+        i = 0;
+        while(xml.getValue("oscillator_"+ofToString(i)) != ""){
+            cout<<xml.getValue("oscillator_"+ofToString(i))<<endl;
+            vector<string> strPoint = ofSplitString(xml.getValue("oscillator_"+ofToString(i)), "_");
+            toCreateOscillators.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
+            i++;
+        }
+        //getOscillatorBanks;
+        i = 0;
+        while(xml.getValue("oscillatorBank_"+ofToString(i)) != ""){
+            cout<<xml.getValue("oscillatorBank_"+ofToString(i))<<endl;
+            vector<string> strPoint = ofSplitString(xml.getValue("oscillatorBank_"+ofToString(i)), "_");
+            toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
+            i++;
+        }
+        toCreateWaveScope = ofToInt(xml.getValue("waveScope"));
+        toCreateColorApplier = ofToBool(xml.getValue("colorApplier"));
+    }
+    
+    bool newModulesCreated = false;
+    
+    //Iterate for all the parameterGroups
+    for (int i = 0; i < parameterGroups.size();){
+        cout<<i<<endl;
+        auto &groupParam = parameterGroups[i];
+        bool isDestroyed = false;
+        
+        //Move or destroy nodes
+        string moduleName = ofSplitString(groupParam->getName(), " ")[0];
+        if(!newModulesCreated){
+            if(moduleName == "phasor"){
+                int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
+                if(toCreatePhasors.size() < id){
+                    //destroy node
+                    isDestroyed = true;
+                }else{
+                    //move to new position
+                    datGuis[i]->setPosition(toCreatePhasors[id-1].x, toCreatePhasors[id-1].y);
+                    toCreatePhasors[id-1] = ofPoint(-1, -1);
+                }
+            }
+            else if(moduleName == "oscillator"){
+                int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
+                if(toCreateOscillators.size() < id){
+                    //destroy node
+                    isDestroyed = true;
+                }else{
+                    //move to new position
+                    datGuis[i]->setPosition(toCreateOscillators[id-1].x, toCreateOscillators[id-1].y);
+                    toCreateOscillators[id-1] = ofPoint(-1, -1);
+                }
+            }
+            else if(moduleName == "oscillatorBank"){
+                int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
+                if(toCreateOscillatorBanks.size() < id){
+                    //destroy node
+                    isDestroyed = true;
+                }else{
+                    //move to new position
+                    datGuis[i]->setPosition(toCreateOscillatorBanks[id-1].x, toCreateOscillatorBanks[id-1].y);
+                    toCreateOscillatorBanks[id-1] = ofPoint(-1, -1);
+                }
+            }
+            else if(moduleName == "waveScope"){
+                //            while(datGuis[i]->getLabel("Osc Bank "+ofToString(toCreateWaveScope))->getName() != "X")
+                //                toCreateWaveScope++;
+            }
+            else if(moduleName == "colorApplier"){
+                //            toCreateColorApplier = true;
+            }
+        }
+        
+        if(isDestroyed){
+            for(int j = 0; j < connections.size();){
+                auto &connection = connections[j];
+                if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
+                    connections.erase(remove(connections.begin(), connections.end(), connection));
+                else
+                    j++;
+            }
+            datGuis.erase(datGuis.begin()+i);
+            string moduleName = parameterGroups[i]->getName();
+            ofNotifyEvent(destroyModule, moduleName, this);
+            parameterGroups.erase(parameterGroups.begin()+i);
+        }
+        else{
+            if(moduleName != "waveScope" && moduleName != "colorApplier"){
+                //Put xml in the place of the parametergroup
+                string noSpacesGroupName = groupParam->getName();
+                ofStringReplace(noSpacesGroupName, " ", "_");
+                if(xml.exists(noSpacesGroupName)){
+                    xml.setTo(noSpacesGroupName);
+                    
+                    //Iterate for all parameters in parametergroup and look for the type of the parameter
+                    for (int j = 0; j < groupParam->size() ; j++){
+                        ofAbstractParameter &absParam = groupParam->get(j);
+                        if(absParam.type() == typeid(ofParameter<float>).name()){
+                            //Cast it
+                            ofParameter<float> castedParam = absParam.cast<float>();
+                            
+                            //Replace blank spaces with underscore
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            
+                            //get the value of that parameter if it's not bpm, we don't want to lose sync
+                            if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master"))
+                                castedParam = xml.getValue(noSpaces, castedParam.get());
+                        }
+                        else if(absParam.type() == typeid(ofParameter<int>).name()){
+                            ofParameter<int> castedParam = absParam.cast<int>();
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                                castedParam = xml.getValue(noSpaces, castedParam.get());
+                        }
+                        else if(absParam.type() == typeid(ofParameter<bool>).name()){
+                            ofParameter<bool> castedParam = absParam.cast<bool>();
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                                castedParam = xml.getValue(noSpaces, castedParam.get());
+                        }
+                        else if(absParam.type() == typeid(ofParameter<string>).name()){
+                            ofParameter<string> castedParam = absParam.cast<string>();
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                                castedParam.set(xml.getValue(noSpaces, castedParam.get()));
+                        }
+                        else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
+                            ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            if(xml.exists(noSpaces)){
+                                vector<string> colors = ofSplitString(xml.getValue(noSpaces), "-");
+                                ofColor_<unsigned char> color = ofColor(ofToInt(colors[0]), ofToInt(colors[1]), ofToInt(colors[2]));
+                                //TODO: hack, arreglar
+                                groupParam->getInt("R Channel") = ofToInt(colors[0]);
+                                groupParam->getInt("G Channel") = ofToInt(colors[1]);
+                                groupParam->getInt("B Channel") = ofToInt(colors[2]);
+                                isColorLoaded = true;
+                            }
+                        }
+                        else{
+                            string noSpaces = groupParam->getGroup(j).getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                                groupParam->getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam->getGroup(j).getInt(1));
+                        }
+                    }
+                    //Jump one label before in xml structure
+                    xml.setToParent();
+                    //reset Phasor
+                    if(ofSplitString(groupParam->getName(), " ")[0] == "phasor")
+                        groupParam->getBool("Reset Phase") = false;
+                }
+                
+                
+            }
+            
+            //increase if it is not destroyed
+            i++;
+            if(i == parameterGroups.size() && !newModulesCreated){
+                //create Phasors
+                for(int i = 0; i < toCreatePhasors.size() ; i++){
+                    if(toCreatePhasors[i] != ofPoint(-1, -1)){
+                        pair<moduleType, ofPoint> pairToSend;
+                        pairToSend.first = static_cast<moduleType>(1);
+                        pairToSend.second = toCreatePhasors[i];
+                        ofNotifyEvent(createNewModule, pairToSend, this);
+                    }
+                }
+                toCreatePhasors.clear();
+                
+                //create Oscillators
+                for(int i = 0; i < toCreateOscillators.size() ; i++){
+                    if(toCreateOscillators[i] != ofPoint(-1, -1)){
+                        pair<moduleType, ofPoint> pairToSend;
+                        pairToSend.first = static_cast<moduleType>(2);
+                        pairToSend.second = toCreateOscillators[i];
+                        ofNotifyEvent(createNewModule, pairToSend, this);
+                    }
+                }
+                
+                //create OscillatorBanks
+                for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
+                    if(toCreateOscillatorBanks[i] != ofPoint(-1, -1)){
+                        pair<moduleType, ofPoint> pairToSend;
+                        pairToSend.first = static_cast<moduleType>(3);
+                        pairToSend.second = toCreateOscillatorBanks[i];
+                        ofNotifyEvent(createNewModule, pairToSend, this);
+                    }
+                }
+                newModulesCreated = true;
+            }
+        }
+    }
+    
+    
+    if(xml.exists("CONNECTIONS")){
+        xml.setTo("CONNECTIONS");
+        int i = 0;
+        while(xml.getValue("connection_" + ofToString(i) + "_source") != ""){
+            string sourceInfo = xml.getValue("connection_" + ofToString(i) + "_source");
+            string sinkInfo = xml.getValue("connection_" + ofToString(i) + "_sink");
+            cout<< sourceInfo << "|||||" << sinkInfo <<endl;
+            i++;
+        }
+    }
+//    auto &masterGroupParam = parameterGroups[parameterGroups.size()-1];
+//    if(!isColorLoaded || masterGroupParam->getBool("Randomize Color")){
+//        int availableSteps = parameterGroups[parameterGroups.size()-1]->getInt("Rnd Color Steps");
+//        vector<int> colorComponents = {0,0,0};
+//        for(auto &component : colorComponents)
+//            component = ofMap(floor(ofRandom(0, availableSteps+1)), 0, availableSteps, 0, 255);
+//        
+//        if(max_element(colorComponents.begin(), colorComponents.end())[0] != 255)
+//            colorComponents[floor(ofRandom(0, 3))] = 255;
+//        
+//        masterGroupParam->getInt("R Channel") = colorComponents[0];
+//        masterGroupParam->getInt("G Channel") = colorComponents[1];
+//        masterGroupParam->getInt("B Channel") = colorComponents[2];
+//    }
     
     
     ofLog()<<"Load Preset_" << presetNum<< "_" << bank;
@@ -720,7 +936,7 @@ void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
     if(ofGetKeyPressed(OF_KEY_SHIFT))
         savePreset(e.child+1, bankSelect->getSelected()->getName());
     else{
-        loadPresetWithFade(e.child+1, bankSelect->getSelected()->getName());
+        loadPreset(e.child+1, bankSelect->getSelected()->getName());
         if(autoPreset)
             presetChangedTimeStamp = ofGetElapsedTimef();
     }
