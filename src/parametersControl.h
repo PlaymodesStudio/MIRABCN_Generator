@@ -157,6 +157,8 @@ public:
     float getMin(){return min;};
     float getMax(){return max;};
     
+    shared_ptr<ofxDatGui> getParentGuis(int i){return bindedComponentsParent[i];};
+    
     bool closedLine = false;
     
 private:

@@ -869,10 +869,18 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         }
     }else if(ofGetKeyPressed('r')){
         for(int i = 0; i<datGuis.size(); i++){
-            if(datGuis[i]->hitTest(transformedPos)){
+            if(datGuis[i]->hitTest(transformedPos)
+               && datGuis[i]->getHeader()->getName() != "oscillatorGroup"
+               && datGuis[i]->getHeader()->getName() != "senderManager"){
+                for(int j = 0; j < connections.size();){
+                    auto &connection = connections[j];
+                    if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
+                        connections.erase(remove(connections.begin(), connections.end(), connection));
+                    else
+                        j++;
+                }
                 datGuis.erase(datGuis.begin()+i);
                 string moduleName = parameterGroups[i]->getName();
-                ofLog()<<moduleName;
                 ofNotifyEvent(destroyModule, moduleName, this);
                 parameterGroups.erase(parameterGroups.begin()+i);
             }
