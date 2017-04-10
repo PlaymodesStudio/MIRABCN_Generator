@@ -611,7 +611,6 @@ void parametersControl::loadPreset(int presetNum, string bank){
         //getPhasors;
         int i = 0;
         while(xml.getValue("phasor_"+ofToString(i)) != ""){
-            cout<<xml.getValue("phasor_"+ofToString(i))<<endl;
             vector<string> strPoint = ofSplitString(xml.getValue("phasor_"+ofToString(i)), "_");
             toCreatePhasors.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
             i++;
@@ -619,7 +618,6 @@ void parametersControl::loadPreset(int presetNum, string bank){
         //getOscillators;
         i = 0;
         while(xml.getValue("oscillator_"+ofToString(i)) != ""){
-            cout<<xml.getValue("oscillator_"+ofToString(i))<<endl;
             vector<string> strPoint = ofSplitString(xml.getValue("oscillator_"+ofToString(i)), "_");
             toCreateOscillators.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
             i++;
@@ -627,7 +625,6 @@ void parametersControl::loadPreset(int presetNum, string bank){
         //getOscillatorBanks;
         i = 0;
         while(xml.getValue("oscillatorBank_"+ofToString(i)) != ""){
-            cout<<xml.getValue("oscillatorBank_"+ofToString(i))<<endl;
             vector<string> strPoint = ofSplitString(xml.getValue("oscillatorBank_"+ofToString(i)), "_");
             toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
             i++;
@@ -636,11 +633,12 @@ void parametersControl::loadPreset(int presetNum, string bank){
         toCreateColorApplier = ofToBool(xml.getValue("colorApplier"));
     }
     
+    xml.setToParent();
+    
     bool newModulesCreated = false;
     
     //Iterate for all the parameterGroups
     for (int i = 0; i < parameterGroups.size();){
-        cout<<i<<endl;
         auto &groupParam = parameterGroups[i];
         bool isDestroyed = false;
         
@@ -709,6 +707,8 @@ void parametersControl::loadPreset(int presetNum, string bank){
                 ofStringReplace(noSpacesGroupName, " ", "_");
                 if(xml.exists(noSpacesGroupName)){
                     xml.setTo(noSpacesGroupName);
+                    cout<< noSpacesGroupName<<endl;
+
                     
                     //Iterate for all parameters in parametergroup and look for the type of the parameter
                     for (int j = 0; j < groupParam->size() ; j++){
@@ -760,7 +760,7 @@ void parametersControl::loadPreset(int presetNum, string bank){
                                 isColorLoaded = true;
                             }
                         }
-                        else{
+                        else if(absParam.type() == typeid(ofParameterGroup).name()){
                             string noSpaces = groupParam->getGroup(j).getName();
                             ofStringReplace(noSpaces, " ", "_");
                             if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
@@ -773,8 +773,6 @@ void parametersControl::loadPreset(int presetNum, string bank){
                     if(ofSplitString(groupParam->getName(), " ")[0] == "phasor")
                         groupParam->getBool("Reset Phase") = false;
                 }
-                
-                
             }
             
             //increase if it is not destroyed
@@ -815,14 +813,30 @@ void parametersControl::loadPreset(int presetNum, string bank){
         }
     }
     
+//    xml.setToParent();
+    
+    connections.clear();
     
     if(xml.exists("CONNECTIONS")){
         xml.setTo("CONNECTIONS");
         int i = 0;
         while(xml.getValue("connection_" + ofToString(i) + "_source") != ""){
-            string sourceInfo = xml.getValue("connection_" + ofToString(i) + "_source");
-            string sinkInfo = xml.getValue("connection_" + ofToString(i) + "_sink");
-            cout<< sourceInfo << "|||||" << sinkInfo <<endl;
+            vector<string> sourceInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_source"), "-|-");
+            vector<string> sinkInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_sink"), "-|-");
+            ofStringReplace(sourceInfo[0], "_", " ");
+            ofStringReplace(sinkInfo[0], "_", " ");
+            ofStringReplace(sourceInfo[1], "_", " ");
+            ofStringReplace(sinkInfo[1], "_", " ");
+            for(int j = 0; j < parameterGroups.size(); j++){
+                if(parameterGroups[j]->getName() == sourceInfo[0]){
+                    connections.push_back(make_shared<nodeConnection>(datGuis[j]->getComponent(sourceInfo[1]), datGuis[j], &parameterGroups[j]->get(sourceInfo[1])));
+                }
+            }
+            for(int j = 0; j < parameterGroups.size(); j++){
+                if(parameterGroups[j]->getName() == sinkInfo[0]){
+                    connections.back()->connectTo(datGuis[j]->getComponent(sinkInfo[1]), datGuis[j], &parameterGroups[j]->get(sinkInfo[1]));
+                }
+            }
             i++;
         }
     }
@@ -984,7 +998,7 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     }
                 }
                 if(!foundParameter)
-                    connections.push_back((shared_ptr<nodeConnection>)new nodeConnection(e.target, datGuis[i], &parameter));
+                    connections.push_back(make_shared<nodeConnection>(e.target, datGuis[i], &parameter));
             }
         }
     }else if(connections.size() > 0){

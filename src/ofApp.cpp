@@ -42,11 +42,10 @@ void ofApp::setup(){
 void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
     switch (info.first) {
         case phasor_module:
-            cout<<"new phasor"<<endl;
             phasors.push_back(make_shared<phasorClass>(phasors.size()+1, info.second));
             break;
         case oscillator_module:
-            monoOscillator.push_back(make_shared<baseOscillator>(0, true, info.second));
+            monoOscillator.push_back(make_shared<baseOscillator>(monoOscillator.size()+1, true, info.second));
             break;
         case oscillatorBank_module:
         {
