@@ -14,13 +14,12 @@
 #include "oscillatorBank.h"
 #include "waveScope.h"
 #include "oscillatorBankGroup.h"
+#include "sharedResources.h"
 
 static const int NUM_BARS = 12;
 static const int PIXEL_X_BAR = 20;
 static const int ROW_BARS = 4;
 static const int COL_BARS = 3;
-
-
 
 class ofApp : public ofBaseApp{
 
@@ -47,6 +46,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+    void setFile(string path){fileName = path;};
     
 private:
     
@@ -65,13 +65,14 @@ private:
     vector<shared_ptr<baseOscillator>>     monoOscillator;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
-    masterControl               masterModule;
     senderManager*              senderModule;
     waveScope*                  preview;
     colorApplier*               colorModule;
     oscillatorBankGroup*        oscBankGroup;
     
     ofSoundStream soundStream;
+    
+    string fileName = " ";
     
     //The log channel is a buffer where you post all notifications, it's used mainly in waveScope to print the debug info.
     shared_ptr<bufferLoggerChannel> logBuffer;

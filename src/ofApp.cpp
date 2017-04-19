@@ -9,26 +9,30 @@ void ofApp::setup(){
     //Set the FrameRate to be 40, that is the frame rate of the Pixel Bars
     ofSetFrameRate(60);
     
+    paramsControl = &parametersControl::getInstance();
+    
     bpmControl::getInstance().setup();
     
-    masterModule.setup(1);
-    
-    
-    //Setup of the phasors, wich controls the oscilator generator and other parameters
-    for(int i=0; i<1; i++)
-        phasors.push_back(make_shared<phasorClass>(i+1));
-    
-    
-    paramsControl = &parametersControl::getInstance();
-
-    
-    oscBankGroup = new oscillatorBankGroup(PIXEL_X_BAR, NUM_BARS);
-    oscillators.push_back(make_shared<oscillatorBank>(NUM_BARS, true, 1));
-    colorModule = new colorApplier(NUM_BARS);
-    senderModule = new senderManager();
-    preview = new waveScope(logBuffer, 3);
-    //Create main gui, and add listeners when all guis are created
-    paramsControl->setup();
+    ofXml xml;
+    if(xml.load(fileName)){
+        if(xml.exists("GeneratorConfig")){
+            xml.setTo("GeneratorConfig");
+            ofLog()<<xml.getValue("Name");
+            int width = xml.getIntValue("Width");
+            int height = xml.getIntValue("Height");
+            bool invert = xml.getBoolValue("Invert");
+            
+            
+            phasors.push_back(make_shared<phasorClass>(1));
+            oscBankGroup = new oscillatorBankGroup(height, width);
+            oscillators.push_back(make_shared<oscillatorBank>(width, true, 1));
+            colorModule = new colorApplier(width);
+            senderModule = new senderManager();
+            preview = new waveScope(logBuffer, 3);
+            //Create main gui, and add listeners when all guis are created
+            paramsControl->setup();
+        }
+    }
     
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
@@ -56,7 +60,9 @@ void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
         case waveScope_module:
         {
             int nScopes = info.second.z;
+            if(nScopes == 0) nScopes = ofToInt(ofSystemTextBoxDialog("How many Scopes?"));
             info.second.z = 0;
+            if(preview != nullptr) delete preview;
             preview = new waveScope(logBuffer, nScopes, info.second);
             break;
         }
@@ -95,7 +101,6 @@ void ofApp::deleteModuleListener(string &moduleName){
         delete preview;
         preview = nullptr;
     }
-    
 }
 
 //--------------------------------------------------------------
@@ -109,6 +114,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0);
+//    ofDrawBitmapString(ofToString(sharedResources::getFilePath()), 20, 20);
 }
 
 void ofApp::exit(){
@@ -183,12 +189,26 @@ void ofApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){
-    if(dragInfo.files.size() == 1){
-        ofXml xml;
-        if(xml.load(dragInfo.files[0])){
-            if(xml.getName() == "GeneratorConfig"){
-                
-            }
-        }
-    }
+//    if(dragInfo.files.size() == 1){
+//        ofXml xml;
+//        if(xml.load(dragInfo.files[0])){
+//            if(xml.exists("GeneratorConfig")){
+//                xml.setTo("GeneratorConfig");
+//                ofLog()<<xml.getValue("Name");
+//                int width = xml.getIntValue("Width");
+//                int height = xml.getIntValue("Height");
+//                bool invert = xml.getBoolValue("Invert");
+//                
+//                
+//                phasors.push_back(make_shared<phasorClass>(1));
+//                oscBankGroup = new oscillatorBankGroup(height, width);
+//                oscillators.push_back(make_shared<oscillatorBank>(width, true, 1));
+//                colorModule = new colorApplier(width);
+//                senderModule = new senderManager();
+//                preview = new waveScope(logBuffer, 3);
+//                //Create main gui, and add listeners when all guis are created
+//                paramsControl->setup();
+//            }
+//        }
+//    }
 }

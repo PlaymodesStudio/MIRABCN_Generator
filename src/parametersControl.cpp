@@ -180,7 +180,7 @@ void parametersControl::setup(){
     theme->color.textInput.text = randColor2;
     theme->color.icons = randColor2;
     popUpMenu->setTheme(theme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "ColorApplier"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "ColorApplier", "WaveScope"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -705,17 +705,18 @@ void parametersControl::loadPreset(int presetNum, string bank){
         }
         
         if(isDestroyed){
-            for(int j = 0; j < connections.size();){
-                auto &connection = connections[j];
-                if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
-                    connections.erase(remove(connections.begin(), connections.end(), connection));
-                else
-                    j++;
-            }
-            datGuis.erase(datGuis.begin()+i);
-            string moduleName = parameterGroups[i]->getName();
-            ofNotifyEvent(destroyModule, moduleName, this);
-            parameterGroups.erase(parameterGroups.begin()+i);
+            destroyModuleAndConnections(i);
+//            for(int j = 0; j < connections.size();){
+//                auto &connection = connections[j];
+//                if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
+//                    connections.erase(remove(connections.begin(), connections.end(), connection));
+//                else
+//                    j++;
+//            }
+//            datGuis.erase(datGuis.begin()+i);
+//            string moduleName = parameterGroups[i]->getName();
+//            ofNotifyEvent(destroyModule, moduleName, this);
+//            parameterGroups.erase(parameterGroups.begin()+i);
         }
         else{
             if(moduleName != "waveScope" && moduleName != "colorApplier"){
@@ -1056,6 +1057,10 @@ void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
     transformedPos -= transformMatrix.getTranslation();
     transformedPos = transformMatrix.getInverse().postMult(transformedPos);
     pairToSend.second = transformedPos;
+    if(pairToSend.first == waveScope_module){
+        for(int i = 0; i < datGuis.size(); i++)
+            if(datGuis[i]->getHeader()->getName() == "waveScope") destroyModuleAndConnections(i);
+    }
     ofNotifyEvent(createNewModule, pairToSend, this);
     
     popUpMenu->setVisible(false);
@@ -1133,17 +1138,18 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
             if(datGuis[i]->hitTest(transformedPos)
                && datGuis[i]->getHeader()->getName() != "oscillatorGroup"
                && datGuis[i]->getHeader()->getName() != "senderManager"){
-                for(int j = 0; j < connections.size();){
-                    auto &connection = connections[j];
-                    if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
-                        connections.erase(remove(connections.begin(), connections.end(), connection));
-                    else
-                        j++;
-                }
-                datGuis.erase(datGuis.begin()+i);
-                string moduleName = parameterGroups[i]->getName();
-                ofNotifyEvent(destroyModule, moduleName, this);
-                parameterGroups.erase(parameterGroups.begin()+i);
+                destroyModuleAndConnections(i);
+//                for(int j = 0; j < connections.size();){
+//                    auto &connection = connections[j];
+//                    if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
+//                        connections.erase(remove(connections.begin(), connections.end(), connection));
+//                    else
+//                        j++;
+//                }
+//                datGuis.erase(datGuis.begin()+i);
+//                string moduleName = parameterGroups[i]->getName();
+//                ofNotifyEvent(destroyModule, moduleName, this);
+//                parameterGroups.erase(parameterGroups.begin()+i);
             }
         }
     }
@@ -1349,4 +1355,18 @@ void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connecti
         }
     }
         
+}
+
+void parametersControl::destroyModuleAndConnections(int index){
+    for(int j = 0; j < connections.size();){
+        auto &connection = connections[j];
+        if(connection->getParentGuis(0) == datGuis[index] || connection->getParentGuis(1) == datGuis[index])
+            connections.erase(remove(connections.begin(), connections.end(), connection));
+        else
+            j++;
+    }
+    datGuis.erase(datGuis.begin()+index);
+    string moduleName = parameterGroups[index]->getName();
+    ofNotifyEvent(destroyModule, moduleName, this);
+    parameterGroups.erase(parameterGroups.begin()+index);
 }

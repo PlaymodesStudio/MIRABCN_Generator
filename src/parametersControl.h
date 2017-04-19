@@ -245,6 +245,8 @@ private:
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
     void setFromSameTypeValue(shared_ptr<nodeConnection> connection);
     
+    void destroyModuleAndConnections(int index);
+    
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;
     ofxDatGuiDropdown* bankSelect;
