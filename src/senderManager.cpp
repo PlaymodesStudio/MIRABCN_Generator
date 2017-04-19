@@ -8,7 +8,8 @@
 
 #include "senderManager.h"
 
-senderManager::senderManager(){
+senderManager::senderManager(bool _invert){
+    invert = _invert;
     parameters = new ofParameterGroup;
     parameters->setName("senderManager");
     parameters->add(enableSyphon.set("Enable Syphon", 0));
@@ -38,29 +39,43 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
     int w = info.size();
     int h = info[0].size();
     if(enableOsc){
-        unique_ptr<ofxOscMessage> messageGrayscale = unique_ptr<ofxOscMessage>(new ofxOscMessage());
-        messageGrayscale->setAddress("size");
-        messageGrayscale->addIntArg(w);
-        messageGrayscale->addIntArg(h);
-        oscSender->sendMessage(*messageGrayscale);
-        messageGrayscale = unique_ptr<ofxOscMessage>(new ofxOscMessage());
+        ofxOscMessage* messageGrayscale = new ofxOscMessage();
         messageGrayscale->setAddress("info/grayscale");
         
-        for(int i = 0 ; i < w ; i++){
-            for (int j = 0 ; j < h ; j++){
-                messageGrayscale->addFloatArg(info[i][j]);
+        if(invert){
+            for(int i = 0 ; i < h ; i++){
+                for (int j = 0 ; j < w ; j++){
+                    messageGrayscale->addFloatArg(info[j][i]);
+                }
+            }
+        }
+        else{
+            for(int i = 0 ; i < w ; i++){
+                for (int j = 0 ; j < h ; j++){
+                    messageGrayscale->addFloatArg(info[i][j]);
+                }
             }
         }
         oscSender->sendMessage(*messageGrayscale);
     }
     if(grayscaleSyphonServer != NULL && enableSyphon){
         ofTexture tex;
-        unsigned char *data = new unsigned char[w * h];
-        for(int i = 0 ; i < w ; i++){
-            for ( int j = 0; j < h ; j++)
-                data[i+w*j] = info[i][j]*255;
+        if(invert){
+            unsigned char *data = new unsigned char[h * w];
+            for(int i = 0 ; i < h ; i++){
+                for ( int j = 0; j < w ; j++)
+                    data[i+h*j] = info[j][i]*255;
+            }
+            tex.loadData(data, h, w, GL_LUMINANCE);
         }
-        tex.loadData(data, w, h, GL_LUMINANCE);
+        else{
+            unsigned char *data = new unsigned char[w * h];
+            for(int i = 0 ; i < w ; i++){
+                for ( int j = 0; j < h ; j++)
+                    data[i+w*j] = info[i][j]*255;
+            }
+            tex.loadData(data, w, h, GL_LUMINANCE);
+        }
         grayscaleSyphonServer->publishTexture(&tex);
     }
 }

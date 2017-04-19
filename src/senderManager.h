@@ -17,7 +17,7 @@
 class senderManager{
 public:
     
-    senderManager();
+    senderManager(bool _invert);
     ~senderManager(){};
     
     void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo, ofFbo &grayscaleFbo, ofFbo &colorFbo){};
@@ -54,6 +54,8 @@ private:
     
     ofParameter<vector<vector<float>>>  grayScaleIn;
     ofParameter<vector<vector<ofColor>>>    colorIn;
+    
+    bool invert;
     
     ofFbo colorTexToSend;
     ofFbo grayScaleTexToSend;
