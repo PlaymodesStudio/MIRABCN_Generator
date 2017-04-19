@@ -4,10 +4,6 @@
 //========================================================================
 int main(){
     
-
-    ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
-    string path = *buffer.getLines().begin();
-    
     ofGLFWWindowSettings mainSettings;
     mainSettings.width = 1965;
     mainSettings.height = 1010;
@@ -30,15 +26,7 @@ int main(){
     ofAddListener(prevWindow->events().draw, mainApp.get(), &ofApp::drawSecondWindow);
     ofAddListener(prevWindow->events().keyPressed, mainApp.get(), &ofApp::keyPressedOnSecondWindow);
     
-    auto result = ofSystemLoadDialog("Select Generator File", false, path);
-    if(ofSplitString(result.getPath(), ".").back() == "generator"){
-        ofBuffer buf;
-        buf.append(result.getPath());
-        ofBufferToFile("lastOpenedFile.txt", buf);
-        mainApp->setFile(result.getPath());
-        ofRunApp(mainWindow, mainApp);
-        ofRunMainLoop();
-    }
-    else
-        ofSystemAlertDialog("Invalid File, .generator file needed");
+    ofRunApp(mainWindow, mainApp);
+    
+    ofRunMainLoop();
 }

@@ -14,7 +14,6 @@
 #include "oscillatorBank.h"
 #include "waveScope.h"
 #include "oscillatorBankGroup.h"
-#include "sharedResources.h"
 
 static const int NUM_BARS = 12;
 static const int PIXEL_X_BAR = 20;
@@ -46,7 +45,6 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    void setFile(string path){fileName = path;};
     
 private:
     
@@ -71,8 +69,6 @@ private:
     oscillatorBankGroup*        oscBankGroup;
     
     ofSoundStream soundStream;
-    
-    string fileName = " ";
     
     //The log channel is a buffer where you post all notifications, it's used mainly in waveScope to print the debug info.
     shared_ptr<bufferLoggerChannel> logBuffer;

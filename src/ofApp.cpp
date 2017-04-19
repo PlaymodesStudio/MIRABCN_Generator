@@ -2,6 +2,21 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
+    
+    ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
+    string path = *buffer.getLines().begin();
+    auto result = ofSystemLoadDialog("Select Generator File", false, path);
+    if(ofSplitString(result.getPath(), ".").back() != "generator"){
+        ofSystemAlertDialog(".generator file needed");
+        ofExit();
+    }
+    
+    ofBuffer buf;
+    buf.append(result.getPath());
+    ofBufferToFile("lastOpenedFile.txt", buf);
+
+    
     ofBackground(0);
     logBuffer = make_shared<bufferLoggerChannel>();
     ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
@@ -14,20 +29,21 @@ void ofApp::setup(){
     bpmControl::getInstance().setup();
     
     ofXml xml;
-    if(xml.load(fileName)){
+    if(xml.load(result.getPath())){
         if(xml.exists("GeneratorConfig")){
             xml.setTo("GeneratorConfig");
-            ofLog()<<xml.getValue("Name");
+            string name = xml.getValue("Name");
             int width = xml.getIntValue("Width");
             int height = xml.getIntValue("Height");
             bool invert = xml.getBoolValue("Invert");
             
+            ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
             phasors.push_back(make_shared<phasorClass>(1));
             oscBankGroup = new oscillatorBankGroup(height, width);
             oscillators.push_back(make_shared<oscillatorBank>(width, true, 1));
             colorModule = new colorApplier(width);
-            senderModule = new senderManager();
+            senderModule = new senderManager(invert);
             preview = new waveScope(logBuffer, 3);
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
