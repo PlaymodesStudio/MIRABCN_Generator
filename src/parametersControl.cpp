@@ -542,13 +542,13 @@ void parametersControl::savePreset(int presetNum, string bank){
                     ofStringReplace(noSpaces, " ", "_");
                     
                     //add the value of that parameter into xml
-                    xml.addValue(noSpaces, castedParam.get());
+                    xml.addValue(noSpaces, ofMap(castedParam.get(), castedParam.getMin(), castedParam.getMax(), 0, 1, true));
                 }
                 else if(absParam.type() == typeid(ofParameter<int>).name()){
                     ofParameter<int> castedParam = absParam.cast<int>();
                     string noSpaces = castedParam.getName();
                     ofStringReplace(noSpaces, " ", "_");
-                    xml.addValue(noSpaces, castedParam.get());
+                    xml.addValue(noSpaces, ofMap(castedParam.get(), castedParam.getMin(), castedParam.getMax(), 0, 1, true));
                 }
                 else if(absParam.type() == typeid(ofParameter<bool>).name()){
                     ofParameter<bool> castedParam = absParam.cast<bool>();
@@ -739,14 +739,14 @@ void parametersControl::loadPreset(int presetNum, string bank){
                             
                             //get the value of that parameter if it's not bpm, we don't want to lose sync
                             if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master"))
-                                castedParam = xml.getValue(noSpaces, castedParam.get());
+                                castedParam = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                         }
                         else if(absParam.type() == typeid(ofParameter<int>).name()){
                             ofParameter<int> castedParam = absParam.cast<int>();
                             string noSpaces = castedParam.getName();
                             ofStringReplace(noSpaces, " ", "_");
                             if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
-                                castedParam = xml.getValue(noSpaces, castedParam.get());
+                                castedParam = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                         }
                         else if(absParam.type() == typeid(ofParameter<bool>).name()){
                             ofParameter<bool> castedParam = absParam.cast<bool>();

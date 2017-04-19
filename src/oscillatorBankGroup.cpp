@@ -113,6 +113,10 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
             oscBank->modulo_Param = modulo_Param;
     }
     
+    else if(p.getName() == phaseOffset_Param.getName()){
+        for(auto &oscBank : oscillatorBanks)
+            oscBank->phaseOffset_Param = phaseOffset_Param;
+    }
     else if(p.getName() == pow_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
             oscBank->pow_Param = pow_Param;
@@ -186,6 +190,10 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
             oscillatorBanks[i]->modulo_Param = ofMap(modulo_vecParam.get()[i], 0, 1, modulo_Param.getMin(), modulo_Param.getMax());
     }
 
+    else if(p.getName() == phaseOffset_vecParam.getName()){
+        for(int i = 0; i < oscillatorBanks.size(); i++)
+            oscillatorBanks[i]->phaseOffset_Param = ofMap(phaseOffset_vecParam.get()[i], 0, 1, phaseOffset_Param.getMin(), phaseOffset_Param.getMax());
+    }
     else if(p.getName() == pow_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size(); i++)
             oscillatorBanks[i]->pow_Param = ofMap(pow_vecParam.get()[i], 0, 1, pow_Param.getMin(), pow_Param.getMax());
