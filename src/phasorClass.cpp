@@ -34,6 +34,10 @@ phasorClass::phasorClass(int index, ofPoint pos)
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green, pos);
 }
 
+phasorClass::~phasorClass(){
+    delete parameters;
+}
+
 float phasorClass::getPhasor(){
     parameters->getFloat("Phasor Monitor") = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
     return (float)ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);

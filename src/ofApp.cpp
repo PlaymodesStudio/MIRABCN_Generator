@@ -53,14 +53,17 @@ void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
             oscillators.push_back(make_shared<oscillatorBank>(nOscillators, true, oscillators.size()+1, info.second));
             break;
         }
-//        case oscillatorBankGroup_module:
-//        {
-//            vector<string> bankGroupSizeInfo = ofSplitString(ofSystemTextBoxDialog("Bank group size, expressed as 161x12"), "x");
-//            if(bankGroupSizeInfo.size() == 2)
-//                oscBankGroup.push_back(new oscillatorBankGroup(ofToInt(bankGroupSizeInfo[0]), ofToInt(bankGroupSizeInfo[1])));
-//            else
-//                ofSystemAlertDialog("Wrong entered info");
-//        }
+        case waveScope_module:
+        {
+            int nScopes = info.second.z;
+            info.second.z = 0;
+            preview = new waveScope(logBuffer, nScopes, info.second);
+            break;
+        }
+        case colorApplier_module:
+        {
+            colorModule = new colorApplier(NUM_BARS);
+        }
         default:
             break;
     }
@@ -90,6 +93,7 @@ void ofApp::deleteModuleListener(string &moduleName){
     }
     else if(moduleName == "waveScope"){
         delete preview;
+        preview = nullptr;
     }
     
 }
@@ -112,7 +116,7 @@ void ofApp::exit(){
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){
-    preview->draw();
+    if(preview != nullptr) preview->draw();
 }
 
 void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){

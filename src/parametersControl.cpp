@@ -9,6 +9,13 @@
 #include "parametersControl.h"
 #include <random>
 
+
+parametersControl::~parametersControl(){
+    datGuis.clear();
+    parameterGroups.clear();
+    connections.clear();
+}
+
 void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColor guiColor, ofPoint pos){
     
     ofxDatGuiLog::quiet();
@@ -173,7 +180,7 @@ void parametersControl::setup(){
     theme->color.textInput.text = randColor2;
     theme->color.icons = randColor2;
     popUpMenu->setTheme(theme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "ColorApplier"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -470,7 +477,7 @@ void parametersControl::savePreset(int presetNum, string bank){
     vector<ofPoint> toCreateOscillators;
     vector<ofPoint> toCreateOscillatorBanks;
     int toCreateWaveScope = 0;
-    bool toCreateColorApplier = false;
+    ofPoint toCreateColorApplier = ofPoint(-1, -1);
     
     for(int i = 0; i < parameterGroups.size() ; i++){
         string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
@@ -488,7 +495,7 @@ void parametersControl::savePreset(int presetNum, string bank){
                 toCreateWaveScope++;
         }
         else if(moduleName == "colorApplier"){
-            toCreateColorApplier = true;
+            toCreateColorApplier = datGuis[i]->getPosition();
         }
     }
     
@@ -507,7 +514,7 @@ void parametersControl::savePreset(int presetNum, string bank){
         xml.addValue("oscillatorBank_"+ofToString(i), ofToString(toCreateOscillatorBanks[i].x)+"_"+ofToString(toCreateOscillatorBanks[i].y));
     }
     xml.addValue("waveScope", ofToString(toCreateWaveScope));
-    xml.addValue("colorApplier", ofToString(toCreateColorApplier));
+    xml.addValue("colorApplier", ofToString(toCreateColorApplier.x)+"_"+ofToString(toCreateColorApplier.y));
     
     
     xml.setToParent();
@@ -604,7 +611,8 @@ void parametersControl::loadPreset(int presetNum, string bank){
     vector<ofPoint> toCreateOscillators;
     vector<ofPoint> toCreateOscillatorBanks;
     int toCreateWaveScope = 0;
-    bool toCreateColorApplier = false;
+    ofPoint waveScopePosition = ofPoint(-1, -1);
+    ofPoint toCreateColorApplier = ofPoint(-1, -1);
     
     if(xml.exists("DYNAMIC_NODES")){
         xml.setTo("DYNAMIC_NODES");
@@ -630,7 +638,8 @@ void parametersControl::loadPreset(int presetNum, string bank){
             i++;
         }
         toCreateWaveScope = ofToInt(xml.getValue("waveScope"));
-        toCreateColorApplier = ofToBool(xml.getValue("colorApplier"));
+        vector<string> strPoint = ofSplitString(xml.getValue("colorApplier"), "_");
+        toCreateColorApplier = ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]));
     }
     
     xml.setToParent();
@@ -679,11 +688,19 @@ void parametersControl::loadPreset(int presetNum, string bank){
                 }
             }
             else if(moduleName == "waveScope"){
-                //            while(datGuis[i]->getLabel("Osc Bank "+ofToString(toCreateWaveScope))->getName() != "X")
-                //                toCreateWaveScope++;
+                int actualWaveScopeSize = 0;
+                while(datGuis[i]->getLabel("Osc Bank "+ofToString(actualWaveScopeSize))->getName() != "X")
+                    actualWaveScopeSize++;
+                if(actualWaveScopeSize != toCreateWaveScope)
+                    isDestroyed = true;
+                else
+                    toCreateWaveScope = 0;
+                
+                waveScopePosition = datGuis[i]->getPosition();
             }
             else if(moduleName == "colorApplier"){
-                //            toCreateColorApplier = true;
+                isDestroyed = toCreateColorApplier == ofPoint(-1, -1) ? true : false;
+                toCreateColorApplier = ofPoint(-1, -1);
             }
         }
         
@@ -707,8 +724,6 @@ void parametersControl::loadPreset(int presetNum, string bank){
                 ofStringReplace(noSpacesGroupName, " ", "_");
                 if(xml.exists(noSpacesGroupName)){
                     xml.setTo(noSpacesGroupName);
-                    cout<< noSpacesGroupName<<endl;
-
                     
                     //Iterate for all parameters in parametergroup and look for the type of the parameter
                     for (int j = 0; j < groupParam->size() ; j++){
@@ -777,39 +792,55 @@ void parametersControl::loadPreset(int presetNum, string bank){
             
             //increase if it is not destroyed
             i++;
-            if(i == parameterGroups.size() && !newModulesCreated){
-                //create Phasors
-                for(int i = 0; i < toCreatePhasors.size() ; i++){
-                    if(toCreatePhasors[i] != ofPoint(-1, -1)){
-                        pair<moduleType, ofPoint> pairToSend;
-                        pairToSend.first = static_cast<moduleType>(1);
-                        pairToSend.second = toCreatePhasors[i];
-                        ofNotifyEvent(createNewModule, pairToSend, this);
-                    }
+            
+        }
+        if(i == parameterGroups.size() && !newModulesCreated){
+            //create Phasors
+            for(int i = 0; i < toCreatePhasors.size() ; i++){
+                if(toCreatePhasors[i] != ofPoint(-1, -1)){
+                    pair<moduleType, ofPoint> pairToSend;
+                    pairToSend.first = phasor_module;
+                    pairToSend.second = toCreatePhasors[i];
+                    ofNotifyEvent(createNewModule, pairToSend, this);
                 }
-                toCreatePhasors.clear();
-                
-                //create Oscillators
-                for(int i = 0; i < toCreateOscillators.size() ; i++){
-                    if(toCreateOscillators[i] != ofPoint(-1, -1)){
-                        pair<moduleType, ofPoint> pairToSend;
-                        pairToSend.first = static_cast<moduleType>(2);
-                        pairToSend.second = toCreateOscillators[i];
-                        ofNotifyEvent(createNewModule, pairToSend, this);
-                    }
-                }
-                
-                //create OscillatorBanks
-                for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
-                    if(toCreateOscillatorBanks[i] != ofPoint(-1, -1)){
-                        pair<moduleType, ofPoint> pairToSend;
-                        pairToSend.first = static_cast<moduleType>(3);
-                        pairToSend.second = toCreateOscillatorBanks[i];
-                        ofNotifyEvent(createNewModule, pairToSend, this);
-                    }
-                }
-                newModulesCreated = true;
             }
+            toCreatePhasors.clear();
+            
+            //create Oscillators
+            for(int i = 0; i < toCreateOscillators.size() ; i++){
+                if(toCreateOscillators[i] != ofPoint(-1, -1)){
+                    pair<moduleType, ofPoint> pairToSend;
+                    pairToSend.first = oscillator_module;
+                    pairToSend.second = toCreateOscillators[i];
+                    ofNotifyEvent(createNewModule, pairToSend, this);
+                }
+            }
+            
+            //create OscillatorBanks
+            for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
+                if(toCreateOscillatorBanks[i] != ofPoint(-1, -1)){
+                    pair<moduleType, ofPoint> pairToSend;
+                    pairToSend.first = oscillatorBank_module;
+                    pairToSend.second = toCreateOscillatorBanks[i];
+                    ofNotifyEvent(createNewModule, pairToSend, this);
+                }
+            }
+            
+            if(toCreateWaveScope != 0){
+                pair<moduleType, ofPoint> pairToSend;
+                pairToSend.first = waveScope_module;
+                pairToSend.second =  waveScopePosition;
+                pairToSend.second.z = toCreateWaveScope;
+                ofNotifyEvent(createNewModule, pairToSend, this);
+            }
+            
+            if(toCreateColorApplier != ofPoint(-1, -1)){
+                pair<moduleType, ofPoint> pairToSend;
+                pairToSend.first = colorApplier_module;
+                pairToSend.second = toCreateColorApplier;
+                ofNotifyEvent(createNewModule, pairToSend, this);
+            }
+            newModulesCreated = true;
         }
     }
     
@@ -874,29 +905,29 @@ void parametersControl::loadPreset(int presetNum, string bank){
 }
 
 void parametersControl::loadPresetWithFade(int presetNum, string bank){
-    ofXml xml2;
-    if(xml2.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
-        presetToLoad = presetNum;
-        bankToLoad = bank;
-        ofxOscMessage m;
-        m.setAddress("bankSelect");
-        m.addStringArg(bank);
-        oscSender.sendMessage(m);
-        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
-        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-        isFading = true;
-    }
+//    ofXml xml2;
+//    if(xml2.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
+//        presetToLoad = presetNum;
+//        bankToLoad = bank;
+//        ofxOscMessage m;
+//        m.setAddress("bankSelect");
+//        m.addStringArg(bank);
+//        oscSender.sendMessage(m);
+//        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+//        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+//        isFading = true;
+//    }
 }
 
 void parametersControl::loadPresetWhenFadeOutCompletes(float *arg){
-    if(*arg == 0){
-        loadPreset(presetToLoad, bankToLoad);
-        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
-         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-    }
-    else if(*arg == 1.0f){
-        isFading = false;
-    }
+//    if(*arg == 0){
+//        loadPreset(presetToLoad, bankToLoad);
+//        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
+//         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+//    }
+//    else if(*arg == 1.0f){
+//        isFading = false;
+//    }
 }
 
 void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){

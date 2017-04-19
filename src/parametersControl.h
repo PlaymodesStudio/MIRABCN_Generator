@@ -20,7 +20,8 @@ enum moduleType{
     phasor_module = 1,
     oscillator_module = 2,
     oscillatorBank_module = 3,
-    oscillatorBankGroup_module = 4
+    colorApplier_module = 4,
+    waveScope_module = 5
 };
 
 static const int NUM_PRESETS = 40;
@@ -42,6 +43,10 @@ public:
         path.setStrokeWidth(1);
         path.setCurveResolution(50);
         path.moveTo(points[0]);
+    }
+    
+    ~nodeConnection(){
+        gui = nullptr;
     }
     
     void moveLine(ofPoint p){
@@ -82,6 +87,7 @@ public:
         bindedComponents[1] = nullptr;
         toggleGui(false);
         delete gui;
+        gui = nullptr;
     }
     
     ofPath getPath(){
@@ -178,7 +184,7 @@ class parametersControl: public ofxMidiListener{
 public:
     
     parametersControl(){};
-    ~parametersControl(){};
+    ~parametersControl();
     
     static parametersControl &getInstance()
     {

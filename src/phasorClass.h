@@ -17,7 +17,7 @@
 class phasorClass{
 public:
     phasorClass(int index = 0, ofPoint pos = ofPoint(-1, -1));
-    ~phasorClass(){};
+    ~phasorClass();
     void setup(int index = 0);
     
     float getPhasor();
