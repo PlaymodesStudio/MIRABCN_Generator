@@ -57,6 +57,8 @@ void ofApp::setup(){
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
     ofAddListener(paramsControl->destroyModule, this, &ofApp::deleteModuleListener);
+    
+    ofAddListener(paramsControl->nextFrameEvent, this, &ofApp::nextFrameListener);
 }
 
 void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
@@ -151,6 +153,11 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
         phasor->audioIn(input, bufferSize, nChannels);
     
     bpmControl::getInstance().audioIn(input, bufferSize, nChannels);
+}
+
+void ofApp::nextFrameListener(){
+    for(auto phasor : phasors)
+        phasor->nextFrame();
 }
 
 //--------------------------------------------------------------

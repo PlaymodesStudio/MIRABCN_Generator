@@ -25,6 +25,7 @@ phasorClass::phasorClass(int index, ofPoint pos)
     parameters->add(resetPhase_Param.set("Reset Phase", false));
     parameters->add(loop_Param.set("Loop", true));
     parameters->add(bounce_Param.set("Bounce", false));
+    parameters->add(offlineMode_Param.set("Offline Mode", false));
     parameters->add(phasorMonitor.set("Phasor Monitor", 0, 0, 1));
     
     
@@ -39,7 +40,8 @@ phasorClass::~phasorClass(){
 }
 
 float phasorClass::getPhasor(){
-    parameters->getFloat("Phasor Monitor") = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
+    if(!offlineMode_Param)
+        parameters->getFloat("Phasor Monitor") = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
     return (float)ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
 }
 
@@ -49,39 +51,81 @@ void phasorClass::resetPhasor(bool &reset){
 }
 
 void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
-    //tue phasor that goes from 0 to 1 at desired frequency
-    double freq = (double)bpm_Param/(double)60;
-    freq = freq * (double)beatsMult_Param;
-    //TODO: This is not working
-    freq = (double)freq / (double)beatsDiv_Param;
-    
-    double increment = (1.0f/(double)(((double)44100/(double)512)/(double)freq));
-    
-    // We want to use half speed with bounce param,
-    // becouse we will make a triangle wave and it
-    // will go and return with the same period
-    // it we don't change it
-    if(loop_Param)
+    if(loop_Param && !offlineMode_Param){
+        //tue phasor that goes from 0 to 1 at desired frequency
+        double freq = (double)bpm_Param/(double)60;
+        freq = freq * (double)beatsMult_Param;
+        //TODO: This is not working
+        freq = (double)freq / (double)beatsDiv_Param;
+        
+        double increment = (1.0f/(double)(((double)44100/(double)512)/(double)freq));
+        
+        // We want to use half speed with bounce param,
+        // becouse we will make a triangle wave and it
+        // will go and return with the same period
+        // it we don't change it
+        
         phasor = bounce_Param ? phasor + increment/2 : phasor + increment;
-    phasor -= (int)phasor;
-    
-    //Assign a copy of the phasor to make some modifications
-    phasorMod = phasor;
-    
-    //We make a triangle Wave
-    if(bounce_Param)
-        phasorMod = 1-(fabs((phasor * (-2))+ 1));
-    
-    //take the initPhase_Param as a phase offset param
-    phasorMod += initPhase_Param;
-    if(phasorMod >= 1.0)
-        phasorMod -= 1.0;
-    
-    
-    //Quantization -- only get the values we are interested
-    if(quant_Param != 40){
-        phasorMod = (int)(phasorMod*quant_Param);
-        phasorMod /= quant_Param;
+        phasor -= (int)phasor;
+        
+        //Assign a copy of the phasor to make some modifications
+        phasorMod = phasor;
+        
+        //We make a triangle Wave
+        if(bounce_Param)
+            phasorMod = 1-(fabs((phasor * (-2))+ 1));
+        
+        //take the initPhase_Param as a phase offset param
+        phasorMod += initPhase_Param;
+        if(phasorMod >= 1.0)
+            phasorMod -= 1.0;
+        
+        
+        //Quantization -- only get the values we are interested
+        if(quant_Param != 40){
+            phasorMod = (int)(phasorMod*quant_Param);
+            phasorMod /= quant_Param;
+        }
+    }
+}
+
+void phasorClass::nextFrame(){
+    if(offlineMode_Param){
+        //tue phasor that goes from 0 to 1 at desired frequency
+        double freq = (double)bpm_Param/(double)60;
+        freq = freq * (double)beatsMult_Param;
+        //TODO: This is not working
+        freq = (double)freq / (double)beatsDiv_Param;
+        
+        double increment = (1.0f/(double)(((double)60.0)/(double)freq));
+        
+        // We want to use half speed with bounce param,
+        // becouse we will make a triangle wave and it
+        // will go and return with the same period
+        // it we don't change it
+        
+        phasor = bounce_Param ? phasor + increment/2 : phasor + increment;
+        phasor -= (int)phasor;
+        
+        //Assign a copy of the phasor to make some modifications
+        phasorMod = phasor;
+        
+        //We make a triangle Wave
+        if(bounce_Param)
+            phasorMod = 1-(fabs((phasor * (-2))+ 1));
+        
+        //take the initPhase_Param as a phase offset param
+        phasorMod += initPhase_Param;
+        if(phasorMod >= 1.0)
+            phasorMod -= 1.0;
+        
+        
+        //Quantization -- only get the values we are interested
+        if(quant_Param != 40){
+            phasorMod = (int)(phasorMod*quant_Param);
+            phasorMod /= quant_Param;
+        }
+        parameters->getFloat("Phasor Monitor") = ofMap(phasorMod, 0, 1, minVal_Param, maxVal_Param);
     }
 }
 

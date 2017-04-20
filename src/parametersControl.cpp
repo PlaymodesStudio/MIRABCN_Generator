@@ -206,6 +206,8 @@ void parametersControl::update(ofEventArgs &args){
                     if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
                         groupParam->getBool("Reset Phase") = 0;
                 }
+            }else if(splitAddress[1] == "nextFrame"){
+                ofNotifyEvent(nextFrameEvent, this);
             }else{
                 for(auto groupParam : parameterGroups){
                     if(groupParam->getName() == splitAddress[1]){

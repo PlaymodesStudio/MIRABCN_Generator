@@ -238,8 +238,9 @@ public:
     
     void loadPresetWhenFadeOutCompletes(float *arg);
     
-    ofEvent<pair<moduleType, ofPoint>> createNewModule;
+    ofEvent<pair<moduleType, ofPoint>>  createNewModule;
     ofEvent<string>                     destroyModule;
+    ofEvent<void>                       nextFrameEvent;
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);

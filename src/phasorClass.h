@@ -26,6 +26,8 @@ public:
     void audioIn(float * input, int bufferSize, int nChannels);
     void loopChanged(bool &val);
     
+    void nextFrame();
+    
     ofParameterGroup* getParameterGroup(){return parameters;};
     
 private:
@@ -43,6 +45,7 @@ private:
     ofParameter<bool>   loop_Param;
     ofParameter<bool>   bounce_Param;
     ofParameter<bool>   resetPhase_Param;
+    ofParameter<bool>   offlineMode_Param;
 };
 
 
