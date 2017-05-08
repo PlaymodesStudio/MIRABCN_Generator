@@ -158,76 +158,76 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     
     //VECTORR
     if(p.getName() == numWaves_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->numWaves_Param = ofMap(numWaves_vecParam.get()[i], 0, 1, numWaves_Param.getMin(), numWaves_Param.getMax());
     }
     else if(p.getName() == invert_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->invert_Param = ofMap(invert_vecParam.get()[i], 0, 1, invert_Param.getMin(), invert_Param.getMax());
     }
     else if(p.getName() == symmetry_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->symmetry_Param = ofMap(symmetry_vecParam.get()[i], 0, 1, symmetry_Param.getMin(), symmetry_Param.getMax());
     }
     else if(p.getName() == indexRand_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->indexRand_Param = ofMap(indexRand_vecParam.get()[i], 0, 1, indexRand_Param.getMin(), indexRand_Param.getMax());
     }
     else if(p.getName() == indexOffset_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->indexOffset_Param = ofMap(indexOffset_vecParam.get()[i], 0, 1, indexOffset_Param.getMin(), indexOffset_Param.getMax());
     }
     else if(p.getName() == indexQuant_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->indexQuant_Param = ofMap(indexQuant_vecParam.get()[i], 0, 1, indexQuant_Param.getMin(), indexQuant_Param.getMax());
     }
     else if(p.getName() == combination_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->combination_Param = ofMap(combination_vecParam.get()[i], 0, 1, combination_Param.getMin(), combination_Param.getMax());
     }
     else if(p.getName() == modulo_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->modulo_Param = ofMap(modulo_vecParam.get()[i], 0, 1, modulo_Param.getMin(), modulo_Param.getMax());
     }
 
     else if(p.getName() == phaseOffset_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->phaseOffset_Param = ofMap(phaseOffset_vecParam.get()[i], 0, 1, phaseOffset_Param.getMin(), phaseOffset_Param.getMax());
     }
     else if(p.getName() == pow_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->pow_Param = ofMap(pow_vecParam.get()[i], 0, 1, pow_Param.getMin(), pow_Param.getMax());
     }
     else if(p.getName() == pwm_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->pwm_Param = ofMap(pwm_vecParam.get()[i], 0, 1, pwm_Param.getMin(), pwm_Param.getMax());
     }
     else if(p.getName() == holdTime_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->holdTime_Param = ofMap(holdTime_vecParam.get()[i], 0, 1, holdTime_Param.getMin(), holdTime_Param.getMax());
     }
     else if(p.getName() == quant_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->quant_Param = ofMap(quant_vecParam.get()[i], 0, 1, quant_Param.getMin(), quant_Param.getMax());
     }
     else if(p.getName() == scale_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->scale_Param = ofMap(scale_vecParam.get()[i], 0, 1, scale_Param.getMin(), scale_Param.getMax());
     }
     else if(p.getName() == offset_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->offset_Param = ofMap(offset_vecParam.get()[i], 0, 1, offset_Param.getMin(), offset_Param.getMax());
     }
     else if(p.getName() == randomAdd_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->randomAdd_Param = ofMap(randomAdd_vecParam.get()[i], 0, 1, randomAdd_Param.getMin(), randomAdd_Param.getMax());
     }
     else if(p.getName() == waveSelect_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->waveSelect_Param = ofMap(waveSelect_vecParam.get()[i], 0, 1, waveSelect_Param.getMin(), waveSelect_Param.getMax());
     }
     else if(p.getName() == amplitude_vecParam.getName()){
-        for(int i = 0; i < oscillatorBanks.size(); i++)
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->amplitude_Param = ofMap(amplitude_vecParam.get()[i], 0, 1, amplitude_Param.getMin(), amplitude_Param.getMax());
     }
 }
