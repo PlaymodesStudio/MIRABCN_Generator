@@ -1023,9 +1023,21 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
             if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target){
                 ofAbstractParameter &parameter = parameterGroups[i]->get(e.target->getName());
                 bool foundParameter = false;
-                for(int i = 0 ; i < connections.size() ; i++){
-                    if(connections[i]->getSinkParameter() == &parameter){
-                        swap(connections[i], connections.back());
+                for(int j = 0 ; j < connections.size() ; j++){
+                    if(connections[j]->getSinkParameter() == &parameter){
+                        swap(connections[j], connections.back());
+                        if(ofStringTimesInString(connections.back()->getSinkParameter()->getName(), "Vector")){
+                            string paramNameWithoutVector = connections.back()->getSinkParameter()->getName();
+                            paramNameWithoutVector.erase(paramNameWithoutVector.end() - 7, paramNameWithoutVector.end());
+                            if(parameterGroups[i]->get(paramNameWithoutVector).type() == typeid(ofParameter<float>).name())
+                                parameterGroups[i]->getFloat(paramNameWithoutVector) = parameterGroups[i]->getFloat(paramNameWithoutVector);
+                            else if(parameterGroups[i]->get(paramNameWithoutVector).type() == typeid(ofParameter<int>).name())
+                                parameterGroups[i]->getInt(paramNameWithoutVector) = parameterGroups[i]->getInt(paramNameWithoutVector);
+                            else if(parameterGroups[i]->get(paramNameWithoutVector).type() == typeid(ofParameter<bool>).name())
+                                parameterGroups[i]->getBool(paramNameWithoutVector) = parameterGroups[i]->getBool(paramNameWithoutVector);
+                            else if(parameterGroups[i]->get(paramNameWithoutVector).type() == typeid(ofParameterGroup).name())
+                                parameterGroups[i]->getGroup(parameterGroups[i]->get(paramNameWithoutVector).getName()).getInt(1) = parameterGroups[i]->getGroup(parameterGroups[i]->get(paramNameWithoutVector).getName()).getInt(1);
+                        }
                         connections.back()->disconnect();
                         foundParameter = true;
                         break;
