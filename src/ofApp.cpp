@@ -39,9 +39,9 @@ void ofApp::setup(){
             
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
-            phasors.push_back(make_shared<phasorClass>(1));
+            phasors.push_back(new phasorClass(1));
             oscBankGroup = new oscillatorBankGroup(height, width);
-            oscillators.push_back(make_shared<oscillatorBank>(width, true, 1));
+            oscillators.push_back(new oscillatorBank(width, true, 1));
             colorModule = new colorApplier(width);
             senderModule = new senderManager(invert);
             preview = new waveScope(logBuffer, 3);
@@ -63,16 +63,45 @@ void ofApp::setup(){
 
 void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
     switch (info.first) {
-        case phasor_module:
-            phasors.push_back(make_shared<phasorClass>(phasors.size()+1, info.second));
+        case phasor_module:{
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < phasors.size() && !foundNullElementInVector) ; i++){
+                if(phasors[i] == nullptr){
+                    phasors[i] = new phasorClass(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                phasors.push_back(new phasorClass(phasors.size()+1, info.second));
             break;
-        case oscillator_module:
-            monoOscillator.push_back(make_shared<baseOscillator>(monoOscillator.size()+1, true, info.second));
+        }
+        case oscillator_module:{
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < monoOscillator.size() && !foundNullElementInVector) ; i++){
+                if(monoOscillator[i] == nullptr){
+                    monoOscillator[i] = new baseOscillator(i+1, true, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                monoOscillator.push_back(new baseOscillator(monoOscillator.size()+1, true, info.second));
             break;
+        }
         case oscillatorBank_module:
         {
-            int nOscillators = ofToInt(ofSystemTextBoxDialog("How many oscillators?"));
-            oscillators.push_back(make_shared<oscillatorBank>(nOscillators, true, oscillators.size()+1, info.second));
+            int nOscillators = info.second.z;
+            if(nOscillators == 0) nOscillators = ofToInt(ofSystemTextBoxDialog("How many oscillators?"));
+            info.second.z = 0;
+            
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < oscillators.size() && !foundNullElementInVector) ; i++){
+                if(oscillators[i] == nullptr){
+                    oscillators[i] = new oscillatorBank(nOscillators, true, i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                oscillators.push_back(new oscillatorBank(nOscillators, true, oscillators.size()+1, info.second));
             break;
         }
         case waveScope_module:
@@ -104,13 +133,16 @@ void ofApp::deleteModuleListener(string &moduleName){
     ofLog()<<"Module Type: " << moduleName << "ID: " << id;
     
     if(moduleName == "phasor"){
-        phasors.erase(phasors.begin()+id-1);
+        delete phasors[id-1];
+        phasors[id-1] = nullptr;
     }
     else if(moduleName == "oscillator"){
-        monoOscillator.erase(monoOscillator.begin()+id-1);
+        delete monoOscillator[id-1];
+        monoOscillator[id-1] = nullptr;
     }
     else if(moduleName == "oscillatorBank"){
-        oscillators.erase(oscillators.begin()+id-1);
+        delete oscillators[id-1];
+        oscillators[id-1] = nullptr;
     }
     else if(moduleName == "colorAppier"){
         delete colorModule;
@@ -125,8 +157,10 @@ void ofApp::deleteModuleListener(string &moduleName){
 void ofApp::update(){
     //Phasor updates automatically at audio rate, but we need to take the value for this update so the phasor is the same along all the time update is being called
     //this has to be done in another thread?? Does not work in another thread becouse the last step is syphon send and can not be done in a thread that is not the main thread becouse opengl calls must run on the same thread
-    for(auto &phasor : phasors)
-        phasor->getPhasor();
+    for(auto &phasor : phasors){
+        if(phasor != nullptr)
+            phasor->getPhasor();
+    }
 }
 
 //--------------------------------------------------------------
@@ -149,15 +183,19 @@ void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
 
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    for(auto phasor : phasors)
-        phasor->audioIn(input, bufferSize, nChannels);
+    for(auto phasor : phasors){
+        if(phasor != nullptr)
+            phasor->audioIn(input, bufferSize, nChannels);
+    }
     
     bpmControl::getInstance().audioIn(input, bufferSize, nChannels);
 }
 
 void ofApp::nextFrameListener(){
-    for(auto phasor : phasors)
-        phasor->nextFrame();
+    for(auto phasor : phasors){
+        if(phasor != nullptr)
+            phasor->nextFrame();
+    }
 }
 
 //--------------------------------------------------------------

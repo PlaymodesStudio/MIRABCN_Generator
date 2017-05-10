@@ -60,9 +60,9 @@ private:
     // - 1 OscillatorBankGroup with the size as parameter, probably wont need more than one in each project
     // - 1 senderManager module (from parameters set syphon names and osc ports
     // - 1 waveScope (from parameters set number of oscillatorBank scopes)
-    vector<shared_ptr<phasorClass>>        phasors;
-    vector<shared_ptr<oscillatorBank>>     oscillators;
-    vector<shared_ptr<baseOscillator>>     monoOscillator;
+    vector<phasorClass*>        phasors;
+    vector<oscillatorBank*>     oscillators;
+    vector<baseOscillator*>     monoOscillator;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;
