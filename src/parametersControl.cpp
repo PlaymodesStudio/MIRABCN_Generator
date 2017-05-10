@@ -491,6 +491,7 @@ void parametersControl::savePreset(int presetNum, string bank){
         }
         else if(moduleName == "oscillatorBank"){
             toCreateOscillatorBanks.push_back(datGuis[i]->getPosition());
+            toCreateOscillatorBanks.back().z = parameterGroups[i]->getFloat("Num Waves").getMax();
         }
         else if(moduleName == "waveScope"){
             while(datGuis[i]->getLabel("Osc Bank "+ofToString(toCreateWaveScope))->getName() != "X")
@@ -513,7 +514,7 @@ void parametersControl::savePreset(int presetNum, string bank){
     
     //save OscillatorBanks
     for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
-        xml.addValue("oscillatorBank_"+ofToString(i), ofToString(toCreateOscillatorBanks[i].x)+"_"+ofToString(toCreateOscillatorBanks[i].y));
+        xml.addValue("oscillatorBank_"+ofToString(i), ofToString(toCreateOscillatorBanks[i].x)+"_"+ofToString(toCreateOscillatorBanks[i].y)+"_"+ofToString(toCreateOscillatorBanks[i].z));
     }
     xml.addValue("waveScope", ofToString(toCreateWaveScope));
     xml.addValue("colorApplier", ofToString(toCreateColorApplier.x)+"_"+ofToString(toCreateColorApplier.y));
@@ -636,7 +637,10 @@ void parametersControl::loadPreset(int presetNum, string bank){
         i = 0;
         while(xml.getValue("oscillatorBank_"+ofToString(i)) != ""){
             vector<string> strPoint = ofSplitString(xml.getValue("oscillatorBank_"+ofToString(i)), "_");
-            toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
+            if(strPoint.size() == 2)
+                toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
+            else if(strPoint.size() == 3)
+                toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]), ofToInt(strPoint[2])));
             i++;
         }
         toCreateWaveScope = ofToInt(xml.getValue("waveScope"));
@@ -681,6 +685,9 @@ void parametersControl::loadPreset(int presetNum, string bank){
             else if(moduleName == "oscillatorBank"){
                 int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
                 if(toCreateOscillatorBanks.size() < id){
+                    //destroy node
+                    isDestroyed = true;
+                }else if(toCreateOscillatorBanks[id-1].z !=0 && toCreateOscillatorBanks[id-1].z != groupParam->getFloat("Num Waves").getMax()){
                     //destroy node
                     isDestroyed = true;
                 }else{
