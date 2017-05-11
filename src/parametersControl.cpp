@@ -639,6 +639,7 @@ void parametersControl::savePreset(string presetName, string bank){
     oscSender.sendMessage(m);
 }
 
+//TODO: When loading a preset, first remove the connections then upload the values
 void parametersControl::loadPreset(string presetName, string bank){
     //Test if there is no problem with the file
     
@@ -781,7 +782,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             string noSpaces = castedParam.getName();
                             ofStringReplace(noSpaces, " ", "_");
                             if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
-                                castedParam = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                                castedParam = round(ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true));
                         }
                         else if(absParam.type() == typeid(ofParameter<bool>).name()){
                             ofParameter<bool> castedParam = absParam.cast<bool>();
@@ -1121,8 +1122,13 @@ void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
 
 void parametersControl::newPresetListener(ofxDatGuiTextInputEvent e){
     if(e.text != ""){
-        string lastPreset = presetsList->get(presetsList->getNumItems()-1)->getName();
-        string newPresetName = ofToString(ofToInt(ofSplitString(lastPreset, "|")[0])+1) + "|" + e.text;
+        string newPresetName;
+        if(presetsList->getNumItems() != 0){
+            string lastPreset = presetsList->get(presetsList->getNumItems()-1)->getName();
+            newPresetName = ofToString(ofToInt(ofSplitString(lastPreset, "|")[0])+1) + "|" + e.text;
+        }else
+            newPresetName = "1|" + e.text;
+            
         presetsList->add(newPresetName);
         savePreset(newPresetName, bankSelect->getSelected()->getName());
     }
