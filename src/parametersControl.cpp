@@ -639,7 +639,6 @@ void parametersControl::savePreset(string presetName, string bank){
     oscSender.sendMessage(m);
 }
 
-//TODO: When loading a preset, first remove the connections then upload the values
 void parametersControl::loadPreset(string presetName, string bank){
     //Test if there is no problem with the file
     
@@ -648,6 +647,7 @@ void parametersControl::loadPreset(string presetName, string bank){
     if(!xml.load("Presets/" + bank + "/" + presetName + ".xml"))
         return;
     
+    //Get the dinamic modules that have to be created or updated
     vector<ofPoint> toCreatePhasors;
     vector<ofPoint> toCreateOscillators;
     vector<ofPoint> toCreateOscillatorBanks;
@@ -690,12 +690,14 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     bool newModulesCreated = false;
     
+    connections.clear();
+    
     //Iterate for all the parameterGroups
     for (int i = 0; i < parameterGroups.size();){
         auto &groupParam = parameterGroups[i];
         bool isDestroyed = false;
         
-        //Move or destroy nodes
+        //Move, edit or destroy nodes
         string moduleName = ofSplitString(groupParam->getName(), " ")[0];
         if(!newModulesCreated){
             if(moduleName == "phasor"){
@@ -751,6 +753,7 @@ void parametersControl::loadPreset(string presetName, string bank){
             }
         }
         
+        //if we have to destroy the module we do it
         if(isDestroyed){
             destroyModuleAndConnections(i);
         }
@@ -883,7 +886,7 @@ void parametersControl::loadPreset(string presetName, string bank){
     
 //    xml.setToParent();
     
-    connections.clear();
+//    connections.clear();
     
     if(xml.exists("CONNECTIONS")){
         xml.setTo("CONNECTIONS");
@@ -1200,21 +1203,10 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         }
     }else if(ofGetKeyPressed('r')){
         for(int i = 0; i<datGuis.size(); i++){
-            if(datGuis[i]->hitTest(transformedPos)
+            if(datGuis[i]->hitTest(e)
                && datGuis[i]->getHeader()->getName() != "oscillatorGroup"
                && datGuis[i]->getHeader()->getName() != "senderManager"){
                 destroyModuleAndConnections(i);
-//                for(int j = 0; j < connections.size();){
-//                    auto &connection = connections[j];
-//                    if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
-//                        connections.erase(remove(connections.begin(), connections.end(), connection));
-//                    else
-//                        j++;
-//                }
-//                datGuis.erase(datGuis.begin()+i);
-//                string moduleName = parameterGroups[i]->getName();
-//                ofNotifyEvent(destroyModule, moduleName, this);
-//                parameterGroups.erase(parameterGroups.begin()+i);
             }
         }
     }
