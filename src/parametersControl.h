@@ -209,6 +209,7 @@ public:
     void onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e);
     
     void newModuleListener(ofxDatGuiDropdownEvent e);
+    void newPresetListener(ofxDatGuiTextInputEvent e);
     
     void keyPressed(ofKeyEventArgs &e);
     void keyReleased(ofKeyEventArgs &e);
@@ -228,8 +229,8 @@ public:
     
     void newMidiMessage(ofxMidiMessage& eventArgs);
     
-    void savePreset(int presetNum, string bank);
-    void loadPreset(int presetNum, string bank);
+    void savePreset(string presetName, string bank);
+    void loadPreset(string presetName, string bank);
     void loadPresetWithFade(int presetNum, string bank);
     
     void saveGuiArrangement();
@@ -238,6 +239,8 @@ public:
     bool loadPresetsSequence();
     
     void loadPresetWhenFadeOutCompletes(float *arg);
+    
+    void loadBank();
     
     ofEvent<pair<moduleType, ofPoint>>  createNewModule;
     ofEvent<string>                     destroyModule;

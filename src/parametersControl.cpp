@@ -117,27 +117,22 @@ void parametersControl::setup(){
     datGui->addSlider("Global BPM", 0, 999, 120);
     
     //Preset Control
-    bankSelect = datGui->addDropdown("Bank Select", {"edu", "eloi", "santi"});
+    ofDirectory dir;
+    vector<string> banks;
+    dir.open("Presets");
+    for(int i = 0; i < dir.listDir() ; i++)
+        banks.push_back(dir.getName(i));
+    banks.push_back(" -- NEW BANK -- ");
+    bankSelect = datGui->addDropdown("Bank Select", banks);
+    bankSelect->select(0);
     datGui->addLabel("<== Presets List ==>")->setStripe(ofColor::red, 10);
     
-    ofDirectory dir;
-    dir.open("Presets");
-    if(!dir.exists())
-        dir.createDirectory("Presets");
-    dir.sort();
-    int numPresets = dir.listDir();
-    ofLog() << "Dir size: " << ofToString(numPresets);
     presetsList = datGui->addScrollView("test", 10);
-    for ( int i = 0 ; i < numPresets; i++)
-        presetsList->add(ofSplitString(dir.getName(i), ".")[0]);
+    
+    loadBank();
     
     datGui->addTextInput("New Preset");
     
-//    presetMatrix = datGui->addMatrix("Presets", NUM_PRESETS, true);
-//    presetMatrix->setRadioMode(true);
-//    presetMatrix->setOpacity(.75);
-//    
-//    presetMatrix->onMatrixEvent(this, &parametersControl::onGuiMatrixEvent);
     
     datGui->addToggle("BPM Sync")->setChecked(false);
     //datGui->addToggle("Automatic Preset");
@@ -146,6 +141,7 @@ void parametersControl::setup(){
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
     datGui->setPosition(ofxDatGuiAnchor::BOTTOM_LEFT);
+
     
     //ControlGui Events
     datGui->onButtonEvent(this, &parametersControl::onGuiButtonEvent);
@@ -153,6 +149,7 @@ void parametersControl::setup(){
     datGui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
     datGui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
     datGui->onScrollViewEvent(this, &parametersControl::onGuiScrollViewEvent);
+    datGui->onTextInputEvent(this, &parametersControl::newPresetListener);
 
     
     //OSC
@@ -214,9 +211,9 @@ void parametersControl::update(ofEventArgs &args){
         if(splitAddress.size() >= 2){
             ofStringReplace(splitAddress[1], "_", " ");
             if(splitAddress[1] == "presetLoad"){
-                loadPreset(m.getArgAsInt(0), m.getArgAsString(1));
+                loadPreset(m.getArgAsString(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "presetSave"){
-                savePreset(m.getArgAsInt(0), m.getArgAsString(1));
+                savePreset(m.getArgAsString(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){
                 for(auto groupParam : parameterGroups){
                     if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
@@ -432,6 +429,30 @@ void parametersControl::loadGuiArrangement(){
      */
 }
 
+void parametersControl::loadBank(){
+    string bankName = bankSelect->getSelected()->getName();
+    
+    ofDirectory dir;
+    vector<pair<int, string>> presets;
+    dir.open("Presets/" + bankName);
+    if(!dir.exists())
+        dir.createDirectory("Presets/" + bankName);
+    dir.sort();
+    int numPresets = dir.listDir();
+    ofLog() << "Dir size: " << ofToString(numPresets);
+    for ( int i = 0 ; i < numPresets; i++)
+        presets.push_back(pair<int, string>(ofToInt(ofSplitString(dir.getName(i), "|")[0]), ofSplitString(dir.getName(i), ".")[0]));
+    
+    std::sort(presets.begin(), presets.end(), [](pair<int, string> &left, pair<int, string> &right) {
+        return left.first< right.first;
+    });
+    
+    presetsList->clear();
+    
+    for(auto preset : presets)
+        presetsList->add(preset.second);
+}
+
 bool parametersControl::loadPresetsSequence(){
     // this is our buffer to stroe the text data
     ofBuffer buffer = ofBufferFromFile("PresetsSequencing.txt");
@@ -476,7 +497,7 @@ bool parametersControl::loadPresetsSequence(){
     return true;
 }
 
-void parametersControl::savePreset(int presetNum, string bank){
+void parametersControl::savePreset(string presetName, string bank){
     //xml.load("Preset_"+ofToString(presetNum)+".xml");
     xml.clear();
     
@@ -608,22 +629,22 @@ void parametersControl::savePreset(int presetNum, string bank){
         xml.addValue("connection_" + ofToString(i) + "_sink", groupNames[0] + "-|-" + groupNames[1]);
     }
     
-    ofLog() <<"Save Preset_" << presetNum<< "_" << bank;
-    xml.save("Preset_"+ofToString(presetNum)+"_"+bank+".xml");
+    ofLog() <<"Save " << presetName;
+    xml.save("Presets/" + bank + "/" + presetName + ".xml");
     
     ofxOscMessage m;
     m.setAddress("presetSave");
-    m.addIntArg(presetNum);
+    m.addStringArg(presetName);
     m.addStringArg(bank);
     oscSender.sendMessage(m);
 }
 
-void parametersControl::loadPreset(int presetNum, string bank){
+void parametersControl::loadPreset(string presetName, string bank){
     //Test if there is no problem with the file
     
     bool isColorLoaded = false;
     
-    if(!xml.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml"))
+    if(!xml.load("Presets/" + bank + "/" + presetName + ".xml"))
         return;
     
     vector<ofPoint> toCreatePhasors;
@@ -902,14 +923,11 @@ void parametersControl::loadPreset(int presetNum, string bank){
 //    }
     
     
-    ofLog()<<"Load Preset_" << presetNum<< "_" << bank;
-    vector<int> tempVec;
-    tempVec.push_back(presetNum-1);
-    presetMatrix->setSelected(tempVec);
+    ofLog()<<"Load " << presetName;
     
     ofxOscMessage m;
     m.setAddress("presetLoad");
-    m.addIntArg(presetNum);
+    m.addStringArg(presetName);
     m.addStringArg(bank);
     oscSender.sendMessage(m);
     
@@ -979,8 +997,13 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
 }
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
-    if(e.target == bankSelect)
-        loadGuiArrangement();
+    if(e.target == bankSelect){
+        if(e.child == bankSelect->getNumOptions()-1){
+            bankSelect->addOption("Bank " + ofGetTimestampString(), bankSelect->getNumOptions()-1);
+            bankSelect->select(bankSelect->getNumOptions()-2);
+        }
+        loadBank();
+    }
     else{
         for (int i=0; i < datGuis.size() ; i++){
             if(datGuis[i]->getDropdown(e.target->getName()) == e.target){
@@ -992,15 +1015,6 @@ void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
     }
 }
 
-void parametersControl::onGuiMatrixEvent(ofxDatGuiMatrixEvent e){
-    if(ofGetKeyPressed(OF_KEY_SHIFT))
-        savePreset(e.child+1, bankSelect->getSelected()->getName());
-    else{
-        loadPreset(e.child+1, bankSelect->getSelected()->getName());
-        if(autoPreset)
-            presetChangedTimeStamp = ofGetElapsedTimef();
-    }
-}
 
 void parametersControl::onGuiSliderEvent(ofxDatGuiSliderEvent e){
     if(datGui->getSlider(e.target->getName())->getName() == e.target->getName()){
@@ -1077,7 +1091,13 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
 }
 
 void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
-    ofLog() << e.target->getName() ;
+    if(ofGetKeyPressed(OF_KEY_SHIFT))
+        savePreset(e.target->getName(), bankSelect->getSelected()->getName());
+    else{
+        loadPreset(e.target->getName(), bankSelect->getSelected()->getName());
+        if(autoPreset)
+            presetChangedTimeStamp = ofGetElapsedTimef();
+    }
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
@@ -1097,6 +1117,15 @@ void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
     popUpMenu->setPosition(-1, -1);
     ofxDatGuiDropdown* drop = popUpMenu->getDropdown("Choose module");
     drop->setLabel("Choose module");
+}
+
+void parametersControl::newPresetListener(ofxDatGuiTextInputEvent e){
+    if(e.text != ""){
+        string lastPreset = presetsList->get(presetsList->getNumItems()-1)->getName();
+        string newPresetName = ofToString(ofToInt(ofSplitString(lastPreset, "|")[0])+1) + "|" + e.text;
+        presetsList->add(newPresetName);
+        savePreset(newPresetName, bankSelect->getSelected()->getName());
+    }
 }
 
 
