@@ -2,7 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
+    //Turn off quit app on ESC press.
+    ofSetEscapeQuitsApp(false);
     
     ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
     string path = *buffer.getLines().begin();
