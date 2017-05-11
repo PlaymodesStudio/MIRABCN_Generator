@@ -206,6 +206,7 @@ public:
     void onGuiTextInputEvent(ofxDatGuiTextInputEvent e);
     void onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e);
     void onGuiRightClickEvent(ofxDatGuiRightClickEvent e);
+    void onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e);
     
     void newModuleListener(ofxDatGuiDropdownEvent e);
     
@@ -251,6 +252,7 @@ private:
     ofxDatGui *datGui;
     ofxDatGuiMatrix* presetMatrix;
     ofxDatGuiDropdown* bankSelect;
+    ofxDatGuiScrollView* presetsList;
     
     vector<shared_ptr<ofxDatGui>> datGuis;
     vector<ofParameterGroup*> parameterGroups;

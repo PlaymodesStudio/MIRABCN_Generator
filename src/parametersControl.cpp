@@ -107,7 +107,7 @@ void parametersControl::setup(){
     theme->color.slider.fill = randColor;
     theme->color.textInput.text = randColor;
     theme->color.icons = randColor;
-    datGui->setTheme(theme);
+    datGui->setTheme(theme);//, true);
     
     datGui->setWidth(290);
     datGui->addHeader("Presets Control");
@@ -118,15 +118,30 @@ void parametersControl::setup(){
     
     //Preset Control
     bankSelect = datGui->addDropdown("Bank Select", {"edu", "eloi", "santi"});
-    presetMatrix = datGui->addMatrix("Presets", NUM_PRESETS, true);
-    presetMatrix->setRadioMode(true);
-    presetMatrix->setOpacity(.75);
+    datGui->addLabel("<== Presets List ==>")->setStripe(ofColor::red, 10);
     
-    presetMatrix->onMatrixEvent(this, &parametersControl::onGuiMatrixEvent);
+    ofDirectory dir;
+    dir.open("Presets");
+    if(!dir.exists())
+        dir.createDirectory("Presets");
+    dir.sort();
+    int numPresets = dir.listDir();
+    ofLog() << "Dir size: " << ofToString(numPresets);
+    presetsList = datGui->addScrollView("test", 10);
+    for ( int i = 0 ; i < numPresets; i++)
+        presetsList->add(ofSplitString(dir.getName(i), ".")[0]);
+    
+    datGui->addTextInput("New Preset");
+    
+//    presetMatrix = datGui->addMatrix("Presets", NUM_PRESETS, true);
+//    presetMatrix->setRadioMode(true);
+//    presetMatrix->setOpacity(.75);
+//    
+//    presetMatrix->onMatrixEvent(this, &parametersControl::onGuiMatrixEvent);
     
     datGui->addToggle("BPM Sync")->setChecked(false);
-    datGui->addToggle("Automatic Preset");
-    datGui->addButton("Reload Sequence");
+    //datGui->addToggle("Automatic Preset");
+    //datGui->addButton("Reload Sequence");
     datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
@@ -137,6 +152,7 @@ void parametersControl::setup(){
     datGui->onToggleEvent(this, &parametersControl::onGuiToggleEvent);
     datGui->onSliderEvent(this, &parametersControl::onGuiSliderEvent);
     datGui->onDropdownEvent(this, &parametersControl::onGuiDropdownEvent);
+    datGui->onScrollViewEvent(this, &parametersControl::onGuiScrollViewEvent);
 
     
     //OSC
@@ -715,17 +731,6 @@ void parametersControl::loadPreset(int presetNum, string bank){
         
         if(isDestroyed){
             destroyModuleAndConnections(i);
-//            for(int j = 0; j < connections.size();){
-//                auto &connection = connections[j];
-//                if(connection->getParentGuis(0) == datGuis[i] || connection->getParentGuis(1) == datGuis[i])
-//                    connections.erase(remove(connections.begin(), connections.end(), connection));
-//                else
-//                    j++;
-//            }
-//            datGuis.erase(datGuis.begin()+i);
-//            string moduleName = parameterGroups[i]->getName();
-//            ofNotifyEvent(destroyModule, moduleName, this);
-//            parameterGroups.erase(parameterGroups.begin()+i);
         }
         else{
             if(moduleName != "waveScope" && moduleName != "colorApplier"){
@@ -1069,6 +1074,10 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
             }
         }
     }
+}
+
+void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
+    ofLog() << e.target->getName() ;
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
