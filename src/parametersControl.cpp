@@ -23,7 +23,10 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     
     //Put parameterGroup into vector
     parameterGroups.push_back(paramGroup);
-        
+    
+    if(ofStringTimesInString(paramGroup->getName(), "phasor") != 0 && paramGroup->getFloat("BPM").getName() == "BPM" && datGui != nullptr)
+        paramGroup->getFloat("BPM") = datGui->getSlider("Global BPM")->getValue();
+    
     shared_ptr<ofxDatGui> tempDatGui = make_shared<ofxDatGui>();
     
     tempDatGui->setTransformMatrix(transformMatrix);
@@ -317,11 +320,7 @@ void parametersControl::update(ofEventArgs &args){
     }
     
     if(newBpm != 0){
-        datGui->getSlider("Global BPM")->setValue(newBpm);
-        for(auto groupParam : parameterGroups){
-            if(ofStringTimesInString(groupParam->getName(), "phasor") != 0 && groupParam->getFloat("BPM").getName() == "BPM")
-                groupParam->getFloat("BPM") = newBpm;
-        }
+        setGlobalBPM(newBpm);
         newBpm = 0;
     }
 
@@ -451,6 +450,14 @@ void parametersControl::loadBank(){
     
     for(auto preset : presets)
         presetsList->add(preset.second);
+}
+
+void parametersControl::setGlobalBPM(float bpm){
+    datGui->getSlider("Global BPM")->setValue(bpm);
+    for(auto groupParam : parameterGroups){
+        if(ofStringTimesInString(groupParam->getName(), "phasor") != 0 && groupParam->getFloat("BPM").getName() == "BPM")
+            groupParam->getFloat("BPM") = bpm;
+    }
 }
 
 bool parametersControl::loadPresetsSequence(){

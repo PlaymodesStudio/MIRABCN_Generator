@@ -242,6 +242,8 @@ public:
     
     void loadBank();
     
+    void setGlobalBPM(float bpm);
+    
     ofEvent<pair<moduleType, ofPoint>>  createNewModule;
     ofEvent<string>                     destroyModule;
     ofEvent<void>                       nextFrameEvent;

@@ -37,6 +37,7 @@ void ofApp::setup(){
             int width = xml.getIntValue("Width");
             int height = xml.getIntValue("Height");
             bool invert = xml.getBoolValue("Invert");
+            float bpm = xml.getFloatValue("BPM");
             
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
@@ -48,6 +49,7 @@ void ofApp::setup(){
             preview = new waveScope(logBuffer, 3);
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
+            paramsControl->setGlobalBPM(bpm);
         }
     }
     
