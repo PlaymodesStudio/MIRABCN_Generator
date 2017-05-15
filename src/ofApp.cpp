@@ -160,9 +160,9 @@ void ofApp::deleteModuleListener(string &moduleName){
 void ofApp::update(){
     //Phasor updates automatically at audio rate, but we need to take the value for this update so the phasor is the same along all the time update is being called
     //this has to be done in another thread?? Does not work in another thread becouse the last step is syphon send and can not be done in a thread that is not the main thread becouse opengl calls must run on the same thread
-    for(auto &phasor : phasors){
-        if(phasor != nullptr)
-            phasor->getPhasor();
+    for(int i = phasors.size()-1 ; i >= 0 ; i--){
+        if(phasors[i] != nullptr)
+            phasors[i]->getPhasor();
     }
 }
 
@@ -186,9 +186,9 @@ void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
 
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    for(auto phasor : phasors){
-        if(phasor != nullptr)
-            phasor->audioIn(input, bufferSize, nChannels);
+    for(int i = phasors.size()-1 ; i >= 0 ; i--){
+        if(phasors[i] != nullptr)
+            phasors[i]->audioIn(input, bufferSize, nChannels);
     }
     
     bpmControl::getInstance().audioIn(input, bufferSize, nChannels);
