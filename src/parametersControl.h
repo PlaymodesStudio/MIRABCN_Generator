@@ -46,12 +46,8 @@ public:
     }
     
     ~nodeConnection(){
-        closedLine = false;
-        bindedParameters[1] = nullptr;
-        bindedComponents[1] = nullptr;
-        toggleGui(false);
-        delete gui;
-        gui = nullptr;
+        if(closedLine)
+            disconnect();
     }
     
     void moveLine(ofPoint p){
