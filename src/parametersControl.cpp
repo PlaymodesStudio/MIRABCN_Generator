@@ -634,6 +634,10 @@ void parametersControl::savePreset(string presetName, string bank){
         
         groupNames = connections[i]->getSinkParameter()->getGroupHierarchyNames();
         xml.addValue("connection_" + ofToString(i) + "_sink", groupNames[0] + "-|-" + groupNames[1]);
+        
+        float min = connections[i]->getMin();
+        float max = connections[i]->getMax();
+        xml.addValue("connection_" + ofToString(i) + "_minmax", ofToString(min) + "-|-" + ofToString(max));
     }
     
     ofLog() <<"Save " << presetName;
@@ -901,6 +905,8 @@ void parametersControl::loadPreset(string presetName, string bank){
         while(xml.getValue("connection_" + ofToString(i) + "_source") != ""){
             vector<string> sourceInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_source"), "-|-");
             vector<string> sinkInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_sink"), "-|-");
+            vector<string> minMaxInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_minmax"), "-|-");
+            if(minMaxInfo.size() != 2) minMaxInfo = {"0", "1"};
             ofStringReplace(sourceInfo[0], "_", " ");
             ofStringReplace(sinkInfo[0], "_", " ");
             ofStringReplace(sourceInfo[1], "_", " ");
@@ -913,6 +919,8 @@ void parametersControl::loadPreset(string presetName, string bank){
             for(int j = 0; j < parameterGroups.size(); j++){
                 if(parameterGroups[j]->getName() == sinkInfo[0]){
                     connections.back()->connectTo(datGuis[j]->getComponent(sinkInfo[1]), datGuis[j], &parameterGroups[j]->get(sinkInfo[1]));
+                    connections.back()->setMin(ofToFloat(minMaxInfo[0]));
+                    connections.back()->setMax(ofToFloat(minMaxInfo[1]));
                 }
             }
             i++;

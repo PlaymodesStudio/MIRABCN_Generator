@@ -46,6 +46,11 @@ public:
     }
     
     ~nodeConnection(){
+        closedLine = false;
+        bindedParameters[1] = nullptr;
+        bindedComponents[1] = nullptr;
+        toggleGui(false);
+        delete gui;
         gui = nullptr;
     }
     
@@ -162,6 +167,9 @@ public:
     
     float getMin(){return min;};
     float getMax(){return max;};
+    
+    void setMin(float _min){min = _min;};
+    void setMax(float _max){max = _max;};
     
     shared_ptr<ofxDatGui> getParentGuis(int i){return bindedComponentsParent[i];};
     
