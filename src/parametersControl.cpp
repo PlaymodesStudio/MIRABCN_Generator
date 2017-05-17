@@ -91,6 +91,25 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
 
 void parametersControl::setup(){
     
+    arrowCursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    
+    auto createCursorFromImage = [](string filename)->GLFWcursor*{
+        ofImage img;
+        img.load("Cursors/" + filename);
+        GLFWimage glfwImg;
+        glfwImg.height = img.getHeight();
+        glfwImg.width = img.getWidth();
+        glfwImg.pixels = img.getPixels().getData();
+        return glfwCreateCursor(&glfwImg, 0, 0);
+    };
+    
+    openedHandCursor = createCursorFromImage("openedHand.png");
+    closedHandCursor = createCursorFromImage("closedHand.png");
+    arrowListCursor = createCursorFromImage("arrowList.png");
+    zoomInCursor = createCursorFromImage("zoomIn.png");
+    zoomOutCursor = createCursorFromImage("zoomOut.png");
+    crossCursor = createCursorFromImage("cross.png");
+    
     ofAddListener(ofEvents().update, this, &parametersControl::update);
     ofAddListener(ofEvents().draw, this, &parametersControl::draw);
     
@@ -665,6 +684,7 @@ void parametersControl::loadPreset(string presetName, string bank){
     if(!xml.load("Presets/" + bank + "/" + presetName + ".xml"))
         return;
     
+    
     //Get the dinamic modules that have to be created or updated
     vector<ofPoint> toCreatePhasors;
     vector<ofPoint> toCreateOscillators;
@@ -933,20 +953,12 @@ void parametersControl::loadPreset(string presetName, string bank){
             i++;
         }
     }
-//    auto &masterGroupParam = parameterGroups[parameterGroups.size()-1];
-//    if(!isColorLoaded || masterGroupParam->getBool("Randomize Color")){
-//        int availableSteps = parameterGroups[parameterGroups.size()-1]->getInt("Rnd Color Steps");
-//        vector<int> colorComponents = {0,0,0};
-//        for(auto &component : colorComponents)
-//            component = ofMap(floor(ofRandom(0, availableSteps+1)), 0, availableSteps, 0, 255);
-//        
-//        if(max_element(colorComponents.begin(), colorComponents.end())[0] != 255)
-//            colorComponents[floor(ofRandom(0, 3))] = 255;
-//        
-//        masterGroupParam->getInt("R Channel") = colorComponents[0];
-//        masterGroupParam->getInt("G Channel") = colorComponents[1];
-//        masterGroupParam->getInt("B Channel") = colorComponents[2];
-//    }
+    
+    
+    for(auto paramGroup : parameterGroups){
+        if(ofStringTimesInString(paramGroup->getName(), "oscillatorBank") || ofStringTimesInString(paramGroup->getName(), "oscillator"))
+            paramGroup->getFloat("Phasor In") = paramGroup->getFloat("Phasor In");
+    }
     
     
     ofLog()<<"Load " << presetName;
@@ -1170,15 +1182,32 @@ void parametersControl::newPresetListener(ofxDatGuiTextInputEvent e){
 #pragma mark --Keyboard and mouse Listenerrs--
 
 void parametersControl::keyPressed(ofKeyEventArgs &e){
-    if(e.key == OF_KEY_COMMAND)
+    if(e.key == OF_KEY_COMMAND){
         commandPressed = true;
-    else if(e.key == OF_KEY_BACKSPACE)
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), arrowListCursor);
+    }
+    else if(e.key == OF_KEY_ESC){
         popUpMenu->setVisible(false);
+        for(auto connection : connections){
+            connection->toggleGui(false);
+        }
+    }
+    else if(e.key == ' '  && !canvasDragging){
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), openedHandCursor);
+        canvasDragging = true;
+    }
+        
 }
 
 void parametersControl::keyReleased(ofKeyEventArgs &e){
-    if(e.key == OF_KEY_COMMAND)
+    if(e.key == OF_KEY_COMMAND){
         commandPressed = false;
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), arrowCursor);
+    }
+    else if(e.key == ' '){
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), arrowCursor);
+        canvasDragging = false;
+    }
 }
 
 void parametersControl::mouseMoved(ofMouseEventArgs &e){
@@ -1193,7 +1222,7 @@ void parametersControl::mouseDragged(ofMouseEventArgs &e){
         if(!connections.back()->closedLine){
             connections.back()->moveLine(transformedPos);
         }
-    }else if(e.button == 0 && ofGetKeyPressed(' ')){
+    }else if(e.button == 0 && canvasDragging){
         transformMatrix.translate(e - dragCanvasInitialPoint);
         for(auto &gui : datGuis)
             gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
@@ -1217,9 +1246,10 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
            for(auto &gui : datGuis)
                gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
        }
-    }else if(ofGetKeyPressed(' ')){
+    }if(canvasDragging){
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), closedHandCursor);
         dragCanvasInitialPoint = e;
-    }else if(ofGetKeyPressed(OF_KEY_CONTROL)){
+    }if(ofGetKeyPressed(OF_KEY_CONTROL)){
         bool cablePressed = false;
         for(auto connection : connections){
             if(connection->hitTest(transformedPos) && !cablePressed){
@@ -1229,7 +1259,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
             else
                 connection->toggleGui(false);
         }
-    }else if(ofGetKeyPressed('r')){
+    }if(ofGetKeyPressed('r')){
         for(int i = 0; i<datGuis.size(); i++){
             if(datGuis[i]->hitTest(e)
                && datGuis[i]->getHeader()->getName() != "oscillatorGroup"
@@ -1245,6 +1275,9 @@ void parametersControl::mouseReleased(ofMouseEventArgs &e){
         if(!connections.back()->closedLine)
             connections.pop_back();
     }
+    if(canvasDragging){
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), openedHandCursor);
+    }
 }
 
 void parametersControl::mouseScrolled(ofMouseEventArgs &e){
@@ -1256,6 +1289,10 @@ void parametersControl::mouseScrolled(ofMouseEventArgs &e){
         transformMatrix.glScale(ofVec3f(1-(e.scrollY/100), 1-(e.scrollY/100), 1));
         for(auto &gui : datGuis)
             gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+        if(e.scrollY < 0)
+            glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), zoomInCursor);
+        else
+            glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), zoomOutCursor);
     }
 }
 

@@ -71,14 +71,17 @@ void waveScope::draw(){
     
     
     //Draw notifiers
-    // Here will be better not to erase the messages and use mouseScrollData to get the older messages.
-    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
+    //TODO: Here will be better not to erase the messages and use mouseScrollData to get the older messages.
     
-    while(logBuffer->getSize()*15 > 2*ofGetHeight()/3) logBuffer->eraseLastLine();
+    int lineHeigh = 15;
+    
+//    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
+    ofRectangle debugRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight());
+    while(logBuffer->getSize()*lineHeigh > debugRectangle.getHeight()) logBuffer->eraseLastLine();
 
     for (int i = 0; i < logBuffer->getSize(); i++){
         string line = logBuffer->getLine(i);
-        ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (15*(i+1)));
+        ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (lineHeigh*(i+1)));
     }
     
     

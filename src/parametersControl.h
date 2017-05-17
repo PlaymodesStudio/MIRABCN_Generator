@@ -305,7 +305,8 @@ private:
     //node
     vector<shared_ptr<nodeConnection>>  connections;
     
-    bool commandPressed = false;
+    bool    commandPressed = false;
+    bool    canvasDragging = false;
     
     ofMatrix4x4 transformMatrix;
     ofPoint dragCanvasInitialPoint;
@@ -313,6 +314,15 @@ private:
     
     ofxDatGuiTheme*     mainGuiTheme;
     ofxDatGuiButton*    oldPresetButton;
+    
+    //CURSORS
+    GLFWcursor* arrowCursor;
+    GLFWcursor* arrowListCursor;
+    GLFWcursor* openedHandCursor;
+    GLFWcursor* closedHandCursor;
+    GLFWcursor* crossCursor;
+    GLFWcursor* zoomInCursor;
+    GLFWcursor* zoomOutCursor;
 };
 
 
