@@ -38,6 +38,7 @@ void ofApp::setup(){
             int height = xml.getIntValue("Height");
             bool invert = xml.getBoolValue("Invert");
             float bpm = xml.getFloatValue("BPM");
+            if(bpm == 0) bpm = 120;
             
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             

@@ -105,12 +105,12 @@ void parametersControl::setup(){
     
     datGui = new ofxDatGui();
     
-    ofxDatGuiTheme* theme = new ofxDatGuiThemeCharcoal;
+    mainGuiTheme = new ofxDatGuiThemeCharcoal;
     ofColor randColor =  ofColor::indianRed;
-    theme->color.slider.fill = randColor;
-    theme->color.textInput.text = randColor;
-    theme->color.icons = randColor;
-    datGui->setTheme(theme);//, true);
+    mainGuiTheme->color.slider.fill = randColor;
+    mainGuiTheme->color.textInput.text = randColor;
+    mainGuiTheme->color.icons = randColor;
+    datGui->setTheme(mainGuiTheme);//, true);
     
     datGui->setWidth(290);
     datGui->addHeader("Presets Control");
@@ -192,10 +192,10 @@ void parametersControl::setup(){
     popUpMenu->setVisible(false);
     popUpMenu->setPosition(-1, -1);
     ofColor randColor2 =  ofColor::indianRed;
-    theme->color.slider.fill = randColor2;
-    theme->color.textInput.text = randColor2;
-    theme->color.icons = randColor2;
-    popUpMenu->setTheme(theme);
+//    theme->color.slider.fill = randColor2;
+//    theme->color.textInput.text = randColor2;
+//    theme->color.icons = randColor2;
+    popUpMenu->setTheme(mainGuiTheme);
     popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "ColorApplier", "WaveScope"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
@@ -451,6 +451,13 @@ void parametersControl::loadBank(){
     for(auto preset : presets)
         presetsList->add(preset.second);
 }
+
+void parametersControl::changePresetLabelHighliht(ofxDatGuiButton *presetToHighlight){
+    if(oldPresetButton != nullptr) oldPresetButton->setTheme(mainGuiTheme);
+    presetToHighlight->setLabelColor(ofColor::red);
+    oldPresetButton = presetToHighlight;
+}
+
 
 void parametersControl::setGlobalBPM(float bpm){
     datGui->getSlider("Global BPM")->setValue(bpm);
@@ -1017,6 +1024,7 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
     if(e.target == bankSelect){
+        oldPresetButton = nullptr;
         if(e.child == bankSelect->getNumOptions()-1){
             bankSelect->addOption("Bank " + ofGetTimestampString(), bankSelect->getNumOptions()-1);
             bankSelect->select(bankSelect->getNumOptions()-2);
@@ -1110,9 +1118,11 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
 }
 
 void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
-    if(ofGetKeyPressed(OF_KEY_SHIFT))
+    if(ofGetKeyPressed(OF_KEY_SHIFT)){
+        changePresetLabelHighliht(e.target);
         savePreset(e.target->getName(), bankSelect->getSelected()->getName());
-    else{
+    }else{
+        changePresetLabelHighliht(e.target);
         loadPreset(e.target->getName(), bankSelect->getSelected()->getName());
         if(autoPreset)
             presetChangedTimeStamp = ofGetElapsedTimef();
@@ -1146,9 +1156,12 @@ void parametersControl::newPresetListener(ofxDatGuiTextInputEvent e){
             newPresetName = ofToString(ofToInt(ofSplitString(lastPreset, "|")[0])+1) + "|" + e.text;
         }else
             newPresetName = "1|" + e.text;
-            
+        
         presetsList->add(newPresetName);
+        changePresetLabelHighliht(presetsList->get(presetsList->getNumItems()-1));
         savePreset(newPresetName, bankSelect->getSelected()->getName());
+        
+        e.text = "";
     }
 }
 

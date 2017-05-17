@@ -237,6 +237,8 @@ public:
     void loadPreset(string presetName, string bank);
     void loadPresetWithFade(int presetNum, string bank);
     
+    void changePresetLabelHighliht(ofxDatGuiButton* presetToHighlight);
+    
     void saveGuiArrangement();
     void loadGuiArrangement();
     
@@ -307,6 +309,10 @@ private:
     
     ofMatrix4x4 transformMatrix;
     ofPoint dragCanvasInitialPoint;
+    
+    
+    ofxDatGuiTheme*     mainGuiTheme;
+    ofxDatGuiButton*    oldPresetButton;
 };
 
 
