@@ -19,6 +19,11 @@ public:
     ~waveScope(){delete parameters;};
     
     void draw();
+    
+    void mouseMoved(ofMouseEventArgs &a);
+    void mousePressed(ofMouseEventArgs &a);
+    void mouseReleased(ofMouseEventArgs &a);
+    void mouseDragged(ofMouseEventArgs &a);
 private:
     
     ofParameterGroup* parameters;
@@ -26,6 +31,10 @@ private:
     ofParameter<vector<vector<float>>> mainOutIn;
     
     shared_ptr<bufferLoggerChannel> logBuffer;
+    
+    int contentWidthOffset;
+    int mousePressInititalX;
+    bool isInMovableRegion;
 };
 
 #endif /* waveScope_h */

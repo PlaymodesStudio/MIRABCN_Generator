@@ -167,6 +167,8 @@ void ofApp::update(){
     }
 }
 
+#pragma mark -------- Second window events --------
+
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0);
@@ -181,9 +183,26 @@ void ofApp::drawSecondWindow(ofEventArgs &args){
     if(preview != nullptr) preview->draw();
 }
 
-void ofApp::keyPressedOnSecondWindow(ofKeyEventArgs & args){
-    
+void ofApp::mouseMovedSecondWindow(ofMouseEventArgs &a){
+    if(preview != nullptr)
+        preview->mouseMoved(a);
 }
+
+void ofApp::mousePressedSecondWindow(ofMouseEventArgs &a){
+    if(preview != nullptr)
+        preview->mousePressed(a);
+}
+
+void ofApp::mouseReleasedSecondWindow(ofMouseEventArgs &a){
+    if(preview != nullptr)
+        preview->mouseReleased(a);
+}
+
+void ofApp::mouseDraggedSecondWindow(ofMouseEventArgs &a){
+    if(preview != nullptr)
+        preview->mouseDragged(a);
+}
+
 
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){

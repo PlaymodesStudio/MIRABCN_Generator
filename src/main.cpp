@@ -24,7 +24,10 @@ int main(){
 //    shared_ptr<previewWindow> monitorApp(new previewWindow);
     shared_ptr<ofApp> mainApp(new ofApp);
     ofAddListener(prevWindow->events().draw, mainApp.get(), &ofApp::drawSecondWindow);
-    ofAddListener(prevWindow->events().keyPressed, mainApp.get(), &ofApp::keyPressedOnSecondWindow);
+    ofAddListener(prevWindow->events().mouseMoved, mainApp.get(), &ofApp::mouseMovedSecondWindow);
+    ofAddListener(prevWindow->events().mousePressed, mainApp.get(), &ofApp::mousePressedSecondWindow);
+    ofAddListener(prevWindow->events().mouseReleased, mainApp.get(), &ofApp::mouseReleasedSecondWindow);
+    ofAddListener(prevWindow->events().mouseDragged, mainApp.get(), &ofApp::mouseDraggedSecondWindow);
     
     ofRunApp(mainWindow, mainApp);
     

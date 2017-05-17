@@ -20,12 +20,15 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numBankScop
         parameters->add(oscillatorBankIns[i].set("Osc Bank "+ofToString(i), {0}));
 
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
+    
+    contentWidthOffset = 0;
 }
 
 void waveScope::draw(){
     ofBackground(0);
     ofSetColor(255);
-    int contentWidth = 2*ofGetWidth()/3;
+    
+    int contentWidth = 2*ofGetWidth()/3 + contentWidthOffset;
     
     ofFbo outTex;
     outTex.allocate(mainOutIn.get().size(), mainOutIn.get()[0].size());
@@ -88,4 +91,36 @@ void waveScope::draw(){
     //Draw the framerate
     ofSetColor(255, 0,0);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
+}
+
+
+
+void waveScope::mouseMoved(ofMouseEventArgs &a){
+    if(abs(a.x - (2*ofGetWidth()/3 + contentWidthOffset)) < 10){
+        if(!isInMovableRegion){
+            isInMovableRegion = true;
+            GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+            glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), cursor);
+        }
+    }
+    else if(isInMovableRegion){
+        isInMovableRegion = false;
+        GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+        glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), cursor);
+    }
+}
+
+void waveScope::mousePressed(ofMouseEventArgs &a){
+    mousePressInititalX = a.x;
+}
+
+void waveScope::mouseReleased(ofMouseEventArgs &a){
+    
+}
+
+void waveScope::mouseDragged(ofMouseEventArgs &a){
+    if(isInMovableRegion){
+        contentWidthOffset = contentWidthOffset + a.x - mousePressInititalX;
+        mousePressInititalX = a.x;
+    }
 }

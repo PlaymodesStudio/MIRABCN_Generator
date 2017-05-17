@@ -29,7 +29,12 @@ class ofApp : public ofBaseApp{
     void exit();
     
     void drawSecondWindow(ofEventArgs & args);
-    void keyPressedOnSecondWindow(ofKeyEventArgs & args);
+    void mouseMovedSecondWindow(ofMouseEventArgs &a);
+    void mouseDraggedSecondWindow(ofMouseEventArgs &a);
+    void mousePressedSecondWindow(ofMouseEventArgs &a);
+    void mouseReleasedSecondWindow(ofMouseEventArgs &a);
+    
+    
     void audioIn(float * input, int bufferSize, int nChannels);
 
 
