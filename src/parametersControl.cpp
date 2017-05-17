@@ -956,8 +956,14 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     
     for(auto paramGroup : parameterGroups){
-        if(ofStringTimesInString(paramGroup->getName(), "oscillatorBank") || ofStringTimesInString(paramGroup->getName(), "oscillator"))
-            paramGroup->getFloat("Phasor In") = paramGroup->getFloat("Phasor In");
+        string moduleName = ofSplitString(paramGroup->getName(), " ")[0];
+        if((moduleName == "oscillatorBank") ||( moduleName == "oscillator")){
+            //If there is a rand wave that does not have a phasor atach we need to trigger the random creation, that means sending a value less that the value that actually is there, becouse we have previously assigned a value, we need to send a value less than the actual value for the oscillators to compute a new random.
+            if(paramGroup->getGroup("Wave Select").getInt(1) == 6)
+                paramGroup->getFloat("Phasor In") = paramGroup->getFloat("Phasor In") - 0.01;
+            else
+                paramGroup->getFloat("Phasor In") = paramGroup->getFloat("Phasor In");
+        }
     }
     
     
