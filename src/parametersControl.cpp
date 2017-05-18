@@ -1417,7 +1417,7 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
     }
     else if(e->type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e->cast<bool>();
-        castedParam = v<64 ? true : false;
+        castedParam = v >= 0.5 ? true : false;
     }
     else if(e->type() == typeid(ofParameter<ofColor>).name()){
         ofParameter<ofColor> castedParam = e->cast<ofColor>();

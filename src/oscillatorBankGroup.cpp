@@ -163,7 +163,7 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     }
     else if(p.getName() == invert_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
-            oscillatorBanks[i]->invert_Param = ofMap(invert_vecParam.get()[i], 0, 1, invert_Param.getMin(), invert_Param.getMax());
+            oscillatorBanks[i]->invert_Param =  invert_vecParam.get()[i] >= 0.5 ? true : false;
     }
     else if(p.getName() == symmetry_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
