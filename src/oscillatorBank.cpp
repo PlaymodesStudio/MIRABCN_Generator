@@ -63,12 +63,15 @@ void oscillatorBank::oscillatorResult(pair<int, float> &oscInfo){
     resultFilledChecker[oscInfo.first] = 1;
     
     if(resultFilledChecker.size() == accumulate(resultFilledChecker.begin(), resultFilledChecker.end(), 0)){
+        if(waveSelect_Param == 6 || waveSelect_Param == 7){
+            auto resultCopy = result;
+            for(int i = 0 ; i<result.size() ; i++){
+                int new_i = floor(i/((float)result.size()/(float)indexQuant_Param));
+                result[i] = resultCopy[new_i];
+            }
+        }
         parameters->get("Oscillator Out").cast<vector<float>>() = result;
         fill(resultFilledChecker.begin(), resultFilledChecker.end(), 0);
-//        static pair<int, vector<float>> toSend;
-//        toSend.first = bankId;
-//        toSend.second = result;
-//        ofNotifyEvent(eventInGroup, toSend, this);
         ofNotifyEvent(eventInGroup, bankId, this);
     }
 }
