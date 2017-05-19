@@ -349,10 +349,13 @@ void parametersControl::draw(ofEventArgs &args){
     ofPushMatrix();
     ofMultMatrix(transformMatrix);
     ofPushStyle();
-    ofSetColor(ofColor::white);
+     ofSetColor(ofColor::white);
     ofSetLineWidth(2);
     for(auto connection : connections){
-        connection->getPath().draw();
+        ofPath path = connection->getPath();
+        if(connection->getMin() != 0 || connection->getMax() != 1)
+            path.setColor(ofColor::navajoWhite);
+        path.draw();
     }
     ofPopStyle();
     ofPopMatrix();
