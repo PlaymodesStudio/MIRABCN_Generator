@@ -83,6 +83,7 @@ public:
     }
     
     void disconnect(){
+        ofNotifyEvent(destroyEvent, *bindedParameters[1], this);
         closedLine = false;
         bindedParameters[1] = nullptr;
         bindedComponents[1] = nullptr;
@@ -171,6 +172,8 @@ public:
     
     bool closedLine = false;
     
+    ofEvent<ofAbstractParameter> destroyEvent;
+    
 private:
     ofxDatGui*  gui;
     vector<ofPoint> points;
@@ -249,6 +252,8 @@ public:
     void loadBank();
     
     void setGlobalBPM(float bpm);
+    
+    void destroyedConnection(ofAbstractParameter &disconnectedParameter);
     
     ofEvent<pair<moduleType, ofPoint>>  createNewModule;
     ofEvent<string>                     destroyModule;
