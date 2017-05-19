@@ -28,6 +28,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
         paramGroup->getFloat("BPM") = datGui->getSlider("Global BPM")->getValue();
     
     shared_ptr<ofxDatGui> tempDatGui = make_shared<ofxDatGui>();
+    tempDatGui->setAutoDraw(false);
     
     tempDatGui->setTransformMatrix(transformMatrix);
     
@@ -123,6 +124,7 @@ void parametersControl::setup(){
     ofxDatGui::setAssetPath("");
     
     datGui = new ofxDatGui();
+    datGui->setAutoDraw(false);
     
     mainGuiTheme = new ofxDatGuiThemeCharcoal;
     ofColor randColor =  ofColor::indianRed;
@@ -222,6 +224,10 @@ void parametersControl::setup(){
 
 
 void parametersControl::update(ofEventArgs &args){
+    
+    datGui->update(args);
+    for(auto gui : datGuis)
+        gui->update(args);
         
     Tweenzor::update(ofGetElapsedTimeMillis());
     
@@ -359,6 +365,12 @@ void parametersControl::draw(ofEventArgs &args){
     }
     ofPopStyle();
     ofPopMatrix();
+    
+    
+    datGui->draw(args);
+    for(auto gui : datGuis)
+        gui->draw(args);
+    
     if(ofGetKeyPressed('r')){
         ofPopStyle();
         ofSetColor(255, 0, 0, 50);

@@ -19,6 +19,7 @@ public:
     ~waveScope(){delete parameters;};
     
     void draw();
+    void drawEvent(ofEventArgs &e){draw();};
     
     void mouseMoved(ofMouseEventArgs &a);
     void mousePressed(ofMouseEventArgs &a);
@@ -26,15 +27,21 @@ public:
     void mouseDragged(ofMouseEventArgs &a);
 private:
     
+    void changeDrawLocation(bool &b);
+    
     ofParameterGroup* parameters;
     vector<ofParameter<vector<float>>> oscillatorBankIns;
     ofParameter<vector<vector<float>>> mainOutIn;
+    ofParameter<bool>   drawOnSeparateWindow;
     
     shared_ptr<bufferLoggerChannel> logBuffer;
     
     int contentWidthOffset;
     int mousePressInititalX;
     bool isInMovableRegion;
+    
+    shared_ptr<ofAppBaseWindow> prevWindow;
+    ofRectangle                 prevWindowRect;
 };
 
 #endif /* waveScope_h */

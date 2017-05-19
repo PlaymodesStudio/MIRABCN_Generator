@@ -17,11 +17,17 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numBankScop
     parameters->setName("waveScope");
     parameters->add(mainOutIn.set("Master Scope", {{0}}));
     for(int i = 0; i < numBankScopes ; i++)
-        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ofToString(i), {0}));
+        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {0}));
+    parameters->add(drawOnSeparateWindow.set("Separate Window", false));
 
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
     
     contentWidthOffset = 0;
+    
+    drawOnSeparateWindow.addListener(this, &waveScope::changeDrawLocation);
+    
+    prevWindowRect.setPosition(-1, -1);
+    
 }
 
 void waveScope::draw(){
@@ -112,6 +118,8 @@ void waveScope::mouseMoved(ofMouseEventArgs &a){
 
 void waveScope::mousePressed(ofMouseEventArgs &a){
     mousePressInititalX = a.x;
+    
+    
 }
 
 void waveScope::mouseReleased(ofMouseEventArgs &a){
@@ -122,5 +130,35 @@ void waveScope::mouseDragged(ofMouseEventArgs &a){
     if(isInMovableRegion){
         contentWidthOffset = contentWidthOffset + a.x - mousePressInititalX;
         mousePressInititalX = a.x;
+    }
+}
+
+
+void waveScope::changeDrawLocation(bool &b){
+    if(b){
+        ofGLFWWindowSettings prevSettings;
+        if(prevWindowRect.getPosition() == ofPoint(-1, -1)){
+            prevSettings.width = 300;
+            prevSettings.height = 250;
+            prevSettings.setPosition(ofVec2f(ofGetScreenWidth()-300, 0));
+        }
+        else{
+            prevSettings.width = prevWindowRect.width;
+            prevSettings.height = prevWindowRect.height;
+            prevSettings.setPosition(prevWindowRect.position);
+        }
+        prevSettings.windowMode = OF_WINDOW;
+        prevSettings.resizable = true;
+        prevWindow = ofCreateWindow(prevSettings);
+        ofAddListener(prevWindow->events().draw, this, &waveScope::drawEvent);
+        ofAddListener(prevWindow->events().mouseMoved, this, &waveScope::mouseMoved);
+        ofAddListener(prevWindow->events().mousePressed, this, &waveScope::mousePressed);
+        ofAddListener(prevWindow->events().mouseReleased, this, &waveScope::mouseReleased);
+        ofAddListener(prevWindow->events().mouseDragged, this, &waveScope::mouseDragged);
+    }
+    else{
+        prevWindowRect.setPosition(prevWindow->getWindowPosition());
+        prevWindowRect.setSize(prevWindow->getWidth(), prevWindow->getHeight());
+        prevWindow->setWindowShouldClose();
     }
 }
