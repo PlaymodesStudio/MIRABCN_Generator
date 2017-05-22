@@ -1342,9 +1342,11 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     
     //ParameterBinding
     for(auto &connection : connections){
-        ofAbstractParameter* possibleSource = connection->getSourceParameter();
-        if(possibleSource == &e && connection->closedLine){
-            validConnections.push_back(connection);
+        if(connection != nullptr){
+            ofAbstractParameter* possibleSource = connection->getSourceParameter();
+            if(possibleSource == &e && connection->closedLine){
+                validConnections.push_back(connection);
+            }
         }
     }
     
@@ -1479,13 +1481,11 @@ void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connecti
             sink->cast<vector<vector<ofColor>>>() = tempVec;
         }
     }else{
-        int i = 0;
         for(auto &connection : connections){
             if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
-                connections.erase(connections.begin() + i);
+                connections.erase(remove(connections.begin(), connections.end(), connection));
                 break;
             }
-            i++;
         }
     }
         
