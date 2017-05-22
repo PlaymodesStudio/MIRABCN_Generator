@@ -34,18 +34,22 @@ void ofApp::setup(){
         if(xml.exists("GeneratorConfig")){
             xml.setTo("GeneratorConfig");
             string name = xml.getValue("Name");
-            int width = xml.getIntValue("Width");
-            int height = xml.getIntValue("Height");
+            width = xml.getIntValue("Width");
+            height = xml.getIntValue("Height");
             bool invert = xml.getBoolValue("Invert");
             float bpm = xml.getFloatValue("BPM");
             if(bpm == 0) bpm = 120;
             
+            hasColorApplier = xml.getBoolValue("Color");
+            
+        
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
             phasors.push_back(new phasorClass(1));
-            oscBankGroup = new oscillatorBankGroup(height, width);
+            oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
             oscillators.push_back(new oscillatorBank(width, true, 1));
-            colorModule = new colorApplier(width);
+            if(hasColorApplier)
+                colorModule = new colorApplier(width);
             senderModule = new senderManager(invert);
             preview = new waveScope(logBuffer, 3);
             //Create main gui, and add listeners when all guis are created
@@ -61,13 +65,15 @@ void ofApp::setup(){
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
     ofAddListener(paramsControl->destroyModule, this, &ofApp::deleteModuleListener);
-    
     ofAddListener(paramsControl->nextFrameEvent, this, &ofApp::nextFrameListener);
 }
 
-void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
-    switch (info.first) {
-        case phasor_module:{
+void ofApp::newModuleListener(pair<string, ofPoint> &info){
+    vector<string> moduleName = ofSplitString(info.first, " ");
+    string moduleTypeName = moduleName[0];
+    
+    if(moduleTypeName == "phasor"){
+        if(moduleName.size() < 2){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < phasors.size() && !foundNullElementInVector) ; i++){
                 if(phasors[i] == nullptr){
@@ -77,9 +83,16 @@ void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
             }
             if(!foundNullElementInVector)
                 phasors.push_back(new phasorClass(phasors.size()+1, info.second));
-            break;
         }
-        case oscillator_module:{
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(phasors.size() <= id-1)
+                phasors.push_back(nullptr);
+            phasors[id-1] = new phasorClass(id, info.second);
+        }
+    }
+    else if(moduleTypeName == "oscillator"){
+        if(moduleName.size() < 2){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < monoOscillator.size() && !foundNullElementInVector) ; i++){
                 if(monoOscillator[i] == nullptr){
@@ -89,40 +102,67 @@ void ofApp::newModuleListener(pair<moduleType, ofPoint> &info){
             }
             if(!foundNullElementInVector)
                 monoOscillator.push_back(new baseOscillator(monoOscillator.size()+1, true, info.second));
-            break;
         }
-        case oscillatorBank_module:
-        {
-            int nOscillators = info.second.z;
-            if(nOscillators == 0) nOscillators = ofToInt(ofSystemTextBoxDialog("How many oscillators?"));
-            info.second.z = 0;
-            
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(monoOscillator.size() <= id-1)
+                monoOscillator.push_back(nullptr);
+            monoOscillator[id-1] = new baseOscillator(id, true, info.second);
+        }
+    }
+    
+    else if(moduleTypeName == "oscillatorBank"){
+        if(moduleName.size() < 2){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < oscillators.size() && !foundNullElementInVector) ; i++){
                 if(oscillators[i] == nullptr){
-                    oscillators[i] = new oscillatorBank(nOscillators, true, i+1, info.second);
+                    oscillators[i] = new oscillatorBank(width, true, i+1, info.second);
                     foundNullElementInVector = true;
                 }
             }
             if(!foundNullElementInVector)
-                oscillators.push_back(new oscillatorBank(nOscillators, true, oscillators.size()+1, info.second));
-            break;
+                oscillators.push_back(new oscillatorBank(width, true, oscillators.size()+1, info.second));
         }
-        case waveScope_module:
-        {
-            int nScopes = info.second.z;
-            if(nScopes == 0) nScopes = ofToInt(ofSystemTextBoxDialog("How many Scopes?"));
-            info.second.z = 0;
-            if(preview != nullptr) delete preview;
-            preview = new waveScope(logBuffer, nScopes, info.second);
-            break;
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(oscillators.size() <= id-1)
+                oscillators.push_back(nullptr);
+            oscillators[id-1] = new oscillatorBank(width, true, id, info.second);
         }
-        case colorApplier_module:
-        {
-            colorModule = new colorApplier(NUM_BARS);
+    }
+    
+    else if(moduleTypeName == "oscillatorGroup"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < oscBankGroups.size() && !foundNullElementInVector) ; i++){
+                if(oscBankGroups[i] == nullptr){
+                    oscBankGroups[i] = new oscillatorBankGroup(height, width, i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                oscBankGroups.push_back(new oscillatorBankGroup(height, width, oscBankGroups.size()+1, info.second));
         }
-        default:
-            break;
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(oscBankGroups.size() <= id-1)
+                oscBankGroups.push_back(nullptr);
+            oscBankGroups[id-1] = new oscillatorBankGroup(height, width, id, info.second);
+        }
+    }
+    
+    else if(moduleTypeName == "waveScope")
+    {
+        int nScopes = info.second.z;
+        if(nScopes == 0) nScopes = ofToInt(ofSystemTextBoxDialog("How many Scopes?"));
+        info.second.z = 0;
+        if(preview != nullptr) delete preview;
+        preview = new waveScope(logBuffer, nScopes, info.second);
+    }
+    else if(moduleTypeName == "colorApplier")
+    {
+        if(hasColorApplier && colorModule == nullptr)
+            colorModule = new colorApplier(width);
     }
 }
 
@@ -148,8 +188,13 @@ void ofApp::deleteModuleListener(string &moduleName){
         delete oscillators[id-1];
         oscillators[id-1] = nullptr;
     }
+    else if(moduleName == "oscillatorGroup"){
+        delete oscBankGroups[id-1];
+        oscBankGroups[id-1] = nullptr;
+    }
     else if(moduleName == "colorAppier"){
         delete colorModule;
+        colorModule = nullptr;
     }
     else if(moduleName == "waveScope"){
         delete preview;

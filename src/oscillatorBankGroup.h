@@ -13,7 +13,7 @@
 
 class oscillatorBankGroup{
 public:
-    oscillatorBankGroup(int oscillatorBankSize, int numOfOscillatorBanks);
+    oscillatorBankGroup(int oscillatorBankSize, int numOfOscillatorBanks, int id = 1, ofPoint pos = ofPoint(-1, -1));
     ~oscillatorBankGroup(){};
     
     

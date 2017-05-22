@@ -160,5 +160,6 @@ void waveScope::changeDrawLocation(bool &b){
         prevWindowRect.setPosition(prevWindow->getWindowPosition());
         prevWindowRect.setSize(prevWindow->getWidth(), prevWindow->getHeight());
         prevWindow->setWindowShouldClose();
+        prevWindow = nullptr;
     }
 }

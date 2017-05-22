@@ -8,7 +8,7 @@
 
 #include "oscillatorBankGroup.h"
 
-oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscillatorBanks){
+oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscillatorBanks, int id, ofPoint pos){
     
     //Last one is for preview, vector modulation does not affect this one
     for(int i=0 ; i < numOfOscillatorBanks + 1 ; i++){
@@ -20,7 +20,7 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     resultFilledChecker.resize(numOfOscillatorBanks, 0);
     
     parameters = new ofParameterGroup;
-    parameters->setName("oscillatorGroup");
+    parameters->setName("oscillatorGroup " + ofToString(id));
     parameters->add(numWaves_Param.set("Num Waves", 1, 0, oscillatorBankSize));
     parameters->add(invert_Param.set("Invert", false));
     parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));
@@ -71,7 +71,7 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     ofAddListener(parameters->parameterChangedE(), this, &oscillatorBankGroup::parameterChanged);
     phasorIn.addListener(this, &oscillatorBankGroup::phasorInListener);
     
-    parametersControl::getInstance().createGuiFromParams(parameters);
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::blue, pos);
 }
 
 void oscillatorBankGroup::phasorInListener(float &phase){

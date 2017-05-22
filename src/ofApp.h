@@ -15,8 +15,8 @@
 #include "waveScope.h"
 #include "oscillatorBankGroup.h"
 
-static const int NUM_BARS = 12;
-static const int PIXEL_X_BAR = 20;
+static const int WIDTH = 0;
+static const int HEIGHT = 0;
 static const int ROW_BARS = 4;
 static const int COL_BARS = 3;
 
@@ -55,10 +55,12 @@ class ofApp : public ofBaseApp{
     
 private:
     
-    void newModuleListener(pair<moduleType, ofPoint> &info);
+    void newModuleListener(pair<string, ofPoint> &info);
     void deleteModuleListener(string &moduleName);
 
-
+    int width;
+    int height;
+    bool hasColorApplier;
     
     //If you open a project file, can be a .generator file, has the following clases for all presets:
     // - 1 PhasorClass
@@ -73,7 +75,7 @@ private:
     senderManager*              senderModule;
     waveScope*                  preview;
     colorApplier*               colorModule;
-    oscillatorBankGroup*        oscBankGroup;
+    vector<oscillatorBankGroup*>       oscBankGroups;
     
     ofSoundStream soundStream;
     

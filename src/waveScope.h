@@ -16,7 +16,11 @@
 class waveScope{
 public:
     waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr,  int numBankScopes = 2, ofPoint pos = ofPoint(-1, -1));
-    ~waveScope(){delete parameters;};
+    ~waveScope(){
+        delete parameters;
+        if(prevWindow != nullptr)
+            prevWindow->setWindowShouldClose();
+    };
     
     void draw();
     void drawEvent(ofEventArgs &e){draw();};

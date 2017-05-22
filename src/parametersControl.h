@@ -16,6 +16,8 @@
 #include "ofxTweenzor.h"
 #include "bpmControl.h"
 
+
+
 enum moduleType{
     phasor_module = 1,
     oscillator_module = 2,
@@ -23,8 +25,6 @@ enum moduleType{
     colorApplier_module = 4,
     waveScope_module = 5
 };
-
-static const int NUM_PRESETS = 40;
 
 class nodeConnection{
 public:
@@ -255,7 +255,7 @@ public:
     
     void destroyedConnection(ofAbstractParameter &disconnectedParameter);
     
-    ofEvent<pair<moduleType, ofPoint>>  createNewModule;
+    ofEvent<pair<string, ofPoint>>      createNewModule;
     ofEvent<string>                     destroyModule;
     ofEvent<void>                       nextFrameEvent;
 private:

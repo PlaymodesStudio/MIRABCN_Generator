@@ -217,7 +217,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "ColorApplier", "WaveScope"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "ColorApplier", "WaveScope"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -566,44 +566,21 @@ void parametersControl::savePreset(string presetName, string bank){
     int toCreateWaveScope = 0;
     ofPoint toCreateColorApplier = ofPoint(-1, -1);
     
+    int modulesToCreate = 0;
+    
     for(int i = 0; i < parameterGroups.size() ; i++){
         string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
-        if(moduleName == "phasor"){
-            toCreatePhasors.push_back(datGuis[i]->getPosition());
+        //if(moduleName == "phasor" || moduleName == "oscillator" || moduleName == "oscillatorBank"){
+        xml.addValue("module_" + ofToString(i) + "_name", parameterGroups[i]->getName());
+        ofPoint modulePosition = datGuis[i]->getPosition();
+        if(moduleName == "waveScope"){
+            modulePosition.z = 0;
+            while(datGuis[i]->getLabel("Osc Bank "+ofToString((int)modulePosition.z))->getName() != "X")
+                modulePosition.z += 1;
         }
-        else if(moduleName == "oscillator"){
-            toCreateOscillators.push_back(datGuis[i]->getPosition());
-        }
-        else if(moduleName == "oscillatorBank"){
-            toCreateOscillatorBanks.push_back(datGuis[i]->getPosition());
-            toCreateOscillatorBanks.back().z = parameterGroups[i]->getFloat("Num Waves").getMax();
-        }
-        else if(moduleName == "waveScope"){
-            while(datGuis[i]->getLabel("Osc Bank "+ofToString(toCreateWaveScope))->getName() != "X")
-                toCreateWaveScope++;
-        }
-        else if(moduleName == "colorApplier"){
-            toCreateColorApplier = datGuis[i]->getPosition();
-        }
+        xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
+        modulesToCreate++;
     }
-    
-    //save Phasors
-    for(int i = 0; i < toCreatePhasors.size() ; i++){
-        xml.addValue("phasor_"+ofToString(i), ofToString(toCreatePhasors[i].x)+"_"+ofToString(toCreatePhasors[i].y));
-    }
-    
-    //save Oscillators
-    for(int i = 0; i < toCreateOscillators.size() ; i++){
-        xml.addValue("oscillator_"+ofToString(i), ofToString(toCreateOscillators[i].x)+"_"+ofToString(toCreateOscillators[i].y));
-    }
-    
-    //save OscillatorBanks
-    for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
-        xml.addValue("oscillatorBank_"+ofToString(i), ofToString(toCreateOscillatorBanks[i].x)+"_"+ofToString(toCreateOscillatorBanks[i].y)+"_"+ofToString(toCreateOscillatorBanks[i].z));
-    }
-    xml.addValue("waveScope", ofToString(toCreateWaveScope));
-    xml.addValue("colorApplier", ofToString(toCreateColorApplier.x)+"_"+ofToString(toCreateColorApplier.y));
-    
     
     xml.setToParent();
     
@@ -699,6 +676,7 @@ void parametersControl::loadPreset(string presetName, string bank){
     if(!xml.load("Presets/" + bank + "/" + presetName + ".xml"))
         return;
     
+    vector<pair<string, ofPoint>> modulesToCreate;
     
     //Get the dinamic modules that have to be created or updated
     vector<ofPoint> toCreatePhasors;
@@ -710,33 +688,16 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     if(xml.exists("DYNAMIC_NODES")){
         xml.setTo("DYNAMIC_NODES");
-        //getPhasors;
+        
         int i = 0;
-        while(xml.getValue("phasor_"+ofToString(i)) != ""){
-            vector<string> strPoint = ofSplitString(xml.getValue("phasor_"+ofToString(i)), "_");
-            toCreatePhasors.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
+        while(xml.getValue("module_" + ofToString(i) + "_name") != ""){
+            pair<string, ofPoint> newModule;
+            newModule.first = xml.getValue("module_" + ofToString(i) + "_name");
+            vector<string> strPoint = ofSplitString(xml.getValue("module_" + ofToString(i) + "_pos"), "_");
+            newModule.second = ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]), ofToInt(strPoint[2]));
+            modulesToCreate.push_back(newModule);
             i++;
         }
-        //getOscillators;
-        i = 0;
-        while(xml.getValue("oscillator_"+ofToString(i)) != ""){
-            vector<string> strPoint = ofSplitString(xml.getValue("oscillator_"+ofToString(i)), "_");
-            toCreateOscillators.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
-            i++;
-        }
-        //getOscillatorBanks;
-        i = 0;
-        while(xml.getValue("oscillatorBank_"+ofToString(i)) != ""){
-            vector<string> strPoint = ofSplitString(xml.getValue("oscillatorBank_"+ofToString(i)), "_");
-            if(strPoint.size() == 2)
-                toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1])));
-            else if(strPoint.size() == 3)
-                toCreateOscillatorBanks.push_back(ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]), ofToInt(strPoint[2])));
-            i++;
-        }
-        toCreateWaveScope = ofToInt(xml.getValue("waveScope"));
-        vector<string> strPoint = ofSplitString(xml.getValue("colorApplier"), "_");
-        toCreateColorApplier = ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]));
     }
     
     xml.setToParent();
@@ -748,70 +709,39 @@ void parametersControl::loadPreset(string presetName, string bank){
     //Iterate for all the parameterGroups
     for (int i = 0; i < parameterGroups.size();){
         auto &groupParam = parameterGroups[i];
-        bool isDestroyed = false;
+        bool hasToBeDestroyed = false;
+        
+        bool waveScopeSeparateWindowToggle;
         
         //Move, edit or destroy nodes
         string moduleName = ofSplitString(groupParam->getName(), " ")[0];
         if(!newModulesCreated){
-            if(moduleName == "phasor"){
-                int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
-                if(toCreatePhasors.size() < id){
-                    //destroy node
-                    isDestroyed = true;
-                }else{
-                    //move to new position
-                    datGuis[i]->setPosition(toCreatePhasors[id-1].x, toCreatePhasors[id-1].y);
-                    toCreatePhasors[id-1] = ofPoint(-1, -1);
+            hasToBeDestroyed = true;
+            for(auto module : modulesToCreate){
+                if(groupParam->getName() == module.first){
+                    if(moduleName == "waveScope"){
+                        waveScopeSeparateWindowToggle = groupParam->getBool("Separate Window");
+                        int actualWaveScopeSize = 0;
+                        while(datGuis[i]->getLabel("Osc Bank "+ofToString(actualWaveScopeSize))->getName() != "X")
+                            actualWaveScopeSize++;
+                        if(actualWaveScopeSize != toCreateWaveScope){
+                            break;
+                        }
+                    }
+                    datGuis[i]->setPosition(module.second.x, module.second.y);
+                    modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
+                    hasToBeDestroyed = false;
+                    break;
                 }
-            }
-            else if(moduleName == "oscillator"){
-                int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
-                if(toCreateOscillators.size() < id){
-                    //destroy node
-                    isDestroyed = true;
-                }else{
-                    //move to new position
-                    datGuis[i]->setPosition(toCreateOscillators[id-1].x, toCreateOscillators[id-1].y);
-                    toCreateOscillators[id-1] = ofPoint(-1, -1);
-                }
-            }
-            else if(moduleName == "oscillatorBank"){
-                int id = ofToInt(ofSplitString(groupParam->getName(), " ")[1]);
-                if(toCreateOscillatorBanks.size() < id){
-                    //destroy node
-                    isDestroyed = true;
-                }else if(toCreateOscillatorBanks[id-1].z !=0 && toCreateOscillatorBanks[id-1].z != groupParam->getFloat("Num Waves").getMax()){
-                    //destroy node
-                    isDestroyed = true;
-                }else{
-                    //move to new position
-                    datGuis[i]->setPosition(toCreateOscillatorBanks[id-1].x, toCreateOscillatorBanks[id-1].y);
-                    toCreateOscillatorBanks[id-1] = ofPoint(-1, -1);
-                }
-            }
-            else if(moduleName == "waveScope"){
-                int actualWaveScopeSize = 0;
-                while(datGuis[i]->getLabel("Osc Bank "+ofToString(actualWaveScopeSize))->getName() != "X")
-                    actualWaveScopeSize++;
-                if(actualWaveScopeSize != toCreateWaveScope)
-                    isDestroyed = true;
-                else
-                    toCreateWaveScope = 0;
-                
-                waveScopePosition = datGuis[i]->getPosition();
-            }
-            else if(moduleName == "colorApplier"){
-                isDestroyed = toCreateColorApplier == ofPoint(-1, -1) ? true : false;
-                toCreateColorApplier = ofPoint(-1, -1);
             }
         }
         
         //if we have to destroy the module we do it
-        if(isDestroyed){
+        if(hasToBeDestroyed && moduleName != "senderManager"){
             destroyModuleAndConnections(i);
         }
         else{
-            if(moduleName != "waveScope" && moduleName != "colorApplier"){
+            if(moduleName != "waveScope" && moduleName != "senderManager"){
                 //Put xml in the place of the parametergroup
                 string noSpacesGroupName = groupParam->getName();
                 ofStringReplace(noSpacesGroupName, " ", "_");
@@ -882,64 +812,22 @@ void parametersControl::loadPreset(string presetName, string bank){
                         groupParam->getBool("Reset Phase") = false;
                 }
             }
+            else if(moduleName == "waveScope" && newModulesCreated && waveScopeSeparateWindowToggle){
+                groupParam->getBool("Separate Window") = true;
+            }
             
             //increase if it is not destroyed
             i++;
             
         }
         if(i == parameterGroups.size() && !newModulesCreated){
-            //create Phasors
-            for(int i = 0; i < toCreatePhasors.size() ; i++){
-                if(toCreatePhasors[i] != ofPoint(-1, -1)){
-                    pair<moduleType, ofPoint> pairToSend;
-                    pairToSend.first = phasor_module;
-                    pairToSend.second = toCreatePhasors[i];
-                    ofNotifyEvent(createNewModule, pairToSend, this);
-                }
-            }
-            toCreatePhasors.clear();
-            
-            //create Oscillators
-            for(int i = 0; i < toCreateOscillators.size() ; i++){
-                if(toCreateOscillators[i] != ofPoint(-1, -1)){
-                    pair<moduleType, ofPoint> pairToSend;
-                    pairToSend.first = oscillator_module;
-                    pairToSend.second = toCreateOscillators[i];
-                    ofNotifyEvent(createNewModule, pairToSend, this);
-                }
-            }
-            
-            //create OscillatorBanks
-            for(int i = 0; i < toCreateOscillatorBanks.size() ; i++){
-                if(toCreateOscillatorBanks[i] != ofPoint(-1, -1)){
-                    pair<moduleType, ofPoint> pairToSend;
-                    pairToSend.first = oscillatorBank_module;
-                    pairToSend.second = toCreateOscillatorBanks[i];
-                    ofNotifyEvent(createNewModule, pairToSend, this);
-                }
-            }
-            
-            if(toCreateWaveScope != 0){
-                pair<moduleType, ofPoint> pairToSend;
-                pairToSend.first = waveScope_module;
-                pairToSend.second =  waveScopePosition;
-                pairToSend.second.z = toCreateWaveScope;
-                ofNotifyEvent(createNewModule, pairToSend, this);
-            }
-            
-            if(toCreateColorApplier != ofPoint(-1, -1)){
-                pair<moduleType, ofPoint> pairToSend;
-                pairToSend.first = colorApplier_module;
-                pairToSend.second = toCreateColorApplier;
-                ofNotifyEvent(createNewModule, pairToSend, this);
+            for(pair<string, ofPoint> module : modulesToCreate){
+                ofNotifyEvent(createNewModule, module, this);
             }
             newModulesCreated = true;
         }
     }
     
-//    xml.setToParent();
-    
-//    connections.clear();
     
     if(xml.exists("CONNECTIONS")){
         xml.setTo("CONNECTIONS");
@@ -957,6 +845,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                 if(parameterGroups[j]->getName() == sourceInfo[0]){
                     connections.push_back(make_shared<nodeConnection>(datGuis[j]->getComponent(sourceInfo[1]), datGuis[j], &parameterGroups[j]->get(sourceInfo[1])));
                     ofAddListener(connections.back()->destroyEvent, this, &parametersControl::destroyedConnection);
+                    break;
                 }
             }
             for(int j = 0; j < parameterGroups.size(); j++){
@@ -964,6 +853,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                     connections.back()->connectTo(datGuis[j]->getComponent(sinkInfo[1]), datGuis[j], &parameterGroups[j]->get(sinkInfo[1]));
                     connections.back()->setMin(ofToFloat(minMaxInfo[0]));
                     connections.back()->setMax(ofToFloat(minMaxInfo[1]));
+                    break;
                 }
             }
             i++;
@@ -1154,13 +1044,14 @@ void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    pair<moduleType, ofPoint> pairToSend;
-    pairToSend.first = static_cast<moduleType>(e.child + 1);
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "colorApplier", "waveScope"};
+    pair<string, ofPoint> pairToSend;
+    pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();
     transformedPos -= transformMatrix.getTranslation();
     transformedPos = transformMatrix.getInverse().postMult(transformedPos);
     pairToSend.second = transformedPos;
-    if(pairToSend.first == waveScope_module){
+    if(pairToSend.first == "waveScope"){
         for(int i = 0; i < datGuis.size(); i++)
             if(datGuis[i]->getHeader()->getName() == "waveScope") destroyModuleAndConnections(i);
     }
@@ -1274,7 +1165,6 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
     }if(ofGetKeyPressed('r')){
         for(int i = 0; i<datGuis.size(); i++){
             if(datGuis[i]->hitTest(e)
-               && datGuis[i]->getHeader()->getName() != "oscillatorGroup"
                && datGuis[i]->getHeader()->getName() != "senderManager"){
                 destroyModuleAndConnections(i);
             }
