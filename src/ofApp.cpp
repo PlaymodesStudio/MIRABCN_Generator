@@ -36,11 +36,13 @@ void ofApp::setup(){
             string name = xml.getValue("Name");
             width = xml.getIntValue("Width");
             height = xml.getIntValue("Height");
-            bool invert = xml.getBoolValue("Invert");
+            bool invert = xml.getBoolValue("InvertTexture");
             float bpm = xml.getFloatValue("BPM");
             if(bpm == 0) bpm = 120;
             
             hasColorApplier = xml.getBoolValue("Color");
+            int previewGroupSize = xml.getIntValue("GroupScopes");
+            int previewBankSize = xml.getIntValue("BankScopes");
             
         
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
@@ -51,7 +53,7 @@ void ofApp::setup(){
             if(hasColorApplier)
                 colorModule = new colorApplier(width);
             senderModule = new senderManager(invert);
-            preview = new waveScope(logBuffer, 3);
+            preview = new waveScope(logBuffer, previewGroupSize, previewBankSize);
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
@@ -149,20 +151,6 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 oscBankGroups.push_back(nullptr);
             oscBankGroups[id-1] = new oscillatorBankGroup(height, width, id, info.second);
         }
-    }
-    
-    else if(moduleTypeName == "waveScope")
-    {
-        int nScopes = info.second.z;
-        if(nScopes == 0) nScopes = ofToInt(ofSystemTextBoxDialog("How many Scopes?"));
-        info.second.z = 0;
-        if(preview != nullptr) delete preview;
-        preview = new waveScope(logBuffer, nScopes, info.second);
-    }
-    else if(moduleTypeName == "colorApplier")
-    {
-        if(hasColorApplier && colorModule == nullptr)
-            colorModule = new colorApplier(width);
     }
 }
 

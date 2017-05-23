@@ -1,0 +1,14 @@
+<CONFIGFILE>
+  <GeneratorConfig>
+    <Name>PalauGuell</Name>
+    <Width>64</Width>
+    <Height>35</Height>
+    <InvertTexture>0</InvertTexture>
+    <BPMSync>0</BPMSync>
+    <BPM>112.5</BPM>
+    <FrameRate>60</FrameRate>
+    <Color>0</Color>
+    <GroupScopes>1</GroupScopes>
+    <BankScopes>5</BankScopes>
+  </GeneratorConfig>
+</CONFIGFILE>

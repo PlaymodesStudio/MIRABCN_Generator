@@ -28,7 +28,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
         paramGroup->getFloat("BPM") = datGui->getSlider("Global BPM")->getValue();
     
     shared_ptr<ofxDatGui> tempDatGui = make_shared<ofxDatGui>();
-    tempDatGui->setAutoDraw(false);
+//    tempDatGui->setAutoDraw(false);
     
     tempDatGui->setTransformMatrix(transformMatrix);
     
@@ -124,7 +124,7 @@ void parametersControl::setup(){
     ofxDatGui::setAssetPath("");
     
     datGui = new ofxDatGui();
-    datGui->setAutoDraw(false);
+//    datGui->setAutoDraw(false);
     
     mainGuiTheme = new ofxDatGuiThemeCharcoal;
     ofColor randColor =  ofColor::indianRed;
@@ -225,10 +225,10 @@ void parametersControl::setup(){
 
 void parametersControl::update(ofEventArgs &args){
     
-    datGui->update(args);
-    for(auto gui : datGuis)
-        gui->update(args);
-        
+//    datGui->update(args);
+//    for(auto gui : datGuis)
+//        gui->update(args);
+    
     Tweenzor::update(ofGetElapsedTimeMillis());
     
     while(oscReceiver.hasWaitingMessages()){
@@ -367,9 +367,9 @@ void parametersControl::draw(ofEventArgs &args){
     ofPopMatrix();
     
     
-    datGui->draw(args);
-    for(auto gui : datGuis)
-        gui->draw(args);
+//    datGui->draw(args);
+//    for(auto gui : datGuis)
+//        gui->draw(args);
     
     if(ofGetKeyPressed('r')){
         ofPopStyle();
@@ -573,11 +573,6 @@ void parametersControl::savePreset(string presetName, string bank){
         //if(moduleName == "phasor" || moduleName == "oscillator" || moduleName == "oscillatorBank"){
         xml.addValue("module_" + ofToString(i) + "_name", parameterGroups[i]->getName());
         ofPoint modulePosition = datGuis[i]->getPosition();
-        if(moduleName == "waveScope"){
-            modulePosition.z = 0;
-            while(datGuis[i]->getLabel("Osc Bank "+ofToString((int)modulePosition.z))->getName() != "X")
-                modulePosition.z += 1;
-        }
         xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
     }
@@ -678,13 +673,6 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     vector<pair<string, ofPoint>> modulesToCreate;
     
-    //Get the dinamic modules that have to be created or updated
-    vector<ofPoint> toCreatePhasors;
-    vector<ofPoint> toCreateOscillators;
-    vector<ofPoint> toCreateOscillatorBanks;
-    int toCreateWaveScope = 0;
-    ofPoint waveScopePosition = ofPoint(-1, -1);
-    ofPoint toCreateColorApplier = ofPoint(-1, -1);
     
     if(xml.exists("DYNAMIC_NODES")){
         xml.setTo("DYNAMIC_NODES");
@@ -719,15 +707,6 @@ void parametersControl::loadPreset(string presetName, string bank){
             hasToBeDestroyed = true;
             for(auto module : modulesToCreate){
                 if(groupParam->getName() == module.first){
-                    if(moduleName == "waveScope"){
-                        waveScopeSeparateWindowToggle = groupParam->getBool("Separate Window");
-                        int actualWaveScopeSize = 0;
-                        while(datGuis[i]->getLabel("Osc Bank "+ofToString(actualWaveScopeSize))->getName() != "X")
-                            actualWaveScopeSize++;
-                        if(actualWaveScopeSize != toCreateWaveScope){
-                            break;
-                        }
-                    }
                     datGuis[i]->setPosition(module.second.x, module.second.y);
                     modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
                     hasToBeDestroyed = false;
@@ -737,7 +716,7 @@ void parametersControl::loadPreset(string presetName, string bank){
         }
         
         //if we have to destroy the module we do it
-        if(hasToBeDestroyed && moduleName != "senderManager"){
+        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope"){
             destroyModuleAndConnections(i);
         }
         else{

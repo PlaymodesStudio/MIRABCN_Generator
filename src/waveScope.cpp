@@ -8,7 +8,7 @@
 
 #include "waveScope.h"
 
-waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numBankScopes, ofPoint pos){
+waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numGroupScopes, int numBankScopes, ofPoint pos){
     logBuffer = logBuffer_;
     
     oscillatorBankIns.resize(numBankScopes);
@@ -136,6 +136,8 @@ void waveScope::mouseDragged(ofMouseEventArgs &a){
 
 void waveScope::changeDrawLocation(bool &b){
     if(b){
+        ofAppBaseWindow* mainWindow = ofGetWindowPtr();
+        
         ofGLFWWindowSettings prevSettings;
         if(prevWindowRect.getPosition() == ofPoint(-1, -1)){
             prevSettings.width = 300;
