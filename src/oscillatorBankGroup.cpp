@@ -22,7 +22,7 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters = new ofParameterGroup;
     parameters->setName("oscillatorGroup " + ofToString(id));
     parameters->add(numWaves_Param.set("Num Waves", 1, 0, oscillatorBankSize));
-    parameters->add(invert_Param.set("Invert", false));
+    parameters->add(invert_Param.set("Invert", 0, 0, 1));
     parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));
     parameters->add(indexRand_Param.set("Index Random", 0, 0, 1));
     parameters->add(indexOffset_Param.set("Index Offset", 0, -oscillatorBankSize/2, oscillatorBankSize/2));
@@ -163,7 +163,7 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     }
     else if(p.getName() == invert_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
-            oscillatorBanks[i]->invert_Param =  invert_vecParam.get()[i] >= 0.5 ? true : false;
+            oscillatorBanks[i]->invert_Param =  ofMap(invert_vecParam.get()[i], 0, 1, invert_Param.getMin(), invert_Param.getMax());
     }
     else if(p.getName() == symmetry_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)

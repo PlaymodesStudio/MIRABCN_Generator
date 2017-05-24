@@ -27,7 +27,7 @@ private:
     
     //INDEX
     ofParameter<float>  numWaves_Param; //Desphase Quantity
-    ofParameter<bool>   invert_Param;
+    ofParameter<float>   invert_Param;
     ofParameter<int>    symmetry_Param;
     ofParameter<float>  indexRand_Param;
     ofParameter<int>    indexOffset_Param;
