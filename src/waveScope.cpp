@@ -61,10 +61,13 @@ void waveScope::draw(){
     ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
     ofPopStyle();
 
+    int numActiveOscBanks = 0;
+    for(auto in : oscillatorBankIns)
+        if(in.get().size() > 2) numActiveOscBanks++;
     
     //Draw the Bars
-    int elementHeight = (ofGetHeight()*2/3) / oscillatorBankIns.size();
-    for(int i = 0; i < oscillatorBankIns.size(); i++){
+    int elementHeight = (ofGetHeight()*2/3) / numActiveOscBanks;
+    for(int i = 0; i < numActiveOscBanks; i++){
         int topPosition = ofGetHeight()/3 + (elementHeight * i);
         int numBars = oscillatorBankIns[i].get().size();
         float wid = (float)contentWidth/numBars;

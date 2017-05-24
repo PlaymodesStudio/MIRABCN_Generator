@@ -224,11 +224,7 @@ void parametersControl::setup(){
 
 
 void parametersControl::update(ofEventArgs &args){
-    
-//    datGui->update(args);
-//    for(auto gui : datGuis)
-//        gui->update(args);
-    
+
     Tweenzor::update(ofGetElapsedTimeMillis());
     
     while(oscReceiver.hasWaitingMessages()){
@@ -365,11 +361,6 @@ void parametersControl::draw(ofEventArgs &args){
     }
     ofPopStyle();
     ofPopMatrix();
-    
-    
-//    datGui->draw(args);
-//    for(auto gui : datGuis)
-//        gui->draw(args);
     
     if(ofGetKeyPressed('r')){
         ofPopStyle();
@@ -699,8 +690,6 @@ void parametersControl::loadPreset(string presetName, string bank){
         auto &groupParam = parameterGroups[i];
         bool hasToBeDestroyed = false;
         
-        bool waveScopeSeparateWindowToggle;
-        
         //Move, edit or destroy nodes
         string moduleName = ofSplitString(groupParam->getName(), " ")[0];
         if(!newModulesCreated){
@@ -791,8 +780,13 @@ void parametersControl::loadPreset(string presetName, string bank){
                         groupParam->getBool("Reset Phase") = false;
                 }
             }
-            else if(moduleName == "waveScope" && newModulesCreated && waveScopeSeparateWindowToggle){
-                groupParam->getBool("Separate Window") = true;
+            else if(moduleName == "waveScope"){
+                int waveScopes = 0;
+                while(datGuis[i]->getLabel("Osc Bank "+ofToString(waveScopes))->getName() != "X"){
+                    parameterGroups[i]->get("Osc Bank "+ofToString(waveScopes)).cast<vector<float>>() = {0};
+                    waveScopes++;
+                }
+                
             }
             
             //increase if it is not destroyed
