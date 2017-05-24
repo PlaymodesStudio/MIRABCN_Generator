@@ -66,6 +66,7 @@ void waveScope::draw(){
         if(in.get().size() > 2) numActiveOscBanks++;
     
     //Draw the Bars
+    if(numActiveOscBanks > 0){
     int elementHeight = (ofGetHeight()*2/3) / numActiveOscBanks;
     for(int i = 0; i < numActiveOscBanks; i++){
         int topPosition = ofGetHeight()/3 + (elementHeight * i);
@@ -79,6 +80,7 @@ void waveScope::draw(){
         ofSetLineWidth(2);
         ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
         ofPopStyle();
+    }
     }
     
     
