@@ -33,6 +33,8 @@ public:
     ofParameter<float>    randomAdd_Param;
     ofParameter<int>      waveSelect_Param;
     ofParameter<float>    amplitude_Param;
+    ofParameter<float>    invert_Param;
+
     ofParameter<vector<float>>      oscillatorOut;
 
     
@@ -50,6 +52,7 @@ private:
     void newRandomAddParam(float &f);
     void newWaveSelectParam(int &i);
     void newAmplitudeParam(float &f);
+    void newInvertParam(float &f);
     
     vector<baseOscillator*> oscillators;
     

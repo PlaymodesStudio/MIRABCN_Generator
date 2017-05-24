@@ -22,13 +22,13 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters = new ofParameterGroup;
     parameters->setName("oscillatorGroup " + ofToString(id));
     parameters->add(numWaves_Param.set("Num Waves", 1, 0, oscillatorBankSize));
-    parameters->add(invert_Param.set("Invert", 0, 0, 1));
+    parameters->add(indexInvert_Param.set("Index Invert", 0, 0, 1));
     parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));
     parameters->add(indexRand_Param.set("Index Random", 0, 0, 1));
     parameters->add(indexOffset_Param.set("Index Offset", 0, -oscillatorBankSize/2, oscillatorBankSize/2));
     parameters->add(indexQuant_Param.set("Index Quantization", oscillatorBankSize, 1, oscillatorBankSize));
-    parameters->add(combination_Param.set("Combination", 0, 0, 1));
-    parameters->add(modulo_Param.set("Modulo", oscillatorBankSize, 1, oscillatorBankSize));
+    parameters->add(combination_Param.set("Index Combination", 0, 0, 1));
+    parameters->add(modulo_Param.set("Index Modulo", oscillatorBankSize, 1, oscillatorBankSize));
     
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     parameters->add(phaseOffset_Param.set("Phase Offset", 0, 0, 1));
@@ -38,6 +38,7 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters->add(pow_Param.set("Pow", 1, -40, 40));
     parameters->add(quant_Param.set("Quantization", 255, 1, 255));
     parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
+    parameters->add(invert_Param.set("Invert", 0, 0, 1));
     ofParameterGroup waveDropDown;
     waveDropDown.setName("Wave Select");
     ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
@@ -47,13 +48,13 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     
     parameters->add(numWaves_vecParam.set("Num Waves Vector", {0}));
-    parameters->add(invert_vecParam.set("Invert Vector", {0}));
+    parameters->add(indexInvert_vecParam.set("Index Invert Vector", {0}));
     parameters->add(symmetry_vecParam.set("Symmetry Vector", {0}));
     parameters->add(indexRand_vecParam.set("Index Random Vector", {0}));
     parameters->add(indexOffset_vecParam.set("Index Offset Vector", {0}));
     parameters->add(indexQuant_vecParam.set("Index Quantization Vector", {0}));
-    parameters->add(combination_vecParam.set("Combination Vector", {0}));
-    parameters->add(modulo_vecParam.set("Modulo Vector", {0}));
+    parameters->add(combination_vecParam.set("Index Combination Vector", {0}));
+    parameters->add(modulo_vecParam.set("Index Modulo Vector", {0}));
     
     parameters->add(phaseOffset_vecParam.set("Phase Offset Vector", {0}));
     parameters->add(randomAdd_vecParam.set("Random Addition Vector", {0}));
@@ -62,6 +63,7 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters->add(pow_vecParam.set("Pow Vector", {0}));
     parameters->add(quant_vecParam.set("Quantization Vector", {0}));
     parameters->add(amplitude_vecParam.set("Fader Vector", {0}));
+    parameters->add(invert_vecParam.set("Invert Vector", {0}));
     parameters->add(waveSelect_vecParam.set("Wave Select Vector", {0}));
     parameters->add(pwm_vecParam.set("Square PWM Vector", {0}));
     
@@ -84,9 +86,9 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
         for(auto &oscBank : oscillatorBanks)
             oscBank->numWaves_Param = numWaves_Param;
     }
-    else if(p.getName() == invert_Param.getName()){
+    else if(p.getName() == indexInvert_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
-            oscBank->invert_Param = invert_Param;
+            oscBank->indexInvert_Param = indexInvert_Param;
     }
     else if(p.getName() == symmetry_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
@@ -153,6 +155,10 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
         for(auto &oscBank : oscillatorBanks)
             oscBank->amplitude_Param = amplitude_Param;
     }
+    else if(p.getName() == invert_Param.getName()){
+        for(auto &oscBank : oscillatorBanks)
+            oscBank->invert_Param = invert_Param;
+    }
     
     
     
@@ -161,9 +167,9 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->numWaves_Param = ofMap(numWaves_vecParam.get()[i], 0, 1, numWaves_Param.getMin(), numWaves_Param.getMax());
     }
-    else if(p.getName() == invert_vecParam.getName()){
+    else if(p.getName() == indexInvert_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
-            oscillatorBanks[i]->invert_Param =  ofMap(invert_vecParam.get()[i], 0, 1, invert_Param.getMin(), invert_Param.getMax());
+            oscillatorBanks[i]->indexInvert_Param =  ofMap(indexInvert_vecParam.get()[i], 0, 1, indexInvert_Param.getMin(), indexInvert_Param.getMax());
     }
     else if(p.getName() == symmetry_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
@@ -229,6 +235,10 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     else if(p.getName() == amplitude_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->amplitude_Param = ofMap(amplitude_vecParam.get()[i], 0, 1, amplitude_Param.getMin(), amplitude_Param.getMax());
+    }
+    else if(p.getName() == invert_vecParam.getName()){
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
+            oscillatorBanks[i]->invert_Param = ofMap(invert_vecParam.get()[i], 0, 1, invert_Param.getMin(), invert_Param.getMax());
     }
 }
 

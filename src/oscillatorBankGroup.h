@@ -27,7 +27,7 @@ private:
     
     //INDEX
     ofParameter<float>  numWaves_Param; //Desphase Quantity
-    ofParameter<float>   invert_Param;
+    ofParameter<float>  indexInvert_Param;
     ofParameter<int>    symmetry_Param;
     ofParameter<float>  indexRand_Param;
     ofParameter<int>    indexOffset_Param;
@@ -46,11 +46,12 @@ private:
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
     ofParameter<float>  amplitude_Param;
+    ofParameter<float>  invert_Param;
     
     //Vectorized
     //INDEX
     ofParameter<vector<float>>  numWaves_vecParam;
-    ofParameter<vector<float>>   invert_vecParam;
+    ofParameter<vector<float>>   indexInvert_vecParam;
     ofParameter<vector<float>>    symmetry_vecParam;
     ofParameter<vector<float>>  indexRand_vecParam;
     ofParameter<vector<float>>    indexOffset_vecParam;
@@ -68,6 +69,7 @@ private:
     ofParameter<vector<float>>  randomAdd_vecParam;
     ofParameter<vector<float>>    waveSelect_vecParam;
     ofParameter<vector<float>>  amplitude_vecParam;
+    ofParameter<vector<float>>  invert_vecParam;
     
     
     ofParameter<vector<vector<float>>>  bankGroupOut;

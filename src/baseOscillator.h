@@ -42,6 +42,7 @@ public:
     ofParameter<float>  randomAdd_Param;
     ofParameter<int>    waveSelect_Param;
     ofParameter<float>  amplitude_Param;
+    ofParameter<float>  invert_Param;
     ofParameter<float>  output;
 
 private:

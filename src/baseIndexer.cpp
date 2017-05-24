@@ -19,16 +19,16 @@ baseIndexer::baseIndexer(int numIndexs){
     parameters = new ofParameterGroup;
     parameters->setName("Indexer");
     parameters->add(numWaves_Param.set("Num Waves", 1, 0, indexCount));
-    parameters->add(invert_Param.set("Invert", 0, 0, 1));
+    parameters->add(indexInvert_Param.set("Index Invert", 0, 0, 1));
     parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));
     parameters->add(indexRand_Param.set("Index Random", 0, 0, 1));
     parameters->add(indexOffset_Param.set("Index Offset", 0, -indexCount/2, indexCount/2));
     parameters->add(indexQuant_Param.set("Index Quantization", indexCount, 1, indexCount));
-    parameters->add(combination_Param.set("Combination", 0, 0, 1));
-    parameters->add(modulo_Param.set("Modulo", indexCount, 1, indexCount));
+    parameters->add(combination_Param.set("Index Combination", 0, 0, 1));
+    parameters->add(modulo_Param.set("Index Modulo", indexCount, 1, indexCount));
     
     numWaves_Param.addListener(this, &baseIndexer::parameterFloatListener);
-    invert_Param.addListener(this, &baseIndexer::parameterFloatListener);
+    indexInvert_Param.addListener(this, &baseIndexer::parameterFloatListener);
     symmetry_Param.addListener(this, &baseIndexer::parameterIntListener);
     indexRand_Param.addListener(this, &baseIndexer::parameterFloatListener);
     indexOffset_Param.addListener(this, &baseIndexer::parameterIntListener);
@@ -70,10 +70,10 @@ void baseIndexer::recomputeIndexs(){
         
         //INVERSE
         //Fisrt we invert the index to simulate the wave goes from left to right, inverting indexes, if we want to invertit we don't do this calc
-//        if(invert_Param)
+//        if(indexInvert_Param)
         int nonInvertIndex = index;
         int invertedIndex = ((float)indexCount-(float)index);
-        index = invert_Param*invertedIndex + (1-invert_Param)*nonInvertIndex;
+        index = indexInvert_Param*invertedIndex + (1-indexInvert_Param)*nonInvertIndex;
         
         //random
         index += indexRand[index-1]*indexRand_Param;

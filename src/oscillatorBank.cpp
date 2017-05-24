@@ -27,6 +27,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     parameters->add(pow_Param.set("Pow", 1, -40, 40));
     parameters->add(quant_Param.set("Quantization", 255, 1, 255));
     parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
+    parameters->add(invert_Param.set("Invert", 0, 0, 1));
     ofParameterGroup waveDropDown;
     waveDropDown.setName("Wave Select");
     ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
@@ -48,6 +49,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     pow_Param.addListener(this, &oscillatorBank::newPowParam);
     quant_Param.addListener(this, &oscillatorBank::newQuantParam);
     amplitude_Param.addListener(this, &oscillatorBank::newAmplitudeParam);
+    invert_Param.addListener(this, &oscillatorBank::newInvertParam);
     waveSelect_Param.addListener(this, &oscillatorBank::newWaveSelectParam);
     pwm_Param.addListener(this, &oscillatorBank::newPwmParam);
 }
@@ -139,5 +141,11 @@ void oscillatorBank::newWaveSelectParam(int &i){
 void oscillatorBank::newAmplitudeParam(float &f){
     for(auto &oscillator : oscillators){
         oscillator->amplitude_Param = f;
+    }
+}
+
+void oscillatorBank::newInvertParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->invert_Param = f;
     }
 }

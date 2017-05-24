@@ -20,6 +20,7 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     parameters->add(pow_Param.set("Pow", 1, -40, 40));
     parameters->add(quant_Param.set("Quantization", 255, 1, 255));
     parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
+    parameters->add(invert_Param.set("Invert", 0, 0, 1));
     ofParameterGroup waveDropDown;
     waveDropDown.setName("Wave Select");
     ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
@@ -164,5 +165,9 @@ void baseOscillator::computeMultiplyMod(float *value){
     *value = ofClamp(*value, 0, 1);
     
     *value *= amplitude_Param;
+    
+    float invertedValue = 1-*value;
+    float nonInvertedValue = *value;
+    *value = (invert_Param) * invertedValue + (1-invert_Param) * nonInvertedValue;
 }
 
