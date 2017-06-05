@@ -20,7 +20,7 @@ public:
     ofParameter<float>   indexInvert_Param;
     ofParameter<int>    symmetry_Param;
     ofParameter<float>  indexRand_Param;
-    ofParameter<int>    indexOffset_Param;
+    ofParameter<float>    indexOffset_Param;
     ofParameter<int>    indexQuant_Param;
     ofParameter<float>  combination_Param;
     ofParameter<int>    modulo_Param;

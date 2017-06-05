@@ -35,8 +35,11 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
     parameters->add(scale_Param.set("Scale", 1, 0, 2));
     parameters->add(offset_Param.set("Offset", 0, -1, 1));
-    parameters->add(pow_Param.set("Pow", 1, -40, 40));
+    parameters->add(pow_Param.set("Pow", 0, -40, 40));
+    parameters->add(biPow_Param.set("Bi Pow", 0, -40, 40));
     parameters->add(quant_Param.set("Quantization", 255, 1, 255));
+    parameters->add(pulseWidth_Param.set("Pulse Width", 1, 0, 1));
+    parameters->add(skew_Param.set("Skew", 0, -1, 1));
     parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
     parameters->add(invert_Param.set("Invert", 0, 0, 1));
     ofParameterGroup waveDropDown;
@@ -45,7 +48,6 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     waveDropDown.add(tempStrParam);
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
-    parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
     
     parameters->add(numWaves_vecParam.set("Num Waves Vector", {0}));
     parameters->add(indexInvert_vecParam.set("Index Invert Vector", {0}));
@@ -61,12 +63,15 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     parameters->add(scale_vecParam.set("Scale Vector", {0}));
     parameters->add(offset_vecParam.set("Offset Vector", {0}));
     parameters->add(pow_vecParam.set("Pow Vector", {0}));
+    parameters->add(biPow_vecParam.set("Bi Pow Vector", {0}));
     parameters->add(quant_vecParam.set("Quantization Vector", {0}));
+    parameters->add(pulseWidth_vecParam.set("Pulse Width Vector", {0}));
+    parameters->add(skew_vecParam.set("Skew Vector", {0}));
+    
     parameters->add(amplitude_vecParam.set("Fader Vector", {0}));
     parameters->add(invert_vecParam.set("Invert Vector", {0}));
     parameters->add(waveSelect_vecParam.set("Wave Select Vector", {0}));
-    parameters->add(pwm_vecParam.set("Square PWM Vector", {0}));
-    
+
     parameters->add(bankGroupOut.set("Main Out", {{0}}));
     parameters->add(previewOut.set("Preview Out", {0}));
     
@@ -123,9 +128,13 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
         for(auto &oscBank : oscillatorBanks)
             oscBank->pow_Param = pow_Param;
     }
-    else if(p.getName() == pwm_Param.getName()){
+    else if(p.getName() == biPow_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
-            oscBank->pwm_Param = pwm_Param;
+        oscBank->biPow_Param = biPow_Param;
+    }
+    else if(p.getName() == pulseWidth_Param.getName()){
+        for(auto &oscBank : oscillatorBanks)
+            oscBank->pulseWidth_Param = pulseWidth_Param;
     }
     else if(p.getName() == holdTime_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
@@ -146,6 +155,10 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     else if(p.getName() == randomAdd_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
             oscBank->randomAdd_Param = randomAdd_Param;
+    }
+    else if(p.getName() == skew_Param.getName()){
+        for(auto &oscBank : oscillatorBanks)
+            oscBank->skew_Param = skew_Param;
     }
     else if(p.getName() == waveSelect_Param.getName()){
         for(auto &oscBank : oscillatorBanks)
@@ -204,9 +217,13 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->pow_Param = ofMap(pow_vecParam.get()[i], 0, 1, pow_Param.getMin(), pow_Param.getMax());
     }
-    else if(p.getName() == pwm_vecParam.getName()){
+    else if(p.getName() == biPow_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
-            oscillatorBanks[i]->pwm_Param = ofMap(pwm_vecParam.get()[i], 0, 1, pwm_Param.getMin(), pwm_Param.getMax());
+            oscillatorBanks[i]->biPow_Param = ofMap(biPow_vecParam.get()[i], 0, 1, biPow_Param.getMin(), biPow_Param.getMax());
+    }
+    else if(p.getName() == pulseWidth_vecParam.getName()){
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
+            oscillatorBanks[i]->pulseWidth_Param = ofMap(pulseWidth_vecParam.get()[i], 0, 1, pulseWidth_Param.getMin(), pulseWidth_Param.getMax());
     }
     else if(p.getName() == holdTime_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
@@ -227,6 +244,10 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     else if(p.getName() == randomAdd_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->randomAdd_Param = ofMap(randomAdd_vecParam.get()[i], 0, 1, randomAdd_Param.getMin(), randomAdd_Param.getMax());
+    }
+    else if(p.getName() == skew_vecParam.getName()){
+        for(int i = 0; i < oscillatorBanks.size() -1; i++)
+            oscillatorBanks[i]->skew_Param = ofMap(skew_vecParam.get()[i], 0, 1, skew_Param.getMin(), skew_Param.getMax());
     }
     else if(p.getName() == waveSelect_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)

@@ -24,8 +24,11 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
     parameters->add(scale_Param.set("Scale", 1, 0, 2));
     parameters->add(offset_Param.set("Offset", 0, -1, 1));
-    parameters->add(pow_Param.set("Pow", 1, -40, 40));
+    parameters->add(pow_Param.set("Pow", 0, -40, 40));
+    parameters->add(biPow_Param.set("Bi Pow", 0, -40, 40));
     parameters->add(quant_Param.set("Quantization", 255, 1, 255));
+    parameters->add(pulseWidth_Param.set("Pulse Width", 1, 0, 1));
+    parameters->add(skew_Param.set("Skew", 0, -1, 1));
     parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
     parameters->add(invert_Param.set("Invert", 0, 0, 1));
     ofParameterGroup waveDropDown;
@@ -34,7 +37,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     waveDropDown.add(tempStrParam);
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
-    parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
+    
     parameters->add(oscillatorOut.set("Oscillator Out", {0}));
     
     if(gui)
@@ -50,8 +53,10 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     quant_Param.addListener(this, &oscillatorBank::newQuantParam);
     amplitude_Param.addListener(this, &oscillatorBank::newAmplitudeParam);
     invert_Param.addListener(this, &oscillatorBank::newInvertParam);
+    biPow_Param.addListener(this, &oscillatorBank::newBiPowParam);
     waveSelect_Param.addListener(this, &oscillatorBank::newWaveSelectParam);
-    pwm_Param.addListener(this, &oscillatorBank::newPwmParam);
+    pulseWidth_Param.addListener(this, &oscillatorBank::newpulseWidthParam);
+    skew_Param.addListener(this, &oscillatorBank::newSkewParam);
 }
 
 void oscillatorBank::newIndexs(){
@@ -84,15 +89,15 @@ void oscillatorBank::newPhasorIn(float &f){
     }
 }
 
-void oscillatorBank::newPowParam(int &i){
+void oscillatorBank::newPowParam(float &f){
     for(auto &oscillator : oscillators){
-        oscillator->pow_Param = i;
+        oscillator->pow_Param = f;
     }
 }
 
-void oscillatorBank::newPwmParam(float &f){
+void oscillatorBank::newpulseWidthParam(float &f){
     for(auto &oscillator : oscillators){
-        oscillator->pwm_Param = f;
+        oscillator->pulseWidth_Param = f;
     }
 }
 
@@ -147,5 +152,17 @@ void oscillatorBank::newAmplitudeParam(float &f){
 void oscillatorBank::newInvertParam(float &f){
     for(auto &oscillator : oscillators){
         oscillator->invert_Param = f;
+    }
+}
+
+void oscillatorBank::newSkewParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->skew_Param = f;
+    }
+}
+
+void oscillatorBank::newBiPowParam(float &f){
+    for(auto &oscillator : oscillators){
+        oscillator->biPow_Param = f;
     }
 }

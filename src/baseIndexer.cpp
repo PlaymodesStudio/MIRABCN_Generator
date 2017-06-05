@@ -31,7 +31,7 @@ baseIndexer::baseIndexer(int numIndexs){
     indexInvert_Param.addListener(this, &baseIndexer::parameterFloatListener);
     symmetry_Param.addListener(this, &baseIndexer::parameterIntListener);
     indexRand_Param.addListener(this, &baseIndexer::parameterFloatListener);
-    indexOffset_Param.addListener(this, &baseIndexer::parameterIntListener);
+    indexOffset_Param.addListener(this, &baseIndexer::parameterFloatListener);
     indexQuant_Param.addListener(this, &baseIndexer::parameterIntListener);
     combination_Param.addListener(this, &baseIndexer::parameterFloatListener);
     modulo_Param.addListener(this, &baseIndexer::parameterIntListener);
@@ -70,7 +70,6 @@ void baseIndexer::recomputeIndexs(){
         
         //INVERSE
         //Fisrt we invert the index to simulate the wave goes from left to right, inverting indexes, if we want to invertit we don't do this calc
-//        if(indexInvert_Param)
         int nonInvertIndex = index;
         int invertedIndex = ((float)indexCount-(float)index);
         index = indexInvert_Param*invertedIndex + (1-indexInvert_Param)*nonInvertIndex;
@@ -90,10 +89,10 @@ void baseIndexer::recomputeIndexs(){
         
 //        index += indexOffset_Param;
         
-        int shifted_i = i + indexOffset_Param;
+        int shifted_i = i + floor(indexOffset_Param);
         if(shifted_i < 0) shifted_i += indexCount;
         shifted_i %= indexCount;
-        indexs[shifted_i] = (((float)index/(float)newNumOfPixels))*numWaves_Param;
+        indexs[shifted_i] = (((float)index/(float)newNumOfPixels))*numWaves_Param;// + (numWaves_Param/newNumOfPixels*fmod(indexOffset_Param, 1));
     }
     newIndexs();
 }

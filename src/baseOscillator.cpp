@@ -17,8 +17,11 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
     parameters->add(scale_Param.set("Scale", 1, 0, 2));
     parameters->add(offset_Param.set("Offset", 0, -1, 1));
-    parameters->add(pow_Param.set("Pow", 1, -40, 40));
+    parameters->add(pow_Param.set("Pow", 0, -40, 40));
+    parameters->add(biPow_Param.set("Bi Pow", 0, -40, 40));
     parameters->add(quant_Param.set("Quantization", 255, 1, 255));
+    parameters->add(pulseWidth_Param.set("Pulse Width", 1, 0, 1));
+    parameters->add(skew_Param.set("Skew", 0, -1, 1));
     parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
     parameters->add(invert_Param.set("Invert", 0, 0, 1));
     ofParameterGroup waveDropDown;
@@ -27,7 +30,7 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     waveDropDown.add(tempStrParam);
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
-    parameters->add(pwm_Param.set("Square PWM", 0.5, 0, 1));
+    
     parameters->add(output.set("Output", 0, 0, 1));
     
     
@@ -50,20 +53,43 @@ void baseOscillator::computeFunc(float &phasor){
 //    //invert it?
 //    k *=  freq_Param * ((float)indexCount_Param/(float)indexQuant_Param); //Index Modifiers
     
+    w += k;
+    w = fmod(w, 2*PI);
     
-    float linPhase = fmod(w+k, 2*PI) / (2*PI);
+    w = ofMap(w, (1-pulseWidth_Param)*2*PI, 2*PI, 0, 2*PI, true);
+    
+    float skewedW = w;
+    
+    
+    if(skew_Param < 0){
+        if(w < PI+((abs(skew_Param))*PI))
+            skewedW = ofMap(w, 0, PI+((abs(skew_Param))*PI), 0, PI, true);
+        else
+            skewedW = ofMap(w, PI+((abs(skew_Param))*PI), 2*PI, PI, 2*PI, true);
+    }
+    else if(skew_Param > 0){
+        if(w > ((1-abs(skew_Param))*PI))
+            skewedW = ofMap(w, (1-abs(skew_Param))*PI, 2*PI, PI, 2*PI, true);
+        else
+            skewedW = ofMap(w, 0, ((1-abs(skew_Param))*PI), 0, PI, true);
+    }
+    
+    w = skewedW;
+
+    
+    float linPhase =  w / (2*PI);
     float val = 0;
     switch (static_cast<oscTypes>(waveSelect_Param.get()+1)){
         case sinOsc:
         {
-            val = sin(w+k);
+            val = sin(w);
             val = ofMap(val, -1, 1, 0, 1);
             break;
             
         }
         case cosOsc:
         {
-            val = cos(w+k);
+            val = cos(w);
             val = ofMap(val, -1, 1, 0, 1);
             break;
         }
@@ -74,7 +100,7 @@ void baseOscillator::computeFunc(float &phasor){
         }
         case squareOsc:
         {
-            val = (linPhase > pwm_Param) ? 1 : 0;
+            val = (linPhase > 0) ? 1 : 0;
             break;
         }
         case sawOsc:
@@ -89,14 +115,8 @@ void baseOscillator::computeFunc(float &phasor){
         }
         case rand1Osc:
         {
-//            srand(linPhase*100000000);
-//            val = ofRandomuf();
-            if(phasor < oldPhasor){
-//                if(index != prevIndex)
-                    val = ofRandom(1);
-//                else
-//                    val = infoVec_preMod[i-1];
-            }
+            if(phasor < oldPhasor)
+                val = ofRandom(1);
             else
                 val = oldValuePreMod;
             
@@ -106,11 +126,7 @@ void baseOscillator::computeFunc(float &phasor){
         {
             if(phasor < oldPhasor){
                 pastRandom = newRandom;
-//                if(index != prevIndex)
-                    newRandom = ofRandom(1);
-//                else
-//                    newRandom[i] = newRandom[i-1];
-//                
+                newRandom = ofRandom(1);
                 val = pastRandom;
             }
             else
@@ -147,14 +163,25 @@ void baseOscillator::computeMultiplyMod(float *value){
     //SCALE
     *value *= scale_Param;
     
-    //OFFSET√ß
+    //OFFSET
     *value += offset_Param;
     
     *value = ofClamp(*value, 0, 1);
     
     //pow
-    if(pow_Param)
-        *value = (pow_Param < 0) ? pow(*value, 1/(float)(-pow_Param)) : pow(*value, pow_Param);
+    if(pow_Param != 0)
+        *value = (pow_Param < 0) ? pow(*value, 1/(float)(-pow_Param+1)) : pow(*value, pow_Param+1);
+    
+    //bipow
+    *value = ofMap(*value, 0, 1, -1, 1);
+    if(biPow_Param != 0){
+        if(*value < 0)
+            *value = -((biPow_Param < 0) ? pow(abs(*value), 1/(float)(-biPow_Param+1)) : pow(abs(*value), biPow_Param+1));
+        else
+            *value = (biPow_Param < 0) ? pow(*value, 1/(float)(-biPow_Param+1)) : pow(*value, biPow_Param+1);
+    }
+    *value = ofMap(*value, -1, 1, 0, 1, true);
+    
     
     *value = ofClamp(*value, 0, 1);
     
