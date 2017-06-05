@@ -31,6 +31,7 @@ phasorClass::phasorClass(int index, ofPoint pos)
     
     resetPhase_Param.addListener(this, &phasorClass::resetPhasor);
     loop_Param.addListener(this, &phasorClass::loopChanged);
+    initPhase_Param.addListener(this, &phasorClass::initPhaseChanged);
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green, pos);
 }
@@ -46,7 +47,8 @@ float phasorClass::getPhasor(){
 }
 
 void phasorClass::resetPhasor(bool &reset){
-    phasor = 0;
+    phasor = initPhase_Param;
+    phasorMod = initPhase_Param;
     resetPhase_Param = false;
 }
 
@@ -130,7 +132,15 @@ void phasorClass::nextFrame(){
 }
 
 void phasorClass::loopChanged(bool &val){
-    if(!val)
-        phasor = 0;
+    if(!val){
+        phasorMod = initPhase_Param;
+    }
+}
+
+void phasorClass::initPhaseChanged(float &f){
+    if(loop_Param == false){
+        phasorMod = initPhase_Param;
+    }
+
 }
 

@@ -31,6 +31,8 @@ public:
     ofParameterGroup* getParameterGroup(){return parameters;};
     
 private:
+    void initPhaseChanged(float &f);
+    
     ofParameterGroup*    parameters;
     ofParameter<double>  phasor;
     ofParameter<double>  phasorMod;
