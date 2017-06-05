@@ -164,6 +164,10 @@ void parametersControl::setup(){
     datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
+    datGui->addLabel("Midi settings");
+    datGui->addToggle("Midi Learn", false);
+    midiListenActive = false;
+    
     datGui->setPosition(ofxDatGuiAnchor::BOTTOM_LEFT);
 
     
@@ -193,10 +197,21 @@ void parametersControl::setup(){
     //MIDI
     ofLog() << "MIDI Info:";
     ofxMidiOut::listPorts();
-    if(midiOut.openPort("BCF2000")){
-        midiIn.openPort("BCF2000");
-        midiIn.addListener(this);
+    for(int i = 0; i< ofxMidiOut::getNumPorts(); i++){
+        midiOut.push_back(ofxMidiOut());
+        midiOut.back().openPort(i);
     }
+    
+    
+    ofxMidiIn::listPorts();
+    for(int i = 0; i< ofxMidiIn::getNumPorts(); i++){
+        midiIn.push_back(ofxMidiIn());
+        midiIn.back().openPort(i);
+        midiIn.back().addListener(this);
+    }
+    
+    loadMidiMapping();
+
     
     
     autoPreset = false;
@@ -274,57 +289,42 @@ void parametersControl::update(ofEventArgs &args){
         oscSender.sendMessage(m);
     }
     
-    //TODO: Reimplement MIDI
-//    //MIDI - Process the midi deque
-//    while(midiMessages.size() > 0){
-//        int parameterNum = midiMessages[0].control;
-//        int parameterVal = midiMessages[0].value;
-//        
-//        midiMessages.pop_front();
-//        
-//        //get the grup in each iteration
-//        ofParameterGroup groupParam;
-//        if(parameterNum > phasorParams.size()-1){
-//            if(parameterNum > (phasorParams.size() + oscilatorParams.size() -1 )){
-//                if(parameterNum > (phasorParams.size() + oscilatorParams.size() + delayParams.size() -1))
-//                    return;
-//                parameterNum -= (phasorParams.size() + oscilatorParams.size());
-//                groupParam = delayParams;
-//            }
-//            else{
-//                parameterNum -= phasorParams.size();
-//                groupParam = oscilatorParams;
-//            }
-//        }
-//        else{
-//            groupParam = phasorParams;
-//        }
-//        
-//        //Iterate for all parameters in parametergroup and look for the type of the parameter
-//        ofAbstractParameter &absParam = groupParam->get(parameterNum);
-//        if(absParam.type() == typeid(ofParameter<float>).name()){
-//            //Cast it
-//            ofParameter<float> castedParam = absParam.cast<float>();
-//            
-//            //get the value of that parameter and map it
-//            castedParam = (ofMap(parameterVal, 0, 127, castedParam.getMin(), castedParam.getMax(), true));
-//        }
-//        else if(absParam.type() == typeid(ofParameter<int>).name()){
-//            ofParameter<int> castedParam = absParam.cast<int>();
-//            int range = castedParam.getMax()-castedParam.getMin();
-//            if(range < 128)
-//                castedParam = ofMap(parameterVal, 0, ((int)(128/(range))*range), castedParam.getMin(), castedParam.getMax(), true);
-//            else
-//                castedParam = ofMap(parameterVal, 0, range/ceil((float)range/(float)128), castedParam.getMin(), castedParam.getMax(), true);
-//            
-//        }
-//        else if(absParam.type() == typeid(ofParameter<bool>).name()){
-//            ofParameter<bool> castedParam = absParam.cast<bool>();
-//            
-//            //get the value of that parameter and map it
-//            castedParam.set(parameterVal >= 64 ? true : false);
-//        }
-//    }
+    //MIDI - Process the midi deque
+    for(auto m : midiMessagesFiller)
+        midiMessages.push_front(m);
+    midiMessagesFiller.clear();
+    
+    while(midiMessages.size() > 0){
+        int parameterChan = midiMessages[0].channel;
+        int parameterNum = midiMessages[0].status == MIDI_NOTE_ON ? midiMessages[0].pitch : midiMessages[0].control;
+        int parameterVal = midiMessages[0].status == MIDI_NOTE_ON ? midiMessages[0].velocity : midiMessages[0].value;
+        string parameterPort = midiMessages[0].portName;
+        
+        for (auto &connection : midiIntConnections){
+            if(connection.isListening())
+                connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
+            else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
+                connection.setValue(parameterVal);
+            }
+        }
+        for (auto &connection : midiFloatConnections){
+            if(connection.isListening())
+                connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
+            else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
+                connection.setValue(parameterVal);
+            }
+        }
+        for (auto &connection : midiBoolConnections){
+            if(connection.isListening())
+                connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
+            else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
+                connection.setValue(parameterVal);
+            }
+        }
+        
+        midiMessages.pop_front();
+    }
+
     
     //Auto preset
     if(randomPresetsArrange.size()>0 && autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
@@ -363,9 +363,17 @@ void parametersControl::draw(ofEventArgs &args){
     ofPopMatrix();
     
     if(ofGetKeyPressed('r')){
-        ofPopStyle();
+        ofPushStyle();
         ofSetColor(255, 0, 0, 50);
         ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+        ofPopStyle();
+    }
+    else if(midiListenActive){
+        ofPushStyle();
+        ofSetColor(ofColor::greenYellow,50);
+        ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+        ofSetColor(ofColor::black);
+        ofDrawBitmapStringHighlight("MIDI LEARN", ofPoint(ofGetWidth() - 100, ofGetHeight() - 10));
         ofPopStyle();
     }
 }
@@ -534,6 +542,114 @@ bool parametersControl::loadPresetsSequence(){
     shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
     
     return true;
+}
+
+void parametersControl::saveMidiMapping(){
+    ofXml xml2;
+    xml2.clear();
+    
+    //Root Element
+    xml2.addChild("MIDIMAPPING");
+    
+    // now we set our current element so we're on the right
+    // element, so when add new nodes, they are still inside
+    //the root element
+    xml2.setTo("MIDIMAPPING");
+    
+    for (int i = 0; i < midiIntConnections.size(); i++){
+        xml2.addChild("MidiInt_" + ofToString(i));
+        xml2.setTo("MidiInt_" + ofToString(i));
+        if(midiIntConnections[i].getParameter()->getGroupHierarchyNames().size() == 3){
+            xml2.addValue("isDropdown", "true");
+            string sGroup = midiIntConnections[i].getParameter()->getGroupHierarchyNames()[0];
+            ofStringReplace(sGroup, "_", " ");
+            xml2.addValue("SourceGroup", sGroup);
+            xml2.addValue("SourceName", midiIntConnections[i].getParameter()->getFirstParent().getName());
+        }else{
+            xml2.addValue("isDropdown", "false");
+            xml2.addValue("SourceGroup", midiIntConnections[i].getParameter()->getFirstParent().getName());
+            xml2.addValue("SourceName", midiIntConnections[i].getParameter()->getName());
+        }
+        xml2.addValue("MidiDevice", midiIntConnections[i].getDevice());
+        xml2.addValue("MidiChannel", ofToString(midiIntConnections[i].getChannel()));
+        xml2.addValue("MidiControl", ofToString(midiIntConnections[i].getControl()));
+        xml2.setToParent();
+    }
+    
+    for (int i = 0; i < midiFloatConnections.size(); i++){
+        xml2.addChild("MidiFloat_" + ofToString(i));
+        xml2.setTo("MidiFloat_" + ofToString(i));
+        xml2.addValue("SourceGroup", midiFloatConnections[i].getParameter()->getFirstParent().getName());
+        xml2.addValue("SourceName", midiFloatConnections[i].getParameter()->getName());
+        xml2.addValue("MidiDevice", midiFloatConnections[i].getDevice());
+        xml2.addValue("MidiChannel", ofToString(midiFloatConnections[i].getChannel()));
+        xml2.addValue("MidiControl", ofToString(midiFloatConnections[i].getControl()));
+        xml2.setToParent();
+    }
+    
+    for (int i = 0; i < midiBoolConnections.size(); i++){
+        xml2.addChild("MidiBool_" + ofToString(i));
+        xml2.setTo("MidiBool_" + ofToString(i));
+        xml2.addValue("SourceGroup", midiBoolConnections[i].getParameter()->getFirstParent().getName());
+        xml2.addValue("SourceName", midiBoolConnections[i].getParameter()->getName());
+        xml2.addValue("MidiDevice", midiBoolConnections[i].getDevice());
+        xml2.addValue("MidiChannel", ofToString(midiBoolConnections[i].getChannel()));
+        xml2.addValue("MidiControl", ofToString(midiBoolConnections[i].getControl()));
+        xml2.addValue("MidiToggleMode", ofToString(midiBoolConnections[i].isToggle()));
+        xml2.setToParent();
+    }
+    
+    xml2.save("MidiMapping.xml");
+}
+
+void parametersControl::loadMidiMapping(){
+    //Test if there is no problem with the file
+    if(!xml.load("MidiMapping.xml"))
+        return;
+    
+    int i = 0;
+    while(xml.exists("MidiInt_" + ofToString(i))){
+        xml.setTo("MidiInt_" + ofToString(i));
+        string isDrop = xml.getValue("isDropdown");
+        for(auto &paramGroup : parameterGroups){
+            if(paramGroup->getName() == xml.getValue("SourceGroup")){
+                if(isDrop == "true")
+                    midiIntConnections.push_back(midiConnection<int>(&paramGroup->getGroup(xml.getValue("SourceName")).getInt(1)));
+                else
+                    midiIntConnections.push_back(midiConnection<int>(&paramGroup->getInt(xml.getValue("SourceName"))));
+            }
+            
+        }
+        midiIntConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+        xml.setToParent();
+        i++;
+    }
+    i = 0;
+    while(xml.exists("MidiFloat_" + ofToString(i))){
+        xml.setTo("MidiFloat_" + ofToString(i));
+        for(auto &paramGroup : parameterGroups){
+            if(paramGroup->getName() == xml.getValue("SourceGroup"))
+                midiFloatConnections.push_back(midiConnection<float>(&paramGroup->getFloat(xml.getValue("SourceName"))));
+        }
+        midiFloatConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+        xml.setToParent();
+        i++;
+    }
+    i = 0;
+    while(xml.exists("MidiBool_" + ofToString(i))){
+        xml.setTo("MidiBool_" + ofToString(i));
+        for(auto &paramGroup : parameterGroups){
+            if(paramGroup->getName() == xml.getValue("SourceGroup"))
+                midiBoolConnections.push_back(midiConnection<bool>(&paramGroup->getBool(xml.getValue("SourceName"))));
+        }
+        midiBoolConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+        midiBoolConnections.back().setToggle(xml.getBoolValue("MidiToggleMode"));
+        
+        xml.setToParent();
+        i++;
+    }
+    
+    ofLog()<<"Load Midi Mapping";
 }
 
 void parametersControl::savePreset(string presetName, string bank){
@@ -917,6 +1033,9 @@ void parametersControl::onGuiToggleEvent(ofxDatGuiToggleEvent e){
             ofRemoveListener(beatTracker->bpmChanged, this, &parametersControl::bpmChangedListener);
         
     }
+    else if(e.target->getName() == "Midi Learn"){
+        midiListenActive = e.checked;
+    }
 }
 
 void parametersControl::onGuiDropdownEvent(ofxDatGuiDropdownEvent e){
@@ -972,18 +1091,82 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
         for (int i=0; i < datGuis.size() ; i++){
             if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target){
                 ofAbstractParameter &parameter = parameterGroups[i]->get(e.target->getName());
-                bool foundParameter = false;
-                for(int j = 0 ; j < connections.size() ; j++){
-                    if(connections[j]->getSinkParameter() == &parameter){
-                        swap(connections[j], connections.back());
-                        connections.back()->disconnect();
-                        foundParameter = true;
-                        break;
+                if(midiListenActive){
+                    if(parameter.type() == typeid(ofParameter<float>).name()){
+                        bool erasedConnection = false;
+                        if(ofGetKeyPressed(OF_KEY_SHIFT)){
+                            for(int i = 0 ; i < midiFloatConnections.size(); i++){
+                                if(midiFloatConnections[i].getParameter() == &parameter){
+                                    erasedConnection = true;
+                                    midiFloatConnections.erase(midiFloatConnections.begin()+i);
+                                    return;
+                                }
+                            }
+                        }
+                        if(!erasedConnection)
+                            midiFloatConnections.push_back(midiConnection<float>(&parameter.cast<float>()));
                     }
+                    else if(parameter.type() == typeid(ofParameter<int>).name()){
+                        bool erasedConnection = false;
+                        if(ofGetKeyPressed(OF_KEY_SHIFT)){
+                            for(int i = 0 ; i < midiIntConnections.size(
+                                ); i++){
+                                if(midiIntConnections[i].getParameter() == &parameter){
+                                    erasedConnection = true;
+                                    midiIntConnections.erase(midiIntConnections.begin()+i);
+                                    return;
+                                }
+                            }
+                        }
+                        if(!erasedConnection)
+                            midiIntConnections.push_back(midiConnection<int>(&parameter.cast<int>()));
+                    }
+                    else if(parameter.type() == typeid(ofParameter<bool>).name()){
+                        bool erasedConnection = false;
+                        if(ofGetKeyPressed(OF_KEY_SHIFT)){
+                            for(int i = 0 ; i < midiBoolConnections.size(); i++){
+                                if(midiBoolConnections[i].getParameter() == &parameter){
+                                    erasedConnection = true;
+                                    midiBoolConnections.erase(midiBoolConnections.begin()+i);
+                                    return;
+                                }
+                            }
+                        }
+                        if(!erasedConnection)
+                            midiBoolConnections.push_back(midiConnection<bool>(&parameter.cast<bool>()));
+                    }
+                    else if(parameter.type() == typeid(ofParameterGroup).name()){
+                        parameter = parameterGroups[i]->getGroup(e.target->getName()).get(2);
+                        bool erasedConnection = false;
+                        if(ofGetKeyPressed(OF_KEY_SHIFT)){
+                            for(int i = 0 ; i < midiFloatConnections.size(); i++){
+                                if(midiFloatConnections[i].getParameter() == &parameter){
+                                    erasedConnection = true;
+                                    midiFloatConnections.erase(midiFloatConnections.begin()+i);
+                                    return;
+                                }
+                            }
+                        }
+                        if(!erasedConnection)
+                            midiFloatConnections.push_back(midiConnection<float>(&parameter.cast<float>()));
+                    }
+                    else
+                        ofLog() << "Cannot midi to parameter " << parameter.getName();
                 }
-                if(!foundParameter){
-                    connections.push_back(make_shared<nodeConnection>(e.target, datGuis[i], &parameter));
-                    ofAddListener(connections.back()->destroyEvent, this, &parametersControl::destroyedConnection);
+                else{
+                    bool foundParameter = false;
+                    for(int j = 0 ; j < connections.size() ; j++){
+                        if(connections[j]->getSinkParameter() == &parameter){
+                            swap(connections[j], connections.back());
+                            connections.back()->disconnect();
+                            foundParameter = true;
+                            break;
+                        }
+                    }
+                    if(!foundParameter){
+                        connections.push_back(make_shared<nodeConnection>(e.target, datGuis[i], &parameter));
+                        ofAddListener(connections.back()->destroyEvent, this, &parametersControl::destroyedConnection);
+                    }
                 }
             }
         }
@@ -1220,6 +1403,16 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
         if(castedParam.getName() == "BPM")
             periodTime = presetChangeBeatsPeriod / castedParam * 60.;
+
+        for(auto &midiConnection : midiFloatConnections){
+            ofAbstractParameter* possibleSource = midiConnection.getParameter();
+            if(possibleSource == &e && !midiConnection.isListening()){
+                for(auto &mOut : midiOut){
+                    if(mOut.getName() == midiConnection.getDevice())
+                        mOut.sendControlChange(midiConnection.getChannel(), midiConnection.getControl(), midiConnection.sendValue());
+                }
+            }
+        }
         
         for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
@@ -1228,6 +1421,16 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     else if(e.type() == typeid(ofParameter<int>).name()){
         ofParameter<int> castedParam = e.cast<int>();
         normalizedVal = ofMap(castedParam, castedParam.getMin(), castedParam.getMax(), 0, 1);
+        
+        for(auto &midiConnection : midiIntConnections){
+            ofAbstractParameter* possibleSource = midiConnection.getParameter();
+            if(possibleSource == &e && !midiConnection.isListening()){
+                for(auto &mOut : midiOut){
+                    if(mOut.getName() == midiConnection.getDevice())
+                        mOut.sendControlChange(midiConnection.getChannel(), midiConnection.getControl(), midiConnection.sendValue());
+                }
+            }
+        }
         
         if(ofStringTimesInString(castedParam.getName(), "Select") == 1){
             datGuis[parentIndex]->getDropdown(castedParam.getName())->select(castedParam);
@@ -1239,6 +1442,16 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     else if(e.type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e.cast<bool>();
         normalizedVal = castedParam ? 1 : 0;
+        
+        for(auto &midiConnection : midiBoolConnections){
+            ofAbstractParameter* possibleSource = midiConnection.getParameter();
+            if(possibleSource == &e && !midiConnection.isListening()){
+                for(auto &mOut : midiOut){
+                    if(mOut.getName() == midiConnection.getDevice())
+                        mOut.sendControlChange(midiConnection.getChannel(), midiConnection.getControl(), midiConnection.sendValue());
+                }
+            }
+        }
         
         //Update to datGuis
         datGuis[parentIndex]->getToggle(castedParam.getName())->setChecked(normalizedVal);

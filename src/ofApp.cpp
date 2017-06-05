@@ -210,6 +210,7 @@ void ofApp::draw(){
 
 void ofApp::exit(){
     paramsControl->saveGuiArrangement();
+    paramsControl->saveMidiMapping();
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){

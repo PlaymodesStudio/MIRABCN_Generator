@@ -15,6 +15,7 @@
 #include "ofxMidi.h"
 #include "ofxTweenzor.h"
 #include "bpmControl.h"
+#include "midiConnection.h"
 
 
 
@@ -242,6 +243,9 @@ public:
     
     void changePresetLabelHighliht(ofxDatGuiButton* presetToHighlight);
     
+    void saveMidiMapping();
+    void loadMidiMapping();
+    
     void saveGuiArrangement();
     void loadGuiArrangement();
     
@@ -284,10 +288,6 @@ private:
     
     ofXml xml;
     
-    ofxMidiOut midiOut;
-    ofxMidiIn   midiIn;
-    
-    deque<ofxMidiMessage> midiMessages;
     
     float   presetChangedTimeStamp;
     float   periodTime;
@@ -309,6 +309,18 @@ private:
     
     //node
     vector<shared_ptr<nodeConnection>>  connections;
+    
+    //MIDI
+    vector<ofxMidiOut> midiOut;
+    vector<ofxMidiIn>  midiIn;
+    
+    deque<ofxMidiMessage> midiMessages;
+    vector<ofxMidiMessage>  midiMessagesFiller;
+    int newMessages = 0;
+    vector<midiConnection<int>>         midiIntConnections;
+    vector<midiConnection<float>>       midiFloatConnections;
+    vector<midiConnection<bool>>        midiBoolConnections;
+    bool    midiListenActive;
     
     bool    commandPressed = false;
     bool    canvasDragging = false;
