@@ -1136,19 +1136,19 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                             midiBoolConnections.push_back(midiConnection<bool>(&parameter.cast<bool>()));
                     }
                     else if(parameter.type() == typeid(ofParameterGroup).name()){
-                        parameter = parameterGroups[i]->getGroup(e.target->getName()).get(2);
+                        ofParameter<int> &intParameter = parameterGroups[i]->getGroup(e.target->getName()).getInt(1);
                         bool erasedConnection = false;
                         if(ofGetKeyPressed(OF_KEY_SHIFT)){
-                            for(int i = 0 ; i < midiFloatConnections.size(); i++){
-                                if(midiFloatConnections[i].getParameter() == &parameter){
+                            for(int i = 0 ; i < midiIntConnections.size(); i++){
+                                if(midiIntConnections[i].getParameter() == &intParameter){
                                     erasedConnection = true;
-                                    midiFloatConnections.erase(midiFloatConnections.begin()+i);
+                                    midiIntConnections.erase(midiIntConnections.begin()+i);
                                     return;
                                 }
                             }
                         }
                         if(!erasedConnection)
-                            midiFloatConnections.push_back(midiConnection<float>(&parameter.cast<float>()));
+                            midiIntConnections.push_back(midiConnection<int>(&intParameter));
                     }
                     else
                         ofLog() << "Cannot midi to parameter " << parameter.getName();
