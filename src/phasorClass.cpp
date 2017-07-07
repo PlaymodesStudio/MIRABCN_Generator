@@ -47,8 +47,8 @@ float phasorClass::getPhasor(){
 }
 
 void phasorClass::resetPhasor(bool &reset){
-    phasor = initPhase_Param;
-    phasorMod = initPhase_Param;
+    phasor = 0;
+    phasorMod = ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);;
     resetPhase_Param = false;
 }
 
@@ -78,7 +78,7 @@ void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
             phasorMod = 1-(fabs((phasor * (-2))+ 1));
         
         //take the initPhase_Param as a phase offset param
-        phasorMod += initPhase_Param;
+        phasorMod += ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);
         if(phasorMod >= 1.0)
             phasorMod -= 1.0;
         
@@ -117,7 +117,7 @@ void phasorClass::nextFrame(){
             phasorMod = 1-(fabs((phasor * (-2))+ 1));
         
         //take the initPhase_Param as a phase offset param
-        phasorMod += initPhase_Param;
+        phasorMod += ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);
         if(phasorMod >= 1.0)
             phasorMod -= 1.0;
         
@@ -133,13 +133,15 @@ void phasorClass::nextFrame(){
 
 void phasorClass::loopChanged(bool &val){
     if(!val){
-        phasorMod = initPhase_Param;
+        phasorMod = ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);
+    }else{
+        phasor = 0;
     }
 }
 
 void phasorClass::initPhaseChanged(float &f){
     if(loop_Param == false){
-        phasorMod = initPhase_Param;
+        phasorMod = ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);
     }
 
 }
