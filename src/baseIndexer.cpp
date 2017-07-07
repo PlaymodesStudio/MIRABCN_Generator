@@ -76,8 +76,9 @@ void baseIndexer::recomputeIndexs(){
         
         //random
         index += indexRand[index-1]*indexRand_Param;
-        if(index > indexCount)
-            index %= indexCount;
+        index %= indexCount;
+        if(index < 0)
+            index += indexCount;
         
         
         //COMB
