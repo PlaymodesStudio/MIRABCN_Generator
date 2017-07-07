@@ -70,7 +70,7 @@ void baseIndexer::recomputeIndexs(){
         
         //INVERSE
         //Fisrt we invert the index to simulate the wave goes from left to right, inverting indexes, if we want to invertit we don't do this calc
-        int nonInvertIndex = index;
+        int nonInvertIndex = index-1.0;
         int invertedIndex = ((float)indexCount-(float)index);
         index = indexInvert_Param*invertedIndex + (1-indexInvert_Param)*nonInvertIndex;
         
