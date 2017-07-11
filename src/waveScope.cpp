@@ -8,14 +8,18 @@
 
 #include "waveScope.h"
 
-waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numGroupScopes, int numBankScopes, ofPoint pos){
+waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, bool color, int numBankScopes, ofPoint pos){
     logBuffer = logBuffer_;
-    
+    hasColor = color;
     oscillatorBankIns.resize(numBankScopes);
     
     parameters = new ofParameterGroup();
     parameters->setName("waveScope");
     parameters->add(mainOutIn.set("Master Scope", {{0}}));
+    if(color){
+        parameters->add(gradientPreview.set("Color Scope", {{ofColor::black}}));
+        parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
+    }
     for(int i = 0; i < numBankScopes ; i++)
         parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {0}));
     parameters->add(drawOnSeparateWindow.set("Separate Window", false));
@@ -33,33 +37,79 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int numGroupSco
 void waveScope::draw(){
     ofBackground(0);
     ofSetColor(255);
-    
+//
     int contentWidth = 2*ofGetWidth()/3 + contentWidthOffset;
+//
+    int masterHeight = 2*ofGetHeight()/3;
+
+    int w = mainOutIn.get().size();
+    int h = mainOutIn.get()[0].size();
     
-    ofFbo outTex;
-    outTex.allocate(mainOutIn.get().size(), mainOutIn.get()[0].size());
-    
-    
-    outTex.begin();
-    for( int i = 0; i < mainOutIn.get().size(); i++){
-        for(int j = 0; j < mainOutIn.get()[i].size(); j++){
-            int valueInByte = mainOutIn.get()[i][j]*255;
-            
-            ofSetColor(valueInByte);
-            ofDrawRectangle(i,j, 1, 1);
-            
-        }
+    ofTexture tex;
+    tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+    unsigned char *data = new unsigned char[w * h];
+    for(int i = 0 ; i < w ; i++){
+        for ( int j = 0; j < h ; j++)
+            data[i+w*j] = mainOutIn.get()[i][j]*255;
     }
-    outTex.end();
-    
-    //Draw the fbo
-    outTex.getTexture().draw(0, 0, contentWidth, ofGetHeight()/3);
+    tex.loadData(data, w, h, GL_LUMINANCE);
+    delete[] data;
+    tex.draw(0,0,contentWidth, hasColor ? masterHeight/3 : masterHeight);
     ofPushStyle();
     ofSetColor(ofColor::indianRed);
     ofNoFill();
     ofSetLineWidth(2);
-    ofDrawRectangle(0, 0, contentWidth, ofGetHeight()/3);
+    ofDrawRectangle(0, 0, contentWidth, hasColor ? masterHeight/3 : masterHeight);
     ofPopStyle();
+
+    if(hasColor){
+        w = gradientPreview.get().size();
+        h = gradientPreview.get()[0].size();
+        ofTexture tex2;
+        tex2.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+        unsigned char *colordata = new unsigned char[w * h*3];
+        for(int i = 0 ; i < w ; i++){
+            for ( int j = 0; j < h ; j++){
+                colordata[(i*3)+w*3*j] = gradientPreview.get()[i][j].r;
+                colordata[(i*3)+(w*3*j)+1] = gradientPreview.get()[i][j].g;
+                colordata[(i*3)+(w*3*j)+2] = gradientPreview.get()[i][j].b;
+            }
+        }
+        tex2.loadData(colordata, w, h, GL_RGB);
+        delete[] colordata;
+        tex2.draw(0, masterHeight/3, contentWidth, masterHeight/3);
+        ofPushStyle();
+        ofSetColor(ofColor::indianRed);
+        ofNoFill();
+        ofSetLineWidth(2);
+        ofDrawRectangle(0, masterHeight/3, contentWidth, masterHeight/3);
+        ofPopStyle();
+        
+        
+        w = colorTexture.get().size();
+        h = colorTexture.get()[0].size();
+        ofTexture tex3;
+        tex3.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+        unsigned char *color2data = new unsigned char[w * h*3];
+        for(int i = 0 ; i < w ; i++){
+            for ( int j = 0; j < h ; j++){
+                color2data[(i*3)+w*3*j] = colorTexture.get()[i][j].r;
+                color2data[(i*3)+(w*3*j)+1] = colorTexture.get()[i][j].g;
+                color2data[(i*3)+(w*3*j)+2] = colorTexture.get()[i][j].b;
+            }
+        }
+        tex3.loadData(color2data, w, h, GL_RGB);
+        delete[] color2data;
+        tex3.draw(0, 2*masterHeight/3, contentWidth, masterHeight/3);
+        ofPushStyle();
+        ofSetColor(ofColor::indianRed);
+        ofNoFill();
+        ofSetLineWidth(2);
+        ofDrawRectangle(0, 2*masterHeight/3, contentWidth, masterHeight/3);
+        ofPopStyle();
+    }
+    
+    
 
     int numActiveOscBanks = 0;
     for(auto in : oscillatorBankIns)
@@ -67,20 +117,20 @@ void waveScope::draw(){
     
     //Draw the Bars
     if(numActiveOscBanks > 0){
-    int elementHeight = (ofGetHeight()*2/3) / numActiveOscBanks;
-    for(int i = 0; i < numActiveOscBanks; i++){
-        int topPosition = ofGetHeight()/3 + (elementHeight * i);
-        int numBars = oscillatorBankIns[i].get().size();
-        float wid = (float)contentWidth/numBars;
-        for(int j = 0; j < numBars; j++)
-            ofDrawRectangle((j*wid), (1-oscillatorBankIns[i].get()[j])*elementHeight+topPosition, wid, oscillatorBankIns[i].get()[j]*elementHeight);
-        ofPushStyle();
-        ofSetColor(ofColor::indianRed);
-        ofNoFill();
-        ofSetLineWidth(2);
-        ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
-        ofPopStyle();
-    }
+        int elementHeight = (ofGetHeight() - masterHeight) / numActiveOscBanks;
+        for(int i = 0; i < numActiveOscBanks; i++){
+            int topPosition = masterHeight + (elementHeight * i);
+            int numBars = oscillatorBankIns[i].get().size();
+            float wid = (float)contentWidth/numBars;
+            for(int j = 0; j < numBars; j++)
+                ofDrawRectangle((j*wid), (1-oscillatorBankIns[i].get()[j])*elementHeight+topPosition, wid, oscillatorBankIns[i].get()[j]*elementHeight);
+            ofPushStyle();
+            ofSetColor(ofColor::indianRed);
+            ofNoFill();
+            ofSetLineWidth(2);
+            ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
+            ofPopStyle();
+        }
     }
     
     
@@ -146,7 +196,7 @@ void waveScope::changeDrawLocation(bool &b){
         ofGLFWWindowSettings prevSettings;
         if(prevWindowRect.getPosition() == ofPoint(-1, -1)){
             prevSettings.width = 300;
-            prevSettings.height = 250;
+            prevSettings.height = 1000;
             prevSettings.setPosition(ofVec2f(ofGetScreenWidth()-300, 0));
         }
         else{

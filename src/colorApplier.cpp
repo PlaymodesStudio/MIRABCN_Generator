@@ -28,6 +28,7 @@ colorApplier::colorApplier(){
     
     parameters->add(indexIn.set("Indexs", {0}));
     parameters->add(grayScaleIn.set("Input", {{0}}));
+    parameters->add(gradientPreview.set("Gradient Preview", {{}}));
     parameters->add(colorizedValues.set("Output", {{ofColor::white}}));
     
     parametersControl::getInstance().createGuiFromParams(parameters);
@@ -42,6 +43,7 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     int h = inputVec[0].size();
     if(tempColors.size() != w){
         tempColors.resize(w, vector<ofColor>(h));
+        tempGradient.resize(w, vector<ofColor>(h));
     }
     
     if(colorDisplacementVector.size() != indexIn.get().size()){
@@ -56,9 +58,11 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
             newColor.b += (colorDisplacementVector[i][2]);
             for (int j = 0 ; j < h ; j++){
                 tempColors[i][j] =  newColor * inputVec[i][j];
+                tempGradient[i][j] = newColor;
             }
         }
         parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+        parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
     }
     else if(indexIn.get().size() == h){
         for(int j = 0 ; j < h ; j++){
@@ -68,9 +72,11 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
             newColor.b += (colorDisplacementVector[j][2]);
             for (int i = 0 ; i < w ; i++){
                 tempColors[i][j] =  newColor * inputVec[i][j];
+                tempGradient[i][j] = newColor;
             }
         }
         parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+        parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
     }
 
 }

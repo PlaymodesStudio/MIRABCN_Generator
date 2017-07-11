@@ -39,10 +39,12 @@ private:
     //in and outs
     ofParameter<vector<float>>          indexIn;
     ofParameter<vector<vector<float>>>  grayScaleIn;
+    ofParameter<vector<vector<ofColor>>>    gradientPreview;
     ofParameter<vector<vector<ofColor>>> colorizedValues;
     
     
     vector<vector<ofColor>> tempColors;
+    vector<vector<ofColor>> tempGradient;
     vector<vector<float>> colorDisplacementVector;
 };
 

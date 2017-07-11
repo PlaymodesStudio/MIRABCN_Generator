@@ -53,7 +53,7 @@ void ofApp::setup(){
             if(hasColorApplier)
                 colorModule = new colorApplier();
             senderModule = new senderManager(invert);
-            preview = new waveScope(logBuffer, previewGroupSize, previewBankSize);
+            preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);

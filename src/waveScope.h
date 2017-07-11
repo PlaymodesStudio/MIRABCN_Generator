@@ -15,7 +15,7 @@
 
 class waveScope{
 public:
-    waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr, int numGroupScopes = 1,  int numBankScopes = 2, ofPoint pos = ofPoint(-1, -1));
+    waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr, bool color = false,  int numBankScopes = 2, ofPoint pos = ofPoint(-1, -1));
     ~waveScope(){
         delete parameters;
         if(prevWindow != nullptr)
@@ -36,6 +36,8 @@ private:
     ofParameterGroup* parameters;
     vector<ofParameter<vector<float>>> oscillatorBankIns;
     ofParameter<vector<vector<float>>> mainOutIn;
+    ofParameter<vector<vector<ofColor>>> gradientPreview;
+    ofParameter<vector<vector<ofColor>>> colorTexture;
     ofParameter<bool>   drawOnSeparateWindow;
     
     shared_ptr<bufferLoggerChannel> logBuffer;
@@ -43,6 +45,7 @@ private:
     int contentWidthOffset;
     int mousePressInititalX;
     bool isInMovableRegion;
+    bool hasColor;
     
     shared_ptr<ofAppBaseWindow> prevWindow;
     ofRectangle                 prevWindowRect;
