@@ -65,7 +65,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
                 tempDatGui->addTextInput(absParam.getName(), absParam.cast<string>());
         }
         else if(absParam.type() == typeid(ofParameter<ofColor>).name())
-            tempDatGui->addColorPicker(paramGroup->getName(i), ofColor::white);
+            tempDatGui->addColorPicker(paramGroup->getName(i), absParam.cast<ofColor>());
         else if(absParam.type() == typeid(ofParameterGroup).name()){
             tempDatGui->addLabel(paramGroup->getGroup(i).getName());
             tempDatGui->addDropdown(paramGroup->getGroup(i).getName(), ofSplitString(paramGroup->getGroup(i).getString(0), "-|-"))->select(paramGroup->getGroup(i).getInt(1));

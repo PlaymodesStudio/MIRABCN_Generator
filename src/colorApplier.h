@@ -25,12 +25,15 @@ private:
     void applyColor(vector<vector<float>> &inputVec);
     void colorDisplacementChanged(float &f);
     
+    void colorListener(ofColor &c);
+    void colorSliderListener(int &i);
+    
     ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
     ofParameter<ofColor>    colorPickerParam[2];
-    ofParameter<float>        colorRParam[2];
-    ofParameter<float>        colorGParam[2];
-    ofParameter<float>        colorBParam[2];
+    ofParameter<int>        colorRParam[2];
+    ofParameter<int>        colorGParam[2];
+    ofParameter<int>        colorBParam[2];
     
     ofParameter<float>  colorDisplacement;
 //    ofParameter<int>        randomColorStepsParam;
@@ -46,6 +49,8 @@ private:
     vector<vector<ofColor>> tempColors;
     vector<vector<ofColor>> tempGradient;
     vector<vector<float>> colorDisplacementVector;
+    
+    bool colorIsChanging;
 };
 
 #endif /* colorApplier_h */
