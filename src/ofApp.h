@@ -68,8 +68,8 @@ private:
     // - 1 senderManager module (from parameters set syphon names and osc ports
     // - 1 waveScope (from parameters set number of oscillatorBank scopes)
     vector<phasorClass*>        phasors;
-    vector<oscillatorBank*>     oscillators;
-    vector<baseOscillator*>     monoOscillator;
+    vector<baseOscillator*> oscillators;
+    vector<oscillatorBank*> oscillatorBanks;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;

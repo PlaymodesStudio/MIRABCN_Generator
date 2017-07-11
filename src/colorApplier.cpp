@@ -62,10 +62,10 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     }
     else if(indexIn.get().size() == h){
         for(int j = 0 ; j < h ; j++){
-            ofColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
-            newColor.r += colorDisplacementVector[j][0]*255;
-            newColor.g += colorDisplacementVector[j][1]*255;
-            newColor.b += colorDisplacementVector[j][2]*255;
+            ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
+            newColor.r += (colorDisplacementVector[j][0]);
+            newColor.g += (colorDisplacementVector[j][1]);
+            newColor.b += (colorDisplacementVector[j][2]);
             for (int i = 0 ; i < w ; i++){
                 tempColors[i][j] =  newColor * inputVec[i][j];
             }

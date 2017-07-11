@@ -49,7 +49,7 @@ void ofApp::setup(){
             
             phasors.push_back(new phasorClass(1));
             oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
-            oscillators.push_back(new oscillatorBank(width, true, 1));
+            oscillatorBanks.push_back(new oscillatorBank(width, true, 1));
             if(hasColorApplier)
                 colorModule = new colorApplier();
             senderModule = new senderManager(invert);
@@ -96,40 +96,45 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
     else if(moduleTypeName == "oscillator"){
         if(moduleName.size() < 2){
             bool foundNullElementInVector = false;
-            for (int i = 0; (i < monoOscillator.size() && !foundNullElementInVector) ; i++){
-                if(monoOscillator[i] == nullptr){
-                    monoOscillator[i] = new baseOscillator(i+1, true, info.second);
+            for (int i = 0; (i < oscillators.size() && !foundNullElementInVector) ; i++){
+                if(oscillators[i] == nullptr){
+                    oscillators[i] = new baseOscillator(i+1, true, info.second);
                     foundNullElementInVector = true;
                 }
             }
             if(!foundNullElementInVector)
-                monoOscillator.push_back(new baseOscillator(monoOscillator.size()+1, true, info.second));
+                oscillators.push_back(new baseOscillator(oscillators.size()+1, true, info.second));
         }
         else{
             int id = ofToInt(moduleName[1]);
-            while(monoOscillator.size() <= id-1)
-                monoOscillator.push_back(nullptr);
-            monoOscillator[id-1] = new baseOscillator(id, true, info.second);
+            while(oscillators.size() <= id-1)
+                oscillators.push_back(nullptr);
+            oscillators[id-1] = new baseOscillator(id, true, info.second);
         }
     }
     
     else if(moduleTypeName == "oscillatorBank"){
         if(moduleName.size() < 2){
             bool foundNullElementInVector = false;
-            for (int i = 0; (i < oscillators.size() && !foundNullElementInVector) ; i++){
-                if(oscillators[i] == nullptr){
-                    oscillators[i] = new oscillatorBank(width, true, i+1, info.second);
+            for (int i = 0; (i < oscillatorBanks.size() && !foundNullElementInVector) ; i++){
+                if(oscillatorBanks[i] == nullptr){
+                    int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators? Width is " + ofToString(width) + ", height is " + ofToString(height)));
+                    oscillatorBanks[i] = new oscillatorBank(nOscillators, true, i+1, info.second);
                     foundNullElementInVector = true;
                 }
             }
-            if(!foundNullElementInVector)
-                oscillators.push_back(new oscillatorBank(width, true, oscillators.size()+1, info.second));
+            if(!foundNullElementInVector){
+                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
+                oscillatorBanks.push_back(new oscillatorBank(nOscillators, true, oscillatorBanks.size()+1, info.second));
+            }
         }
         else{
             int id = ofToInt(moduleName[1]);
-            while(oscillators.size() <= id-1)
-                oscillators.push_back(nullptr);
-            oscillators[id-1] = new oscillatorBank(width, true, id, info.second);
+            while(oscillatorBanks.size() <= id-1)
+                oscillatorBanks.push_back(nullptr);
+            int nOscillators = info.second.z;
+            info.second.z = 0;
+            oscillatorBanks[id-1] = new oscillatorBank(nOscillators, true, id, info.second);
         }
     }
     
@@ -169,12 +174,12 @@ void ofApp::deleteModuleListener(string &moduleName){
         phasors[id-1] = nullptr;
     }
     else if(moduleName == "oscillator"){
-        delete monoOscillator[id-1];
-        monoOscillator[id-1] = nullptr;
-    }
-    else if(moduleName == "oscillatorBank"){
         delete oscillators[id-1];
         oscillators[id-1] = nullptr;
+    }
+    else if(moduleName == "oscillatorBank"){
+        delete oscillatorBanks[id-1];
+        oscillatorBanks[id-1] = nullptr;
     }
     else if(moduleName == "oscillatorGroup"){
         delete oscBankGroups[id-1];

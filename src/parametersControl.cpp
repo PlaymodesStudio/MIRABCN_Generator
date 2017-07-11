@@ -680,6 +680,8 @@ void parametersControl::savePreset(string presetName, string bank){
         //if(moduleName == "phasor" || moduleName == "oscillator" || moduleName == "oscillatorBank"){
         xml.addValue("module_" + ofToString(i) + "_name", parameterGroups[i]->getName());
         ofPoint modulePosition = datGuis[i]->getPosition();
+        if(moduleName == "oscillatorBank")
+            modulePosition.z = parameterGroups[i]->getInt("Index Modulo").getMax();
         xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
     }
