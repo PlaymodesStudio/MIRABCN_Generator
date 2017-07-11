@@ -27,6 +27,7 @@ private:
     
     void colorListener(ofColor &c);
     void colorSliderListener(int &i);
+    void colorHueListener(int &i);
     
     ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
@@ -34,6 +35,7 @@ private:
     ofParameter<int>        colorRParam[2];
     ofParameter<int>        colorGParam[2];
     ofParameter<int>        colorBParam[2];
+    ofParameter<int>        colorHParam[2];
     
     ofParameter<float>  colorDisplacement;
 //    ofParameter<int>        randomColorStepsParam;
