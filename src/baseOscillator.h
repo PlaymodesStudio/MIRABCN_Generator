@@ -26,7 +26,9 @@ enum oscTypes{
 class baseOscillator{
 public:
     baseOscillator(int id = 0, bool gui = false, ofPoint pos = ofPoint(-1, -1));
-    ~baseOscillator(){};
+    ~baseOscillator(){
+        delete parameters;
+    };
     
     void setIndexNormalized(float index){indexNormalized = index;};
     

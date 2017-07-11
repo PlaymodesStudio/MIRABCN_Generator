@@ -16,7 +16,9 @@
 class oscillatorBank : public baseIndexer{
 public:
     oscillatorBank(int nOscillators, bool gui = true, int bankId = 0, ofPoint pos = ofPoint(-1, -1));
-    ~oscillatorBank(){};
+    ~oscillatorBank(){
+        for(auto i : oscillators) delete i;
+    };
     
 //     ofEvent<pair<int, vector<float>>> eventInGroup;
     ofEvent<int> eventInGroup;

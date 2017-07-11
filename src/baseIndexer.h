@@ -14,7 +14,9 @@
 class baseIndexer{
 public:
     baseIndexer(int numIndexs);
-    ~baseIndexer(){};
+    ~baseIndexer(){
+        delete parameters;
+    };
     
     ofParameter<float>  numWaves_Param; //Desphase Quantity
     ofParameter<float>   indexInvert_Param;

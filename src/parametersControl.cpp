@@ -814,10 +814,12 @@ void parametersControl::loadPreset(string presetName, string bank){
             hasToBeDestroyed = true;
             for(auto module : modulesToCreate){
                 if(groupParam->getName() == module.first){
-                    datGuis[i]->setPosition(module.second.x, module.second.y);
-                    modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
-                    hasToBeDestroyed = false;
-                    break;
+                    if(moduleName != "OscillatorBank" || groupParam->getInt("Index Modulo").getMax() == module.second.z){
+                        datGuis[i]->setPosition(module.second.x, module.second.y);
+                        modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
+                        hasToBeDestroyed = false;
+                        break;
+                    }
                 }
             }
         }
@@ -878,9 +880,10 @@ void parametersControl::loadPreset(string presetName, string bank){
                                 vector<string> colors = ofSplitString(xml.getValue(noSpaces), "-");
                                 ofColor_<unsigned char> color = ofColor(ofToInt(colors[0]), ofToInt(colors[1]), ofToInt(colors[2]));
                                 //TODO: hack, arreglar
-                                groupParam->getInt("R Channel") = ofToInt(colors[0]);
-                                groupParam->getInt("G Channel") = ofToInt(colors[1]);
-                                groupParam->getInt("B Channel") = ofToInt(colors[2]);
+//                                groupParam->getInt("R Channel") = ofToInt(colors[0]);
+//                                groupParam->getInt("G Channel") = ofToInt(colors[1]);
+//                                groupParam->getInt("B Channel") = ofToInt(colors[2]);
+                                castedParam = color;
                                 isColorLoaded = true;
                             }
                         }
