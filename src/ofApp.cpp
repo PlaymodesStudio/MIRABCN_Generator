@@ -22,7 +22,7 @@ void ofApp::setup(){
     logBuffer = make_shared<bufferLoggerChannel>();
     ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
     
-    //Set the FrameRate to be 40, that is the frame rate of the Pixel Bars
+    //Set the FrameRate to be 40, that is the frame rate of artnet
     ofSetFrameRate(60);
     
     paramsControl = &parametersControl::getInstance();
@@ -51,7 +51,7 @@ void ofApp::setup(){
             oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
             oscillators.push_back(new oscillatorBank(width, true, 1));
             if(hasColorApplier)
-                colorModule = new colorApplier(width);
+                colorModule = new colorApplier();
             senderModule = new senderManager(invert);
             preview = new waveScope(logBuffer, previewGroupSize, previewBankSize);
             //Create main gui, and add listeners when all guis are created

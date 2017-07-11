@@ -17,13 +17,13 @@ class colorApplier{
     
 public:
     
-    colorApplier(int nOscillators);
+    colorApplier();
     ~colorApplier(){};
     
     
 private:
     void applyColor(vector<vector<float>> &inputVec);
-    
+    void colorDisplacementChanged(float &f);
     
     ofParameterGroup*        parameters;
     ofParameter<void>       cableConnected;
@@ -32,13 +32,18 @@ private:
     ofParameter<float>        colorGParam[2];
     ofParameter<float>        colorBParam[2];
     
-    ofParameter<int>        randomColorStepsParam;
-    ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
+    ofParameter<float>  colorDisplacement;
+//    ofParameter<int>        randomColorStepsParam;
+//    ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
     //in and outs
     ofParameter<vector<float>>          indexIn;
     ofParameter<vector<vector<float>>>  grayScaleIn;
     ofParameter<vector<vector<ofColor>>> colorizedValues;
+    
+    
+    vector<vector<ofColor>> tempColors;
+    vector<vector<float>> colorDisplacementVector;
 };
 
 #endif /* colorApplier_h */
