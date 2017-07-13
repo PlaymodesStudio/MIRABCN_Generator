@@ -36,7 +36,7 @@ void ofApp::setup(){
             string name = xml.getValue("Name");
             width = xml.getIntValue("Width");
             height = xml.getIntValue("Height");
-            bool invert = xml.getBoolValue("InvertTexture");
+            
             float bpm = xml.getFloatValue("BPM");
             if(bpm == 0) bpm = 120;
             
@@ -44,6 +44,7 @@ void ofApp::setup(){
             int previewGroupSize = xml.getIntValue("GroupScopes");
             int previewBankSize = xml.getIntValue("BankScopes");
             
+           
         
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
@@ -53,7 +54,14 @@ void ofApp::setup(){
             //envelopeGens.push_back(new envelopeGenerator(1, width));
             if(hasColorApplier)
                 colorModule = new colorApplier();
-            senderModule = new senderManager(invert);
+            
+            int numSyphonServers = xml.getIntValue("SyphonSenders");
+            for(int i = 0; i < numSyphonServers; i++){
+                bool invert = xml.getBoolValue("SyphonSender"+ ofToString(i+1) + "InvertTexture");
+                string grayName = xml.getValue("SyphonSender"+ ofToString(i+1) + "GrayName");
+                string colorName = xml.getValue("SyphonSender"+ ofToString(i+1) + "ColorName");
+                senderModules.push_back(new senderManager(i+1, invert, grayName, colorName));
+            }
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
@@ -207,14 +215,6 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "oscillatorGroup"){
         delete oscBankGroups[id-1];
         oscBankGroups[id-1] = nullptr;
-    }
-    else if(moduleName == "colorAppier"){
-        delete colorModule;
-        colorModule = nullptr;
-    }
-    else if(moduleName == "waveScope"){
-        delete preview;
-        preview = nullptr;
     }
 }
 

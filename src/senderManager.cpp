@@ -8,13 +8,13 @@
 
 #include "senderManager.h"
 
-senderManager::senderManager(bool _invert){
+senderManager::senderManager(int _id, bool _invert, string _grayscaleName, string _colorName){
     invert = _invert;
     parameters = new ofParameterGroup;
-    parameters->setName("senderManager");
+    parameters->setName("senderManager " + ofToString(_id));
     parameters->add(enableSyphon.set("Enable Syphon", 0));
-    parameters->add(grayscaleSyphonName.set("Grayscale Server Name", "Gen_Grayscale"));
-    parameters->add(colorSyphonName.set("Color Server Name", "Gen_Color"));
+    parameters->add(grayscaleSyphonName.set("Grayscale Server Name", _grayscaleName));
+    parameters->add(colorSyphonName.set("Color Server Name", _colorName));
 
     parameters->add(enableOsc.set("Enable OSC", 0));
     parameters->add(oscHost.set("Host", "127.0.0.1"));

@@ -17,7 +17,7 @@
 class senderManager{
 public:
     
-    senderManager(bool _invert);
+    senderManager(int _id, bool _invert = false, string _grayscaleName = "Gen_Grayscale", string _colorName = "Gen_Color");
     ~senderManager(){};
     
     void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo, ofFbo &grayscaleFbo, ofFbo &colorFbo){};
@@ -25,6 +25,9 @@ public:
     void send(ofFbo &grayscaleFbo){};
     void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo);
     void send(vector<vector<float>> &greyscaleInfo);
+    
+    void setGrayName(string name){grayscaleSyphonName = name;};
+    void setColorName(string name){colorSyphonName = name;};
     
     //listeres
     void enableOscListener(bool &b);

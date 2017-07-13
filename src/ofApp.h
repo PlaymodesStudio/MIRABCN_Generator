@@ -72,6 +72,7 @@ private:
     vector<baseOscillator*> oscillators;
     vector<oscillatorBank*> oscillatorBanks;
     vector<envelopeGenerator*>  envelopeGens;
+    vector<senderManager*>      senderModules;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;

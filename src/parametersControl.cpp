@@ -1325,8 +1325,9 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         }
     }if(ofGetKeyPressed('r')){
         for(int i = 0; i<datGuis.size(); i++){
+            string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
             if(datGuis[i]->hitTest(e)
-               && datGuis[i]->getHeader()->getName() != "senderManager"){
+               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier"){
                 destroyModuleAndConnections(i);
             }
         }
