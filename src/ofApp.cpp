@@ -1,5 +1,4 @@
 #include "ofApp.h"
-#include "expressionOperator.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -66,7 +65,7 @@ void ofApp::setup(){
             
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
-            new expressionOperator<vector<float>>(1, 2, ofPoint(800, 500));
+            expressionOps.push_back(new expressionOperator<vector<float>>(1, 2, ofPoint(800, 500)));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);

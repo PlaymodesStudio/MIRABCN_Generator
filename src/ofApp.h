@@ -16,6 +16,8 @@
 #include "oscillatorBankGroup.h"
 #include "envelopeGenerator.h"
 #include "typeConverter.h"
+#include "expressionOperator.h"
+
 
 static const int WIDTH = 0;
 static const int HEIGHT = 0;
@@ -75,6 +77,7 @@ private:
     vector<envelopeGenerator*>  envelopeGens;
     vector<senderManager*>      senderModules;
     vector<typeConverter<vector<float>, vector<vector<float>>>*> converters;
+    vector<abstractExpressionOperator*> expressionOps;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;

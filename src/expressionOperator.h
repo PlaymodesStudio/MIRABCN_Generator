@@ -13,10 +13,17 @@
 #include "ofxExprtk.h"
 #include "parametersControl.h"
 
+class abstractExpressionOperator{
+public:
+    abstractExpressionOperator(){};
+    ~abstractExpressionOperator(){};
+};
+
 template <typename T>
-class expressionOperator{
+class expressionOperator : public abstractExpressionOperator{
 public:
     expressionOperator(int _id, int numInputs, ofPoint pos = ofPoint(-1, -1)){
+        abstractExpressionOperator();
         parameters = new ofParameterGroup();
         parameters->setName("expressionOperator " + ofToString(_id));
         
@@ -37,6 +44,7 @@ public:
         expression_parser.registerSymbols();
         expression_parser.compileExpression(expression);
     }
+    
     
 private:
     void inputReceived(T &val){
