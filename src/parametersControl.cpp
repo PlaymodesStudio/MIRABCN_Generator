@@ -1589,20 +1589,22 @@ void parametersControl::destroyModuleAndConnections(int index){
 
 void parametersControl::destroyedConnection(ofAbstractParameter &disconnectedParameter){
     for(auto paramGroup : parameterGroups){
-        if(&paramGroup->get(disconnectedParameter.getName()) == &disconnectedParameter){
-            if(ofStringTimesInString(disconnectedParameter.getName(), "Vector")){
-                string paramNameWithoutVector = disconnectedParameter.getName();
-                paramNameWithoutVector.erase(paramNameWithoutVector.end() - 7, paramNameWithoutVector.end());
-                if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<float>).name())
-                    paramGroup->getFloat(paramNameWithoutVector) = paramGroup->getFloat(paramNameWithoutVector);
-                else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<int>).name())
-                    paramGroup->getInt(paramNameWithoutVector) = paramGroup->getInt(paramNameWithoutVector);
-                else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<bool>).name())
-                    paramGroup->getBool(paramNameWithoutVector) = paramGroup->getBool(paramNameWithoutVector);
-                else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameterGroup).name())
-                    paramGroup->getGroup(paramGroup->get(paramNameWithoutVector).getName()).getInt(1) = paramGroup->getGroup(paramGroup->get(paramNameWithoutVector).getName()).getInt(1);
+        if(paramGroup->contains(disconnectedParameter.getName())){
+            if(&paramGroup->get(disconnectedParameter.getName()) == &disconnectedParameter){
+                if(ofStringTimesInString(disconnectedParameter.getName(), "Vector")){
+                    string paramNameWithoutVector = disconnectedParameter.getName();
+                    paramNameWithoutVector.erase(paramNameWithoutVector.end() - 7, paramNameWithoutVector.end());
+                    if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<float>).name())
+                        paramGroup->getFloat(paramNameWithoutVector) = paramGroup->getFloat(paramNameWithoutVector);
+                    else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<int>).name())
+                        paramGroup->getInt(paramNameWithoutVector) = paramGroup->getInt(paramNameWithoutVector);
+                    else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<bool>).name())
+                        paramGroup->getBool(paramNameWithoutVector) = paramGroup->getBool(paramNameWithoutVector);
+                    else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameterGroup).name())
+                        paramGroup->getGroup(paramGroup->get(paramNameWithoutVector).getName()).getInt(1) = paramGroup->getGroup(paramGroup->get(paramNameWithoutVector).getName()).getInt(1);
+                }
+                break;
             }
-            break;
         }
     }
 }
