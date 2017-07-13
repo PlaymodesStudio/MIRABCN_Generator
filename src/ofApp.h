@@ -15,6 +15,7 @@
 #include "waveScope.h"
 #include "oscillatorBankGroup.h"
 #include "envelopeGenerator.h"
+#include "typeConverter.h"
 
 static const int WIDTH = 0;
 static const int HEIGHT = 0;
@@ -61,7 +62,7 @@ private:
 
     int width;
     int height;
-    bool hasColorApplier;
+    int hasColorApplier;
     
     //If you open a project file, can be a .generator file, has the following clases for all presets:
     // - 1 PhasorClass
@@ -73,11 +74,12 @@ private:
     vector<oscillatorBank*> oscillatorBanks;
     vector<envelopeGenerator*>  envelopeGens;
     vector<senderManager*>      senderModules;
+    vector<typeConverter<vector<float>, vector<vector<float>>>*> converters;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;
     waveScope*                  preview;
-    colorApplier*               colorModule;
+    vector<colorApplier*>               colorModules;
     vector<oscillatorBankGroup*>       oscBankGroups;
     
     ofSoundStream soundStream;

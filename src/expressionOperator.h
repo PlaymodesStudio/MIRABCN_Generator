@@ -1,14 +1,19 @@
 //
-//  expressionOperator.hpp
+//  expressionOperator.h
 //  MIRABCN_Generator
 //
 //  Created by Eduard Frigola on 13/07/2017.
 //
 //
 
-#ifndef expressionOperator_hpp
-#define expressionOperator_hpp
+#ifndef expressionOperator_h
+#define expressionOperator_h
 
-#include <stdio.h>
+#include "ofMain.h"
 
-#endif /* expressionOperator_hpp */
+//template class<T>
+//class expressionOperator{
+//    
+//};
+
+#endif /* expressionOperator_h */

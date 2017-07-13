@@ -21,7 +21,7 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, bool color, int
         parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
     }
     for(int i = 0; i < numBankScopes ; i++)
-        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {0}));
+        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {}));
     parameters->add(drawOnSeparateWindow.set("Separate Window", false));
 
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
@@ -113,7 +113,7 @@ void waveScope::draw(){
 
     int numActiveOscBanks = 0;
     for(auto in : oscillatorBankIns)
-        if(in.get().size() > 2) numActiveOscBanks++;
+        if(in.get().size() > 0) numActiveOscBanks++;
     
     //Draw the Bars
     if(numActiveOscBanks > 0){

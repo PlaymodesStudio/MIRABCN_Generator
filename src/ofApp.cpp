@@ -40,7 +40,7 @@ void ofApp::setup(){
             float bpm = xml.getFloatValue("BPM");
             if(bpm == 0) bpm = 120;
             
-            hasColorApplier = xml.getBoolValue("Color");
+            hasColorApplier = xml.getIntValue("Color");
             int previewGroupSize = xml.getIntValue("GroupScopes");
             int previewBankSize = xml.getIntValue("BankScopes");
             
@@ -52,8 +52,8 @@ void ofApp::setup(){
             oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
             oscillatorBanks.push_back(new oscillatorBank(width, true, 1));
             //envelopeGens.push_back(new envelopeGenerator(1, width));
-            if(hasColorApplier)
-                colorModule = new colorApplier();
+            for(int i = 0 ; i < hasColorApplier ; i++)
+                colorModules.push_back(new colorApplier(i+1));
             
             int numSyphonServers = xml.getIntValue("SyphonSenders");
             for(int i = 0; i < numSyphonServers; i++){
@@ -62,7 +62,9 @@ void ofApp::setup(){
                 string colorName = xml.getValue("SyphonSender"+ ofToString(i+1) + "ColorName");
                 senderModules.push_back(new senderManager(i+1, invert, grayName, colorName));
             }
+            
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
+            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(500,500)));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);

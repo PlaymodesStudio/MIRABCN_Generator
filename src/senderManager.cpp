@@ -98,15 +98,27 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
     }
     if(colorSyphonServer != NULL && enableSyphon){
         ofTexture tex;
-        unsigned char *data = new unsigned char[w * h*3];
-        for(int i = 0 ; i < w ; i++){
-            for ( int j = 0; j < h ; j++){
-                data[(i*3)+w*3*j] = info[i][j].r;
-                data[(i*3)+(w*3*j)+1] = info[i][j].g;
-                data[(i*3)+(w*3*j)+2] = info[i][j].b;
+        if(invert){
+            unsigned char *data = new unsigned char[w * h*3];
+            for(int i = 0 ; i < h ; i++){
+                for ( int j = 0; j < w ; j++){
+                    data[(i*3)+h*3*j] = info[j][i].r;
+                    data[(i*3)+(h*3*j)+1] = info[j][i].g;
+                    data[(i*3)+(h*3*j)+2] = info[j][i].b;
+                }
             }
+            tex.loadData(data, h, w, GL_RGB);
+        }else{
+            unsigned char *data = new unsigned char[w * h*3];
+            for(int i = 0 ; i < w ; i++){
+                for ( int j = 0; j < h ; j++){
+                    data[(i*3)+w*3*j] = info[i][j].r;
+                    data[(i*3)+(w*3*j)+1] = info[i][j].g;
+                    data[(i*3)+(w*3*j)+2] = info[i][j].b;
+                }
+            }
+            tex.loadData(data, w, h, GL_RGB);
         }
-        tex.loadData(data, w, h, GL_RGB);
         colorSyphonServer->publishTexture(&tex);
     }
 }

@@ -9,9 +9,9 @@
 #include "colorApplier.h"
 #include "sharedResources.h"
 
-colorApplier::colorApplier(){
+colorApplier::colorApplier(int _id){
     parameters = new ofParameterGroup;
-    parameters->setName("colorApplier");
+    parameters->setName("colorApplier " + ofToString(_id));
     parameters->add(colorPickerParam[0].set("Color 1", ofColor::black));
     parameters->add(colorRParam[0].set("Color 1 R", 0, 0, 255));
     parameters->add(colorGParam[0].set("Color 1 G", 0, 0, 255));
@@ -50,6 +50,8 @@ colorApplier::colorApplier(){
     
     colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
     grayScaleIn.addListener(this, &colorApplier::applyColor);
+    
+    colorIsChanging = false;
 }
 
 void colorApplier::applyColor(vector<vector<float>> &inputVec){

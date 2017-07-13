@@ -42,6 +42,8 @@
 		99713A77173E6C750326219F /* parametersControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 087D8883A39116874A1FC5E8 /* parametersControl.cpp */; };
 		99F9413A08923B8F81AC69ED /* bufferLoggerChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D54B0D218CD6FA617A7BD18 /* bufferLoggerChannel.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
+		9F124A511F1793CA00DFE4D2 /* expressionOperator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F124A4F1F1793CA00DFE4D2 /* expressionOperator.cpp */; };
+		9F124A541F17B84500DFE4D2 /* typeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F124A521F17B84500DFE4D2 /* typeConverter.cpp */; };
 		9F235E841DF039CE00793A42 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F235E831DF039CE00793A42 /* aubio.framework */; };
 		9F235E891DF040F100793A42 /* colorApplier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F235E871DF040F100793A42 /* colorApplier.cpp */; };
 		9F235E8C1DF0423400793A42 /* senderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F235E8A1DF0423400793A42 /* senderManager.cpp */; };
@@ -173,6 +175,10 @@
 		9BF3AA0D4FAA89D0F8A0E545 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = OscReceivedElements.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscReceivedElements.cpp; sourceTree = SOURCE_ROOT; };
 		9D2C29B96659EBB7A0C5672F /* ofxAubioPitch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAubioPitch.h; path = ../../../addons/ofxAubio/src/ofxAubioPitch.h; sourceTree = SOURCE_ROOT; };
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
+		9F124A4F1F1793CA00DFE4D2 /* expressionOperator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = expressionOperator.cpp; sourceTree = "<group>"; };
+		9F124A501F1793CA00DFE4D2 /* expressionOperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = expressionOperator.h; sourceTree = "<group>"; };
+		9F124A521F17B84500DFE4D2 /* typeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = typeConverter.cpp; sourceTree = "<group>"; };
+		9F124A531F17B84500DFE4D2 /* typeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = typeConverter.h; sourceTree = "<group>"; };
 		9F235E831DF039CE00793A42 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = aubio.framework; sourceTree = "<group>"; };
 		9F235E851DF03BFD00793A42 /* sharedResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sharedResources.h; sourceTree = "<group>"; };
 		9F235E861DF03E2100793A42 /* includes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = includes.h; sourceTree = "<group>"; };
@@ -700,6 +706,10 @@
 				9F6DBFE31E28E4AA0098F3CE /* oscillatorBankGroup.cpp */,
 				9F6DBFE41E28E4AA0098F3CE /* oscillatorBankGroup.h */,
 				9F4F29181EE5BD6B00B6E290 /* midiConnection.h */,
+				9F124A4F1F1793CA00DFE4D2 /* expressionOperator.cpp */,
+				9F124A501F1793CA00DFE4D2 /* expressionOperator.h */,
+				9F124A521F17B84500DFE4D2 /* typeConverter.cpp */,
+				9F124A531F17B84500DFE4D2 /* typeConverter.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -869,6 +879,7 @@
 				8EEB7B47DAB773397BA707AD /* bpmControl.cpp in Sources */,
 				99F9413A08923B8F81AC69ED /* bufferLoggerChannel.cpp in Sources */,
 				1654BF82222C68AE9D2387B7 /* elementOscilator.cpp in Sources */,
+				9F124A511F1793CA00DFE4D2 /* expressionOperator.cpp in Sources */,
 				A0F842B90C48CC33F069DFDE /* masterControl.cpp in Sources */,
 				99713A77173E6C750326219F /* parametersControl.cpp in Sources */,
 				6B27E4ED726F82D792E518DB /* phasorClass.cpp in Sources */,
@@ -878,6 +889,7 @@
 				C60077973A257D8F44947E2E /* ofxAubioBlock.cpp in Sources */,
 				9FB82D901E23FD8E00D6CCF2 /* baseIndexer.cpp in Sources */,
 				9FB82D8D1E23F6A700D6CCF2 /* oscillatorBank.cpp in Sources */,
+				9F124A541F17B84500DFE4D2 /* typeConverter.cpp in Sources */,
 				67383740F5CC47ED5F955A76 /* ofxAubioMelBands.cpp in Sources */,
 				9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */,
 				101D2DB773940813A5C898CD /* ofxAubioPitch.cpp in Sources */,
