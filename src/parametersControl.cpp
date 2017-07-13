@@ -232,7 +232,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "ColorApplier", "WaveScope"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -1205,7 +1205,7 @@ void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "colorApplier", "waveScope"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();

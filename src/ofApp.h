@@ -14,6 +14,7 @@
 #include "oscillatorBank.h"
 #include "waveScope.h"
 #include "oscillatorBankGroup.h"
+#include "envelopeGenerator.h"
 
 static const int WIDTH = 0;
 static const int HEIGHT = 0;
@@ -70,6 +71,7 @@ private:
     vector<phasorClass*>        phasors;
     vector<baseOscillator*> oscillators;
     vector<oscillatorBank*> oscillatorBanks;
+    vector<envelopeGenerator*>  envelopeGens;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;

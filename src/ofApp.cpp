@@ -9,7 +9,7 @@ void ofApp::setup(){
     string path = *buffer.getLines().begin();
     auto result = ofSystemLoadDialog("Select Generator File", false, path);
     if(ofSplitString(result.getPath(), ".").back() != "generator"){
-        ofSystemAlertDialog(".generator file needed");
+//        ofSystemAlertDialog(".generator file needed");
         ofExit();
     }
     
@@ -50,6 +50,7 @@ void ofApp::setup(){
             phasors.push_back(new phasorClass(1));
             oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
             oscillatorBanks.push_back(new oscillatorBank(width, true, 1));
+            //envelopeGens.push_back(new envelopeGenerator(1, width));
             if(hasColorApplier)
                 colorModule = new colorApplier();
             senderModule = new senderManager(invert);
@@ -59,6 +60,8 @@ void ofApp::setup(){
             paramsControl->setGlobalBPM(bpm);
         }
     }
+    
+    
     
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
@@ -157,6 +160,26 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             oscBankGroups[id-1] = new oscillatorBankGroup(height, width, id, info.second);
         }
     }
+    
+    else if(moduleTypeName == "envelopeGenerator"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < envelopeGens.size() && !foundNullElementInVector) ; i++){
+                if(envelopeGens[i] == nullptr){
+                    envelopeGens[i] = new envelopeGenerator(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                envelopeGens.push_back(new envelopeGenerator(envelopeGens.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(envelopeGens.size() <= id-1)
+                envelopeGens.push_back(nullptr);
+            envelopeGens[id-1] = new envelopeGenerator(id, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -214,8 +237,10 @@ void ofApp::draw(){
 }
 
 void ofApp::exit(){
-    paramsControl->saveGuiArrangement();
-    paramsControl->saveMidiMapping();
+    if(paramsControl != nullptr){
+        paramsControl->saveGuiArrangement();
+        paramsControl->saveMidiMapping();
+    }
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){

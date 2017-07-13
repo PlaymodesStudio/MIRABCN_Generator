@@ -262,6 +262,23 @@ public:
     ofEvent<pair<string, ofPoint>>      createNewModule;
     ofEvent<string>                     destroyModule;
     ofEvent<void>                       nextFrameEvent;
+    
+    static void addDropdownToParameterGroupFromParameter(ofParameterGroup* parameterGroup, string name, vector<string> options, ofParameter<int> dropdownSelector){
+        ofParameterGroup tempDropdown;
+        tempDropdown.setName(name + " Select");
+        string  tempStr;
+        ofParameter<string> tempStrParam("Options");
+        for(auto opt : options)
+            tempStr += opt + "-|-";
+        
+        tempStr.erase(tempStr.end()-3, tempStr.end());
+        tempStrParam.set(tempStr);
+        
+        tempDropdown.add(tempStrParam);
+        tempDropdown.add(dropdownSelector.set(name +" Select", 0, 0, options.size()));
+        parameterGroup->add(tempDropdown);
+    }
+
 private:
     
     void setFromNormalizedValue(ofAbstractParameter* p, float v);
