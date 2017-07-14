@@ -9,9 +9,9 @@
 #include "midiGateIn.h"
 #include "parametersControl.h"
 
-midiGateIn::midiGateIn(){
+midiGateIn::midiGateIn(int _id, ofPoint pos){
     parameters = new ofParameterGroup();
-    parameters->setName("midiGateIn " + ofToString(1));
+    parameters->setName("midiGateIn " + ofToString(_id));
     parametersControl::addDropdownToParameterGroupFromParameter(parameters, "Midi Device", midiIn.getPortList(), midiDevice);
     parameters->add(midiChannel.set("Midi Channel", 0, 0, 16));
     parameters->add(noteOnStart.set("Note Begin", 0, 0, 127));
@@ -23,7 +23,7 @@ midiGateIn::midiGateIn(){
     noteOnEnd.addListener(this, &midiGateIn::noteRangeChanged);
     midiDevice.addListener(this, &midiGateIn::midiDeviceListener);
     
-    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, ofPoint(-1, -1));
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
 
 }
 

@@ -80,6 +80,8 @@ private:
     vector<senderManager*>      senderModules;
     vector<typeConverter<vector<float>, vector<vector<float>>>*> converters;
     vector<abstractExpressionOperator*> expressionOps;
+    vector<delta*>  deltaCalculators;
+    vector<midiGateIn*> midiGateIns;
 //    Wave2DControl   waveControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;

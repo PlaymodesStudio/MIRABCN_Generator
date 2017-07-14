@@ -48,9 +48,9 @@ void ofApp::setup(){
         
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
-            phasors.push_back(new phasorClass(1));
-            oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
-            oscillatorBanks.push_back(new oscillatorBank(width, true, 1));
+//            phasors.push_back(new phasorClass(1));
+//            oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
+//            oscillatorBanks.push_back(new oscillatorBank(width, true, 1));
             //envelopeGens.push_back(new envelopeGenerator(1, width));
             for(int i = 0 ; i < hasColorApplier ; i++)
                 colorModules.push_back(new colorApplier(i+1));
@@ -65,9 +65,9 @@ void ofApp::setup(){
             
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
-            expressionOps.push_back(new expressionOperator<vector<float>>(1, 2, ofPoint(800, 500)));
-            new midiGateIn();
-            new delta(1, ofPoint(900, 100));
+//            expressionOps.push_back(new expressionOperator<vector<float>>(1, 2, ofPoint(800, 500)));
+//            midiGateIns.push_back(new midiGateIn(1, ofPoint(0,0)));
+//            new delta(1, ofPoint(900, 100));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
@@ -191,6 +191,46 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             while(envelopeGens.size() <= id-1)
                 envelopeGens.push_back(nullptr);
             envelopeGens[id-1] = new envelopeGenerator(id, info.second);
+        }
+    }
+    
+    else if(moduleTypeName == "midiGateIn"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < midiGateIns.size() && !foundNullElementInVector) ; i++){
+                if(midiGateIns[i] == nullptr){
+                    midiGateIns[i] = new midiGateIn(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                midiGateIns.push_back(new midiGateIn(midiGateIns.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(midiGateIns.size() <= id-1)
+                midiGateIns.push_back(nullptr);
+            midiGateIns[id-1] = new midiGateIn(id, info.second);
+        }
+    }
+    
+    else if(moduleTypeName == "delta"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < deltaCalculators.size() && !foundNullElementInVector) ; i++){
+                if(deltaCalculators[i] == nullptr){
+                    deltaCalculators[i] = new delta(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                deltaCalculators.push_back(new delta(deltaCalculators.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(deltaCalculators.size() <= id-1)
+                deltaCalculators.push_back(nullptr);
+            deltaCalculators[id-1] = new delta(id, info.second);
         }
     }
 }

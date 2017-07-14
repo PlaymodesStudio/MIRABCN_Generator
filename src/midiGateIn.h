@@ -15,7 +15,7 @@
 
 class midiGateIn : ofxMidiListener{
 public:
-    midiGateIn();
+    midiGateIn(int _id, ofPoint pos = ofPoint(-1, -1));
     ~midiGateIn(){};
     
 private:
