@@ -18,6 +18,7 @@
 #include "typeConverter.h"
 #include "expressionOperator.h"
 #include "midiGateIn.h"
+#include "delta.h"
 
 
 static const int WIDTH = 0;

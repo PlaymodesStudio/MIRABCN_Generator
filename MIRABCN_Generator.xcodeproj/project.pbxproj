@@ -53,6 +53,7 @@
 		9BD777923C7E370A961526AC /* envelopeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4655B54F461ED6D3FD64F179 /* envelopeGenerator.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
 		9F89C70E1F191D8A008EB023 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F89C70D1F191D8A008EB023 /* aubio.framework */; };
+		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
 		A0F842B90C48CC33F069DFDE /* masterControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93873127F6C0FCF3F7EDFBB1 /* masterControl.cpp */; };
 		ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD194746185E2DA11468377 /* IpEndpointName.cpp */; };
 		B436E3388D17A3AA80557209 /* midiGateIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 382A46E8952EBD382834A5A4 /* midiGateIn.cpp */; };
@@ -204,6 +205,8 @@
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
 		9F89C70D1F191D8A008EB023 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = aubio.framework; sourceTree = "<group>"; };
+		9F89C7101F1924A0008EB023 /* delta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = delta.cpp; sourceTree = "<group>"; };
+		9F89C7111F1924A0008EB023 /* delta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delta.h; sourceTree = "<group>"; };
 		A081004F20B3CFAB927EEEED /* bpmControl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = bpmControl.cpp; path = src/bpmControl.cpp; sourceTree = SOURCE_ROOT; };
 		A13853A1B21F20177F44EE37 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui_PM/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
 		A2AAA8CA403479E6FCDF920E /* OscHostEndianness.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscHostEndianness.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscHostEndianness.h; sourceTree = SOURCE_ROOT; };
@@ -715,6 +718,8 @@
 				6014812FA3137C9ABE1892EF /* typeConverter.h */,
 				792D914E43BBE8CABB0BA98A /* waveScope.cpp */,
 				73EA2D57F8A48AE4D3F6DA62 /* waveScope.h */,
+				9F89C7101F1924A0008EB023 /* delta.cpp */,
+				9F89C7111F1924A0008EB023 /* delta.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -908,6 +913,7 @@
 				90DE257C9408FA963A24EF71 /* oscillatorBankGroup.cpp in Sources */,
 				99713A77173E6C750326219F /* parametersControl.cpp in Sources */,
 				6B27E4ED726F82D792E518DB /* phasorClass.cpp in Sources */,
+				9F89C7121F1924A0008EB023 /* delta.cpp in Sources */,
 				80C2077E2DE4E2436EE84D82 /* senderManager.cpp in Sources */,
 				C14328667B29F16B6626D88B /* typeConverter.cpp in Sources */,
 				8E3135847B3FB438E44CFCA0 /* waveScope.cpp in Sources */,

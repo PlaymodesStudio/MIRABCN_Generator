@@ -67,6 +67,7 @@ void ofApp::setup(){
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             expressionOps.push_back(new expressionOperator<vector<float>>(1, 2, ofPoint(800, 500)));
             new midiGateIn();
+            new delta(1, ofPoint(900, 100));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
