@@ -10,7 +10,7 @@
 #define expressionOperator_h
 
 #include "ofMain.h"
-#include "ofxExprtk.h"
+//#include "ofxExprtk.h"
 #include "parametersControl.h"
 
 class abstractExpressionOperator{
@@ -32,7 +32,7 @@ public:
         floatInputs.resize(numInputs);
         for(int i = 0; i< numInputs; i++){
             parameters->add(inputs[i].set("Input " + ofToString(i), T()));
-            expression_parser.addSymbol("x" + ofToString(i+1), floatInputs[i]);
+//            expression_parser.addSymbol("x" + ofToString(i+1), floatInputs[i]);
         }
         parameters->add(output.set("Output", T()));
         
@@ -41,8 +41,8 @@ public:
         
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
         
-        expression_parser.registerSymbols();
-        expression_parser.compileExpression(expression);
+//        expression_parser.registerSymbols();
+//        expression_parser.compileExpression(expression);
     }
     
     
@@ -66,14 +66,14 @@ private:
                     floatInputs[j] = 0;
             }
             
-            tempOut[i] = expression_parser.evaluateExpression();
+//            tempOut[i] = expression_parser.evaluateExpression();
         }
         
         parameters->get("Output").cast<vector<float>>() = tempOut;
     }
     
     void expressionChanged(string &s){
-        if(!expression_parser.compileExpression(s)) ofLog() << "Can't Compile Expression: " << s;
+//        if(!expression_parser.compileExpression(s)) ofLog() << "Can't Compile Expression: " << s;
     }
     
     ofParameterGroup *parameters;
@@ -82,7 +82,7 @@ private:
     ofParameter<T> output;
     
     //Variables for the function expression evaluator
-    ofxExprtk<float> expression_parser;
+//    ofxExprtk<float> expression_parser;
     vector<float>   floatInputs;
 };
 
