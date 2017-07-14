@@ -30,10 +30,13 @@ envelopeGenerator::envelopeGenerator(int id, ofPoint pos){
     
     gateIn.addListener(this, &envelopeGenerator::gateInChanged);
     Tweenzor::init();
+    
+    ofAddListener(ofEvents().update, this, &envelopeGenerator::update);
 }
 
-void envelopeGenerator::update(ofEventArgs e){
+void envelopeGenerator::update(ofEventArgs &e){
     Tweenzor::update(ofGetElapsedTimeMillis());
+    parameters->get("Output").cast<vector<float>>() = outputComputeVec;
 }
 
 void envelopeGenerator::gateInChanged(vector<float> &vf){

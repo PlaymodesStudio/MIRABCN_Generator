@@ -50,6 +50,7 @@
 		9F3977121E25022600CD8BEE /* baseOscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3977101E25022600CD8BEE /* baseOscillator.cpp */; };
 		9F39771B1E25553E00CD8BEE /* waveScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F3977191E25553E00CD8BEE /* waveScope.cpp */; };
 		9F6DBFE51E28E4AA0098F3CE /* oscillatorBankGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DBFE31E28E4AA0098F3CE /* oscillatorBankGroup.cpp */; };
+		9F89C7011F18D11F008EB023 /* midiGateIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C6FF1F18D11F008EB023 /* midiGateIn.cpp */; };
 		9FB82D8D1E23F6A700D6CCF2 /* oscillatorBank.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FB82D8B1E23F6A700D6CCF2 /* oscillatorBank.cpp */; };
 		9FB82D901E23FD8E00D6CCF2 /* baseIndexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FB82D8E1E23FD8E00D6CCF2 /* baseIndexer.cpp */; };
 		9FF442AA1F17746A002665AF /* envelopeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FF442A81F17746A002665AF /* envelopeGenerator.cpp */; };
@@ -194,6 +195,8 @@
 		9F6DBFE31E28E4AA0098F3CE /* oscillatorBankGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscillatorBankGroup.cpp; sourceTree = "<group>"; };
 		9F6DBFE41E28E4AA0098F3CE /* oscillatorBankGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscillatorBankGroup.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
+		9F89C6FF1F18D11F008EB023 /* midiGateIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midiGateIn.cpp; sourceTree = "<group>"; };
+		9F89C7001F18D11F008EB023 /* midiGateIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midiGateIn.h; sourceTree = "<group>"; };
 		9FB82D8B1E23F6A700D6CCF2 /* oscillatorBank.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscillatorBank.cpp; sourceTree = "<group>"; };
 		9FB82D8C1E23F6A700D6CCF2 /* oscillatorBank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscillatorBank.h; sourceTree = "<group>"; };
 		9FB82D8E1E23FD8E00D6CCF2 /* baseIndexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = baseIndexer.cpp; sourceTree = "<group>"; };
@@ -710,6 +713,8 @@
 				9F124A501F1793CA00DFE4D2 /* expressionOperator.h */,
 				9F124A521F17B84500DFE4D2 /* typeConverter.cpp */,
 				9F124A531F17B84500DFE4D2 /* typeConverter.h */,
+				9F89C6FF1F18D11F008EB023 /* midiGateIn.cpp */,
+				9F89C7001F18D11F008EB023 /* midiGateIn.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -892,6 +897,7 @@
 				9F124A541F17B84500DFE4D2 /* typeConverter.cpp in Sources */,
 				67383740F5CC47ED5F955A76 /* ofxAubioMelBands.cpp in Sources */,
 				9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */,
+				9F89C7011F18D11F008EB023 /* midiGateIn.cpp in Sources */,
 				101D2DB773940813A5C898CD /* ofxAubioPitch.cpp in Sources */,
 				CABA2A99CFDFE993141568F9 /* CurveLut.cpp in Sources */,
 				9FF442AA1F17746A002665AF /* envelopeGenerator.cpp in Sources */,

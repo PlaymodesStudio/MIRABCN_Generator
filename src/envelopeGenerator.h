@@ -19,7 +19,7 @@ public:
     
     
 private:
-    void update(ofEventArgs e);
+    void update(ofEventArgs &e);
     void gateInChanged(vector<float> &vf);
     void attackEnd(float *f);
     

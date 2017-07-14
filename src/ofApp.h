@@ -17,6 +17,7 @@
 #include "envelopeGenerator.h"
 #include "typeConverter.h"
 #include "expressionOperator.h"
+#include "midiGateIn.h"
 
 
 static const int WIDTH = 0;
