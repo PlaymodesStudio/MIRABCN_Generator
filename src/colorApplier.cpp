@@ -63,7 +63,7 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     }
     
     if(colorDisplacementVector.size() != indexIn.get().size()){
-        colorDisplacementVector.resize(w, {ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement)});
+        colorDisplacementVector.resize(indexIn.get().size(), {ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement)});
     }
     
     if(indexIn.get().size() == w){

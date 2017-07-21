@@ -44,14 +44,8 @@ void ofApp::setup(){
             int previewGroupSize = xml.getIntValue("GroupScopes");
             int previewBankSize = xml.getIntValue("BankScopes");
             
-           
-        
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
             
-//            phasors.push_back(new phasorClass(1));
-//            oscBankGroups.push_back(new oscillatorBankGroup(height, width, 1));
-//            oscillatorBanks.push_back(new oscillatorBank(width, true, 1));
-            //envelopeGens.push_back(new envelopeGenerator(1, width));
             for(int i = 0 ; i < hasColorApplier ; i++)
                 colorModules.push_back(new colorApplier(i+1));
             
@@ -65,9 +59,6 @@ void ofApp::setup(){
             
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
-//            expressionOps.push_back(new expressionOperator<vector<float>>(1, 2, ofPoint(800, 500)));
-//            midiGateIns.push_back(new midiGateIn(1, ofPoint(0,0)));
-//            new delta(1, ofPoint(900, 100));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
@@ -233,6 +224,25 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             deltaCalculators[id-1] = new delta(id, info.second);
         }
     }
+    else if(moduleTypeName == "expressionOperator"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < expressionOps.size() && !foundNullElementInVector) ; i++){
+                if(expressionOps[i] == nullptr){
+                    expressionOps[i] = new expressionOperator<vector<float>>(i+1, 3, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                expressionOps.push_back(new expressionOperator<vector<float>>(expressionOps.size()+1, 3,info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(expressionOps.size() <= id-1)
+                expressionOps.push_back(nullptr);
+            expressionOps[id-1] = new expressionOperator<vector<float>>(id, 3, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -261,6 +271,10 @@ void ofApp::deleteModuleListener(string &moduleName){
         delete oscBankGroups[id-1];
         oscBankGroups[id-1] = nullptr;
     }
+    else if(moduleName == "expressionOperator"){
+        delete expressionOps[id-1];
+        expressionOps[id-1] = nullptr;
+    }
 }
 
 //--------------------------------------------------------------
@@ -277,8 +291,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(0);
-//    ofDrawBitmapString(ofToString(sharedResources::getFilePath()), 20, 20);
+
 }
 
 void ofApp::exit(){

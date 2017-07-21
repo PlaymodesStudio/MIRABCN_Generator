@@ -27,7 +27,7 @@ private:
     ofParameter<vector<float>>   output;
     
     vector<float>   inputStore;
-    vector<float>  outputStore;
+    vector<float>   outputStore;
 };
 
 #endif /* delta_h */

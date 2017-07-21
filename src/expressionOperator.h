@@ -10,7 +10,7 @@
 #define expressionOperator_h
 
 #include "ofMain.h"
-//#include "ofxExprtk.h"
+#include "ofxPython.h"
 #include "parametersControl.h"
 
 class abstractExpressionOperator{
@@ -22,14 +22,15 @@ public:
 template <typename T>
 class expressionOperator : public abstractExpressionOperator{
 public:
-    expressionOperator(int _id, int numInputs, ofPoint pos = ofPoint(-1, -1)){
+    expressionOperator(int _id, int numInputs = 3, ofPoint pos = ofPoint(-1, -1)){
         abstractExpressionOperator();
+        python.init();
         parameters = new ofParameterGroup();
         parameters->setName("expressionOperator " + ofToString(_id));
         
-        parameters->add(expression.set("Expression", "x1"));
+        parameters->add(expression.set("Expression_paragraph", "import math\nfrom openframeworks import * \nprint \"LOL\" \ndef compute(x1, x2, x3):\n    return x1+x2+x3"));
         inputs.resize(numInputs);
-        floatInputs.resize(numInputs);
+        floatInputs.resize(numInputs, 0);
         for(int i = 0; i< numInputs; i++){
             parameters->add(inputs[i].set("Input " + ofToString(i), T()));
 //            expression_parser.addSymbol("x" + ofToString(i+1), floatInputs[i]);
@@ -41,8 +42,8 @@ public:
         
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
         
-//        expression_parser.registerSymbols();
-//        expression_parser.compileExpression(expression);
+        
+        python.executeString(expression.get());
     }
     
     
@@ -65,15 +66,15 @@ private:
                 else
                     floatInputs[j] = 0;
             }
-            
-//            tempOut[i] = expression_parser.evaluateExpression();
+            auto result = python.getObject("compute")(ofxPythonObject::fromFloat(floatInputs[0]), ofxPythonObject::fromFloat(floatInputs[1]), ofxPythonObject::fromFloat(floatInputs[2]));
+            tempOut[i] = ofToFloat(result.repr());
         }
         
         parameters->get("Output").cast<vector<float>>() = tempOut;
     }
     
     void expressionChanged(string &s){
-//        if(!expression_parser.compileExpression(s)) ofLog() << "Can't Compile Expression: " << s;
+            python.executeString(s);
     }
     
     ofParameterGroup *parameters;
@@ -82,7 +83,7 @@ private:
     ofParameter<T> output;
     
     //Variables for the function expression evaluator
-//    ofxExprtk<float> expression_parser;
+    ofxPython python;
     vector<float>   floatInputs;
 };
 

@@ -59,8 +59,13 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
         else if(absParam.type() == typeid(ofParameter<bool>).name())
             tempDatGui->addToggle(paramGroup->getName(i))->setChecked(paramGroup->getBool(i).get());
         else if(absParam.type() == typeid(ofParameter<string>).name()){
-            if(ofSplitString(absParam.getName(), "_").size() > 1)
-                tempDatGui->addLabel(ofSplitString(absParam.getName(), "_")[0]);
+            if(ofSplitString(absParam.getName(), "_").size() > 1){
+                if(ofSplitString(absParam.getName(), "_")[1] == "label"){
+                   tempDatGui->addLabel(ofSplitString(absParam.getName(), "_")[0]);
+                }else if(ofSplitString(absParam.getName(), "_")[1] == "paragraph"){
+                    tempDatGui->addParagraph(ofSplitString(absParam.getName(), "_")[0], absParam.cast<string>());
+                }
+            }
             else
                 tempDatGui->addTextInput(absParam.getName(), absParam.cast<string>());
         }
@@ -82,7 +87,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     tempDatGui->onTextInputEvent(this, &parametersControl::onGuiTextInputEvent);
     tempDatGui->onColorPickerEvent(this, &parametersControl::onGuiColorPickerEvent);
     tempDatGui->onRightClickEvent(this, &parametersControl::onGuiRightClickEvent);
-
+    tempDatGui->onParagraphEvent(this, &parametersControl::onGuiParagraphEvent);
     
     //OF PARAMETERS LISTERENRS
     ofAddListener(paramGroup->parameterChangedE(), this, &parametersControl::listenerFunction);
@@ -1204,8 +1209,15 @@ void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
     }
 }
 
+void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
+    for (int i=0; i < datGuis.size() ; i++){
+        if(datGuis[i]->getParagraph(e.target->getName()) == e.target)
+            parameterGroups[i]->getString(e.target->getName() + "_paragraph") = e.text;
+    }
+}
+
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionGenerator"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();
@@ -1468,7 +1480,14 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
     else if(e.type() == typeid(ofParameter<string>).name()){
         ofParameter<string> castedParam = e.cast<string>();
         
-        datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
+        if(ofSplitString(castedParam.getName(), "_").size() > 1){
+            if(ofSplitString(castedParam.getName(), "_")[1] == "paragraph"){
+                datGuis[parentIndex]->getParagraph(ofSplitString(castedParam.getName(), "_")[0])->setTextWithoutEvent(castedParam);
+            }
+        }
+        else{
+            datGuis[parentIndex]->getTextInput(castedParam.getName())->setTextWithoutEvent(castedParam);
+        }
         
         for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));

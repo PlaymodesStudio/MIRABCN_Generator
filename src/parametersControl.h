@@ -215,6 +215,7 @@ public:
     void onGuiColorPickerEvent(ofxDatGuiColorPickerEvent e);
     void onGuiRightClickEvent(ofxDatGuiRightClickEvent e);
     void onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e);
+    void onGuiParagraphEvent(ofxDatGuiParagraphEvent e);
     
     void newModuleListener(ofxDatGuiDropdownEvent e);
     void newPresetListener(ofxDatGuiTextInputEvent e);
