@@ -57,6 +57,7 @@ void ofApp::setup(){
                 senderModules.push_back(new senderManager(i+1, invert, grayName, colorName));
             }
             
+            new audioEngineController();
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             //Create main gui, and add listeners when all guis are created
@@ -131,7 +132,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 }
             }
             if(!foundNullElementInVector){
-                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
+                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators? Width is " + ofToString(width) + ", height is " + ofToString(height)));
                 oscillatorBanks.push_back(new oscillatorBank(nOscillators, true, oscillatorBanks.size()+1, info.second));
             }
         }

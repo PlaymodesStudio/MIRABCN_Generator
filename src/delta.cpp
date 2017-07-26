@@ -36,6 +36,7 @@ void delta::computeOutput(vector<float> &in){
         for(int i = 0; i < in.size(); i++){
             tempOut[i] = abs(in[i]-inputStore[i])*gain;
             tempOut[i] = (smooth*outputStore[i]) + ((1-smooth)*tempOut[i]);
+            tempOut[i] = ofClamp(tempOut[i], 0, 1);
         }
         inputStore = in;
         outputStore = tempOut;

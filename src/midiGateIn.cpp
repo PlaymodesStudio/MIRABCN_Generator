@@ -28,12 +28,12 @@ midiGateIn::midiGateIn(int _id, ofPoint pos){
 }
 
 void midiGateIn::newMidiMessage(ofxMidiMessage &eventArgs){
-    if(eventArgs.status == MIDI_NOTE_ON){
+    if(eventArgs.status == MIDI_NOTE_ON && (eventArgs.channel == midiChannel || midiChannel == 0)){
         if(eventArgs.pitch >= noteOnStart && eventArgs.pitch <= noteOnEnd){
             outputStore[eventArgs.pitch - noteOnStart] = (float)eventArgs.velocity/(float)127;
             parameters->get("Output").cast<vector<float>>() = outputStore;
         }
-    }else if(eventArgs.status == MIDI_NOTE_OFF){
+    }else if(eventArgs.status == MIDI_NOTE_OFF && (eventArgs.channel == midiChannel || midiChannel == 0)){
         if(eventArgs.pitch >= noteOnStart && eventArgs.pitch <= noteOnEnd){
             outputStore[eventArgs.pitch - noteOnStart] = 0;
             parameters->get("Output").cast<vector<float>>() = outputStore;
@@ -50,5 +50,9 @@ void midiGateIn::midiDeviceListener(int &device){
 }
 
 void midiGateIn::noteRangeChanged(int &note){
-    outputStore.resize(noteOnEnd - noteOnStart, 0);
+    if(noteOnEnd <= noteOnStart){
+        noteOnStart = 0;
+    }else{
+        outputStore.resize(noteOnEnd - noteOnStart, 0);
+    }
 }

@@ -53,7 +53,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     for(int i=0 ; i<paramGroup->size(); i++){
         ofAbstractParameter &absParam = paramGroup->get(i);
         if(absParam.type() == typeid(ofParameter<float>).name())
-            tempDatGui->addSlider(paramGroup->getFloat(i));
+            tempDatGui->addSlider(paramGroup->getFloat(i))->setPrecision(1000);
         else if(absParam.type() == typeid(ofParameter<int>).name())
             tempDatGui->addSlider(paramGroup->getInt(i));
         else if(absParam.type() == typeid(ofParameter<bool>).name())
@@ -830,11 +830,11 @@ void parametersControl::loadPreset(string presetName, string bank){
         }
         
         //if we have to destroy the module we do it
-        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope"){
+        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "typeConverter" && moduleName != "audioControls"){
             destroyModuleAndConnections(i);
         }
         else{
-            if(moduleName != "waveScope" && moduleName != "senderManager"){
+            if(moduleName != "waveScope" && moduleName != "senderManager" && moduleName != "typeConverter"){
                 //Put xml in the place of the parametergroup
                 string noSpacesGroupName = groupParam->getName();
                 ofStringReplace(noSpacesGroupName, " ", "_");
@@ -874,8 +874,9 @@ void parametersControl::loadPreset(string presetName, string bank){
                             ofParameter<string> castedParam = absParam.cast<string>();
                             string noSpaces = castedParam.getName();
                             ofStringReplace(noSpaces, " ", "_");
-                            if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                            if(moduleName != "audioControls" && xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master")){
                                 castedParam.set(xml.getValue(noSpaces, castedParam.get()));
+                            }
                         }
                         else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
                             ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
@@ -1339,7 +1340,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         for(int i = 0; i<datGuis.size(); i++){
             string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
             if(datGuis[i]->hitTest(e)
-               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier"){
+               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier" && moduleName != "typeConverter" && moduleName != "audioControls"){
                 destroyModuleAndConnections(i);
             }
         }

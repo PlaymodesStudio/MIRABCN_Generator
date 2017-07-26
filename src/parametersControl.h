@@ -66,8 +66,8 @@ public:
         gui = new ofxDatGui();
         gui->setVisible(false);
         gui->addLabel(bindedParameters[0]->getName() + " ==> " + p->getName());
-        gui->addSlider(min);
-        gui->addSlider(max);
+        gui->addSlider(min)->setPrecision(1000);
+        gui->addSlider(max)->setPrecision(1000);
         points[1].x = c->getX();
         points[1].y = c->getY() + c->getHeight()/2;
         bindedComponents[1] = c;

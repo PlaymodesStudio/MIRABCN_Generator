@@ -16,8 +16,8 @@ phasorClass::phasorClass(int index, ofPoint pos)
     parameters = new ofParameterGroup;
     parameters->setName("phasor " + ofToString(index));
     parameters->add(bpm_Param.set("BPM", 120, 0, 999));
-    parameters->add(beatsDiv_Param.set("Beats Div", 1, 1, 64));
-    parameters->add(beatsMult_Param.set("Beats Mult", 1, 1, 12));
+    parameters->add(beatsDiv_Param.set("Beats Div", 1, 1, 512));
+    parameters->add(beatsMult_Param.set("Beats Mult", 1, 1, 512));
     parameters->add(quant_Param.set("Quantization", 40, 1, 40));
     parameters->add(initPhase_Param.set("Initial Phase", 0, 0, 1));
     parameters->add(minVal_Param.set("Min Value", 0, 0, 1));

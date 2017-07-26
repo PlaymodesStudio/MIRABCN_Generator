@@ -19,6 +19,7 @@
 #include "expressionOperator.h"
 #include "midiGateIn.h"
 #include "delta.h"
+#include "audioEngineController.h"
 
 
 static const int WIDTH = 0;
