@@ -24,6 +24,8 @@ audioEngineController::audioEngineController(){
     
     oscSender.setup(oscHost, ofToInt(oscPort));
     
+    presetNum.addListener(this, &audioEngineController::presetNumSender);
+    
     oscHost.addListener(this, &audioEngineController::oscHostAndPortListener);
     oscPort.addListener(this, &audioEngineController::oscHostAndPortListener);
     
@@ -40,6 +42,13 @@ audioEngineController::audioEngineController(){
 
 void audioEngineController::oscHostAndPortListener(string &s){
     oscSender.setup(oscHost, ofToInt(oscPort));
+}
+
+void audioEngineController::presetNumSender(int &i){
+    ofxOscMessage message;
+    message.setAddress("audio/preset");
+    message.addIntArg(i);
+    oscSender.sendMessage(message);
 }
 
 void audioEngineController::param_aSender(float &f){

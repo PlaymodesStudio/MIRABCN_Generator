@@ -12,7 +12,8 @@
 colorApplier::colorApplier(int _id){
     parameters = new ofParameterGroup;
     parameters->setName("colorApplier " + ofToString(_id));
-    parameters->add(colorPickerParam[0].set("Color 1", ofColor::black));
+    parameters->add(bypass.set("Bypass", false));
+    parameters->add(colorPickerParam[0].set("Color 1", ofColor::white));
     parameters->add(colorRParam[0].set("Color 1 R", 0, 0, 255));
     parameters->add(colorGParam[0].set("Color 1 G", 0, 0, 255));
     parameters->add(colorBParam[0].set("Color 1 B", 0, 0, 255));
@@ -57,44 +58,54 @@ colorApplier::colorApplier(int _id){
 void colorApplier::applyColor(vector<vector<float>> &inputVec){
     int w = inputVec.size();
     int h = inputVec[0].size();
-    if(tempColors.size() != w){
-        tempColors.resize(w, vector<ofColor>(h));
-        tempGradient.resize(w, vector<ofColor>(h));
-    }
-    
-    if(colorDisplacementVector.size() != indexIn.get().size()){
-        colorDisplacementVector.resize(indexIn.get().size(), {ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement)});
-    }
-    
-    if(indexIn.get().size() == w){
+    if(bypass){
         for(int i = 0 ; i < w ; i++){
-            ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[i])+(colorPickerParam[1].get()*(1-indexIn.get()[i]));
-            newColor.r += (colorDisplacementVector[i][0]);
-            newColor.g += (colorDisplacementVector[i][1]);
-            newColor.b += (colorDisplacementVector[i][2]);
             for (int j = 0 ; j < h ; j++){
-                tempColors[i][j] =  newColor * inputVec[i][j];
-                tempGradient[i][j] = newColor;
+                tempColors[i][j] =  ofColor::white * inputVec[i][j];
+                tempGradient[i][j] = ofColor::white;
             }
         }
         parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
         parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
-    }
-    else if(indexIn.get().size() == h){
-        for(int j = 0 ; j < h ; j++){
-            ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
-            newColor.r += (colorDisplacementVector[j][0]);
-            newColor.g += (colorDisplacementVector[j][1]);
-            newColor.b += (colorDisplacementVector[j][2]);
-            for (int i = 0 ; i < w ; i++){
-                tempColors[i][j] =  newColor * inputVec[i][j];
-                tempGradient[i][j] = newColor;
-            }
+    }else{
+        if(tempColors.size() != w){
+            tempColors.resize(w, vector<ofColor>(h));
+            tempGradient.resize(w, vector<ofColor>(h));
         }
-        parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
-        parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
+        
+        if(colorDisplacementVector.size() != indexIn.get().size()){
+            colorDisplacementVector.resize(indexIn.get().size(), {ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement)});
+        }
+        
+        if(indexIn.get().size() == w){
+            for(int i = 0 ; i < w ; i++){
+                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[i])+(colorPickerParam[1].get()*(1-indexIn.get()[i]));
+                newColor.r += (colorDisplacementVector[i][0]);
+                newColor.g += (colorDisplacementVector[i][1]);
+                newColor.b += (colorDisplacementVector[i][2]);
+                for (int j = 0 ; j < h ; j++){
+                    tempColors[i][j] =  newColor * inputVec[i][j];
+                    tempGradient[i][j] = newColor;
+                }
+            }
+            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
+        }
+        else if(indexIn.get().size() == h){
+            for(int j = 0 ; j < h ; j++){
+                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
+                newColor.r += (colorDisplacementVector[j][0]);
+                newColor.g += (colorDisplacementVector[j][1]);
+                newColor.b += (colorDisplacementVector[j][2]);
+                for (int i = 0 ; i < w ; i++){
+                    tempColors[i][j] =  newColor * inputVec[i][j];
+                    tempGradient[i][j] = newColor;
+                }
+            }
+            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
+        }
     }
-
 }
 
 void colorApplier::colorDisplacementChanged(float &f){

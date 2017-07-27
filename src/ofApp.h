@@ -84,6 +84,7 @@ private:
     vector<delta*>  deltaCalculators;
     vector<midiGateIn*> midiGateIns;
 //    Wave2DControl   waveControl;
+    audioEngineController*      audioControl;
     parametersControl*          paramsControl;
     senderManager*              senderModule;
     waveScope*                  preview;

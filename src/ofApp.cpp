@@ -57,7 +57,11 @@ void ofApp::setup(){
                 senderModules.push_back(new senderManager(i+1, invert, grayName, colorName));
             }
             
-            new audioEngineController();
+            
+            
+            audioControl = new audioEngineController();
+            
+            
             preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             //Create main gui, and add listeners when all guis are created

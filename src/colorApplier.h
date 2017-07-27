@@ -30,7 +30,7 @@ private:
     void colorHueListener(int &i);
     
     ofParameterGroup*        parameters;
-    ofParameter<void>       cableConnected;
+    ofParameter<bool>       bypass;
     ofParameter<ofColor>    colorPickerParam[2];
     ofParameter<int>        colorRParam[2];
     ofParameter<int>        colorGParam[2];

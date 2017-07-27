@@ -19,6 +19,7 @@ public:
 private:
     void oscHostAndPortListener(string &s);
     
+    void presetNumSender(int &i);
     void param_aSender(float &f);
     void param_bSender(float &f);
     void param_cSender(float &f);
@@ -29,7 +30,7 @@ private:
     ofParameterGroup* parameters;
     
     ofParameter<string> oscHost;
-    ofParameter<string>    oscPort;
+    ofParameter<string> oscPort;
     ofParameter<int>    presetNum;
     ofParameter<float>  param_a;
     ofParameter<float>  param_b;
