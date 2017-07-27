@@ -33,6 +33,8 @@ senderManager::senderManager(int _id, bool _invert, string _grayscaleName, strin
     
     enableOsc.addListener(this, &senderManager::enableOscListener);
     enableSyphon.addListener(this, &senderManager::enableSyphonListener);
+    
+    enableSyphon = true;
 }
 
 void senderManager::sendGrayScale(vector<vector<float>> &info){

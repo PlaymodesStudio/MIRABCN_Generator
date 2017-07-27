@@ -188,6 +188,11 @@ void waveScope::mouseDragged(ofMouseEventArgs &a){
     }
 }
 
+void waveScope::activateSeparateWindow(ofRectangle winRect){
+    prevWindowRect = winRect;
+    if(!drawOnSeparateWindow) drawOnSeparateWindow = true;
+}
+
 
 void waveScope::changeDrawLocation(bool &b){
     if(b){

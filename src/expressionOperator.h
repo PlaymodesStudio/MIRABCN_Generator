@@ -28,7 +28,7 @@ public:
         parameters = new ofParameterGroup();
         parameters->setName("expressionOperator " + ofToString(_id));
         
-        parameters->add(expression.set("Expression_paragraph", "import math\nfrom openframeworks import * \nprint \"LOL\" \ndef compute(x1, x2, x3):\n    return x1+x2+x3"));
+        parameters->add(expression.set("Expression_paragraph", "import math\nfrom openframeworks import *\nprint \"LOL\"\ndef compute(x1, x2, x3):\n    return x1+x2+x3"));
         inputs.resize(numInputs);
         floatInputs.resize(numInputs, 0);
         for(int i = 0; i< numInputs; i++){

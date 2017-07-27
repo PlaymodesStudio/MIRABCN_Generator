@@ -22,6 +22,9 @@ public:
             prevWindow->setWindowShouldClose();
     };
     
+    void activateSeparateWindow(ofRectangle winRect = ofRectangle(-1, -1, 100, 100));
+    shared_ptr<ofAppBaseWindow> getWindow(){return prevWindow;};
+    
     void draw();
     void drawEvent(ofEventArgs &e){draw();};
     
@@ -46,6 +49,8 @@ private:
     int mousePressInititalX;
     bool isInMovableRegion;
     bool hasColor;
+    
+    bool manualWindowCreation = false;
     
     shared_ptr<ofAppBaseWindow> prevWindow;
     ofRectangle                 prevWindowRect;

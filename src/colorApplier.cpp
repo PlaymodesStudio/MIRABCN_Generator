@@ -59,6 +59,10 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     int w = inputVec.size();
     int h = inputVec[0].size();
     if(bypass){
+        if(tempColors.size() != w || tempColors[0].size() != h){
+            tempColors.resize(w, vector<ofColor>(h));
+            tempGradient.resize(w, vector<ofColor>(h));
+        }
         for(int i = 0 ; i < w ; i++){
             for (int j = 0 ; j < h ; j++){
                 tempColors[i][j] =  ofColor::white * inputVec[i][j];

@@ -9,7 +9,6 @@ void ofApp::setup(){
     string path = *buffer.getLines().begin();
     auto result = ofSystemLoadDialog("Select Generator File", false, path);
     if(ofSplitString(result.getPath(), ".").back() != "generator"){
-//        ofSystemAlertDialog(".generator file needed");
         ofExit();
     }
     
@@ -26,6 +25,8 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     
     paramsControl = &parametersControl::getInstance();
+    
+    ofRectangle prevWinRect = ofRectangle(-1, -1, 100, 100);
     
     bpmControl::getInstance().setup();
     
@@ -57,7 +58,25 @@ void ofApp::setup(){
                 senderModules.push_back(new senderManager(i+1, invert, grayName, colorName));
             }
             
+            auto mainPos = ofSplitString(xml.getValue("MainWindowPos"), "_");
+            if(mainPos.size() == 2){
+                ofSetWindowPosition(ofToInt(mainPos[0]), ofToInt(mainPos[1]));
+            }
             
+            auto mainSize = ofSplitString(xml.getValue("MainWindowSize"), "_");
+            if(mainSize.size() == 2){
+                ofSetWindowShape(ofToInt(mainSize[0]), ofToInt(mainSize[1]));
+            }
+            
+            auto prevPos = ofSplitString(xml.getValue("PrevWindowPos"), "_");
+            if(prevPos.size() == 2){
+                prevWinRect.setPosition(ofToInt(prevPos[0]), ofToInt(prevPos[1]));
+            }
+            
+            auto prevSize = ofSplitString(xml.getValue("PrevWindowSize"), "_");
+            if(prevSize.size() == 2){
+                prevWinRect.setSize(ofToInt(prevSize[0]), ofToInt(prevSize[1]));
+            }
             
             audioControl = new audioEngineController();
             
@@ -75,7 +94,8 @@ void ofApp::setup(){
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
-   
+    
+    preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
     ofAddListener(paramsControl->destroyModule, this, &ofApp::deleteModuleListener);
@@ -258,7 +278,6 @@ void ofApp::deleteModuleListener(string &moduleName){
         id = -1;
     
     ofStringReplace(moduleName, " " + ofToString(id), "");
-    ofLog()<<"Module Type: " << moduleName << "ID: " << id;
     
     if(moduleName == "phasor"){
         delete phasors[id-1];
@@ -304,6 +323,21 @@ void ofApp::exit(){
         paramsControl->saveGuiArrangement();
         paramsControl->saveMidiMapping();
     }
+    
+    ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
+    string path = *buffer.getLines().begin();
+    
+    ofXml xml;
+    if(xml.load(path)){
+        if(xml.exists("GeneratorConfig")){
+            xml.setTo("GeneratorConfig");
+            xml.setValue("MainWindowPos", ofToString(ofGetWindowRect().getPosition().x) + "_" + ofToString(ofGetWindowRect().getPosition().y));
+            xml.setValue("MainWindowSize", ofToString(ofGetWindowSize().x) + "_" + ofToString(ofGetWindowSize().y));
+            xml.setValue("PrevWindowPos", ofToString(preview->getWindow()->getWindowPosition().x) + "_" + ofToString(preview->getWindow()->getWindowPosition().y));
+            xml.setValue("PrevWindowSize", ofToString(preview->getWindow()->getWidth()) + "_" + ofToString(preview->getWindow()->getHeight()));
+        }
+    }
+    xml.save(path);
 }
 
 void ofApp::drawSecondWindow(ofEventArgs &args){

@@ -819,7 +819,7 @@ void parametersControl::loadPreset(string presetName, string bank){
             hasToBeDestroyed = true;
             for(auto module : modulesToCreate){
                 if(groupParam->getName() == module.first){
-                    if(moduleName != "OscillatorBank" || groupParam->getInt("Index Modulo").getMax() == module.second.z){
+                    if(moduleName != "oscillatorBank" || groupParam->getInt("Index Modulo").getMax() == module.second.z){
                         datGuis[i]->setPosition(module.second.x, module.second.y);
                         modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
                         hasToBeDestroyed = false;
