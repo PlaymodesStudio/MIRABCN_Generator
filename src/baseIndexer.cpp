@@ -70,7 +70,7 @@ void baseIndexer::recomputeIndexs(){
         
         //INVERSE
         //Fisrt we invert the index to simulate the wave goes from left to right, inverting indexes, if we want to invertit we don't do this calc
-        int nonInvertIndex = index-1.0;
+        int nonInvertIndex = index;//-1.0;
         int invertedIndex = ((float)indexCount-(float)index);
         index = indexInvert_Param*invertedIndex + (1-indexInvert_Param)*nonInvertIndex;
         
@@ -88,9 +88,8 @@ void baseIndexer::recomputeIndexs(){
         if(modulo_Param != modulo_Param.getMax())
             index %= modulo_Param;
         
-//        index += indexOffset_Param;
         
-        int shifted_i = i + floor(indexOffset_Param);
+        int shifted_i = i + floor(indexOffset_Param)-1;
         if(shifted_i < 0) shifted_i += indexCount;
         shifted_i %= indexCount;
         indexs[shifted_i] = (((float)index/(float)newNumOfPixels))*numWaves_Param;// + (numWaves_Param/newNumOfPixels*fmod(indexOffset_Param, 1));
