@@ -31,6 +31,7 @@ class nodeConnection{
 public:
     nodeConnection(){};
     nodeConnection(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p){
+        closedLine = false;
         min.set("Min", 0, 0, 1);
         max.set("Max", 1, 0, 1);
         points.resize(2);

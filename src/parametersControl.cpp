@@ -1333,8 +1333,9 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
                 connection->toggleGui(true, e);
                 cablePressed = true;
             }
-            else
+            else if(connection->closedLine){
                 connection->toggleGui(false);
+            }
         }
     }if(ofGetKeyPressed('r')){
         for(int i = 0; i<datGuis.size(); i++){
