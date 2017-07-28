@@ -1259,6 +1259,16 @@ void parametersControl::newPresetListener(ofxDatGuiTextInputEvent e){
 #pragma mark --Keyboard and mouse Listenerrs--
 
 void parametersControl::keyPressed(ofKeyEventArgs &e){
+    if(ofGetKeyPressed(OF_KEY_CONTROL) && e.key == OF_KEY_LEFT_SHIFT){
+        for (int i=0; i < datGuis.size() ; i++){
+            if(datGuis[i]->getHeader()->getName() == "waveScope"){
+                ofVec4f transformedPos(ofGetMouseX() + 20, ofGetMouseY() - (transformMatrix.getScale()[1]*datGuis[i]->getHeight()/2), 0, 0);
+                transformedPos -= transformMatrix.getTranslation();
+                transformedPos = transformMatrix.getInverse().postMult(transformedPos);
+                datGuis[i]->setPosition(transformedPos.x, transformedPos.y);
+            }
+        }
+    }
     if(e.key == OF_KEY_COMMAND){
         commandPressed = true;
         glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), arrowListCursor);

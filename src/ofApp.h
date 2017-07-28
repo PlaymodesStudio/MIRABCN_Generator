@@ -35,11 +35,6 @@ class ofApp : public ofBaseApp{
 		void draw();
     void exit();
     
-    void drawSecondWindow(ofEventArgs & args);
-    void mouseMovedSecondWindow(ofMouseEventArgs &a);
-    void mouseDraggedSecondWindow(ofMouseEventArgs &a);
-    void mousePressedSecondWindow(ofMouseEventArgs &a);
-    void mouseReleasedSecondWindow(ofMouseEventArgs &a);
     
     
     void audioIn(float * input, int bufferSize, int nChannels);
@@ -92,6 +87,7 @@ private:
     vector<oscillatorBankGroup*>       oscBankGroups;
     
     ofSoundStream soundStream;
+    
     
     //The log channel is a buffer where you post all notifications, it's used mainly in waveScope to print the debug info.
     shared_ptr<bufferLoggerChannel> logBuffer;

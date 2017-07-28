@@ -89,8 +89,6 @@ void ofApp::setup(){
         }
     }
     
-    
-    
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
@@ -315,7 +313,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    
 }
 
 void ofApp::exit(){
@@ -331,37 +329,13 @@ void ofApp::exit(){
     if(xml.load(path)){
         if(xml.exists("GeneratorConfig")){
             xml.setTo("GeneratorConfig");
-            xml.setValue("MainWindowPos", ofToString(ofGetWindowRect().getPosition().x) + "_" + ofToString(ofGetWindowRect().getPosition().y));
+            xml.setValue("MainWindowPos", ofToString(ofGetWindowPositionX()) + "_" + ofToString(ofGetWindowPositionX()));
             xml.setValue("MainWindowSize", ofToString(ofGetWindowSize().x) + "_" + ofToString(ofGetWindowSize().y));
             xml.setValue("PrevWindowPos", ofToString(preview->getWindow()->getWindowPosition().x) + "_" + ofToString(preview->getWindow()->getWindowPosition().y));
             xml.setValue("PrevWindowSize", ofToString(preview->getWindow()->getWidth()) + "_" + ofToString(preview->getWindow()->getHeight()));
         }
     }
     xml.save(path);
-}
-
-void ofApp::drawSecondWindow(ofEventArgs &args){
-    if(preview != nullptr) preview->draw();
-}
-
-void ofApp::mouseMovedSecondWindow(ofMouseEventArgs &a){
-    if(preview != nullptr)
-        preview->mouseMoved(a);
-}
-
-void ofApp::mousePressedSecondWindow(ofMouseEventArgs &a){
-    if(preview != nullptr)
-        preview->mousePressed(a);
-}
-
-void ofApp::mouseReleasedSecondWindow(ofMouseEventArgs &a){
-    if(preview != nullptr)
-        preview->mouseReleased(a);
-}
-
-void ofApp::mouseDraggedSecondWindow(ofMouseEventArgs &a){
-    if(preview != nullptr)
-        preview->mouseDragged(a);
 }
 
 
