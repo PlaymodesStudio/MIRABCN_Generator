@@ -266,6 +266,44 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             expressionOps[id-1] = new expressionOperator<vector<float>>(id, 3, info.second);
         }
     }
+    else if(moduleTypeName == "mapper"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < mappers.size() && !foundNullElementInVector) ; i++){
+                if(mappers[i] == nullptr){
+                    mappers[i] = new mapper(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                mappers.push_back(new mapper(mappers.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(mappers.size() <= id-1)
+                mappers.push_back(nullptr);
+            mappers[id-1] = new mapper(id, info.second);
+        }
+    }
+    else if(moduleTypeName == "vecMapper"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < vecMappers.size() && !foundNullElementInVector) ; i++){
+                if(vecMappers[i] == nullptr){
+                    vecMappers[i] = new vectorMapper(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                vecMappers.push_back(new vectorMapper(vecMappers.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(vecMappers.size() <= id-1)
+                vecMappers.push_back(nullptr);
+            vecMappers[id-1] = new vectorMapper(id, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -296,6 +334,14 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "expressionOperator"){
         delete expressionOps[id-1];
         expressionOps[id-1] = nullptr;
+    }
+    else if(moduleName == "mapper"){
+        delete mappers[id-1];
+        mappers[id-1] = nullptr;
+    }
+    else if(moduleName == "vectorMapper"){
+        delete vecMappers[id-1];
+        vecMappers[id-1] = nullptr;
     }
 }
 

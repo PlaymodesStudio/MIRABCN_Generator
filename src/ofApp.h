@@ -20,6 +20,8 @@
 #include "midiGateIn.h"
 #include "delta.h"
 #include "audioEngineController.h"
+#include "mapper.h"
+#include "vectorMapper.h"
 
 
 static const int WIDTH = 0;
@@ -78,6 +80,8 @@ private:
     vector<abstractExpressionOperator*> expressionOps;
     vector<delta*>  deltaCalculators;
     vector<midiGateIn*> midiGateIns;
+    vector<mapper*> mappers;
+    vector<vectorMapper*> vecMappers;
 //    Wave2DControl   waveControl;
     audioEngineController*      audioControl;
     parametersControl*          paramsControl;
