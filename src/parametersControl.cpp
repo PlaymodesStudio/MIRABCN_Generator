@@ -301,12 +301,12 @@ void parametersControl::update(ofEventArgs &args){
         }
     }
     
-    if(isFading){
-        ofxOscMessage m;
-        m.setAddress("presetFade");
-        m.addFloatArg(parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get());
-        oscSender.sendMessage(m);
-    }
+//    if(isFading){
+//        ofxOscMessage m;
+//        m.setAddress("presetFade");
+//        m.addFloatArg(parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get());
+//        oscSender.sendMessage(m);
+//    }
     
     //MIDI - Process the midi deque
     for(auto m : midiMessagesFiller)

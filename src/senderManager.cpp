@@ -20,6 +20,8 @@ senderManager::senderManager(int _id, bool _invert, string _grayscaleName, strin
     parameters->add(oscHost.set("Host", "127.0.0.1"));
     parameters->add(oscPort.set("Port", "1234"));
     
+    parameters->add(masterFader.set("Master Fader", 1, 0, 1));
+    
     parameters->add(grayScaleIn.set("Grayscale In", {{0}}));
     parameters->add(colorIn.set("Color In", {{ofColor::white}}));
     
@@ -47,14 +49,14 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
         if(invert){
             for(int i = 0 ; i < h ; i++){
                 for (int j = 0 ; j < w ; j++){
-                    messageGrayscale->addFloatArg(info[j][i]);
+                    messageGrayscale->addFloatArg(info[j][i]*masterFader);
                 }
             }
         }
         else{
             for(int i = 0 ; i < w ; i++){
                 for (int j = 0 ; j < h ; j++){
-                    messageGrayscale->addFloatArg(info[i][j]);
+                    messageGrayscale->addFloatArg(info[i][j]*masterFader);
                 }
             }
         }
@@ -66,7 +68,7 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
             unsigned char *data = new unsigned char[h * w];
             for(int i = 0 ; i < h ; i++){
                 for ( int j = 0; j < w ; j++)
-                    data[i+h*j] = info[j][i]*255;
+                    data[i+h*j] = info[j][i]*255*masterFader;
             }
             tex.loadData(data, h, w, GL_LUMINANCE);
         }
@@ -74,7 +76,7 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
             unsigned char *data = new unsigned char[w * h];
             for(int i = 0 ; i < w ; i++){
                 for ( int j = 0; j < h ; j++)
-                    data[i+w*j] = info[i][j]*255;
+                    data[i+w*j] = info[i][j]*255*masterFader;
             }
             tex.loadData(data, w, h, GL_LUMINANCE);
         }
@@ -91,9 +93,9 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
         
         for(int i = 0 ; i < w ; i++){
             for (int j = 0 ; j < h ; j++){
-                messageColor->addFloatArg((float)info[i][j].r);
-                messageColor->addFloatArg((float)info[i][j].g);
-                messageColor->addFloatArg((float)info[i][j].b);
+                messageColor->addFloatArg((float)info[i][j].r*masterFader);
+                messageColor->addFloatArg((float)info[i][j].g*masterFader);
+                messageColor->addFloatArg((float)info[i][j].b*masterFader);
             }
         }
         oscSender->sendMessage(*messageColor);
@@ -104,9 +106,9 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
             unsigned char *data = new unsigned char[w * h*3];
             for(int i = 0 ; i < h ; i++){
                 for ( int j = 0; j < w ; j++){
-                    data[(i*3)+h*3*j] = info[j][i].r;
-                    data[(i*3)+(h*3*j)+1] = info[j][i].g;
-                    data[(i*3)+(h*3*j)+2] = info[j][i].b;
+                    data[(i*3)+h*3*j] = info[j][i].r*masterFader;
+                    data[(i*3)+(h*3*j)+1] = info[j][i].g*masterFader;
+                    data[(i*3)+(h*3*j)+2] = info[j][i].b*masterFader;
                 }
             }
             tex.loadData(data, h, w, GL_RGB);
@@ -114,9 +116,9 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
             unsigned char *data = new unsigned char[w * h*3];
             for(int i = 0 ; i < w ; i++){
                 for ( int j = 0; j < h ; j++){
-                    data[(i*3)+w*3*j] = info[i][j].r;
-                    data[(i*3)+(w*3*j)+1] = info[i][j].g;
-                    data[(i*3)+(w*3*j)+2] = info[i][j].b;
+                    data[(i*3)+w*3*j] = info[i][j].r*masterFader;
+                    data[(i*3)+(w*3*j)+1] = info[i][j].g*masterFader;
+                    data[(i*3)+(w*3*j)+2] = info[i][j].b*masterFader;
                 }
             }
             tex.loadData(data, w, h, GL_RGB);

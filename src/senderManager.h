@@ -55,6 +55,8 @@ private:
     ofParameter<string> oscHost;
     ofParameter<string> oscPort;
     
+    ofParameter<float>  masterFader;
+    
     ofParameter<vector<vector<float>>>  grayScaleIn;
     ofParameter<vector<vector<ofColor>>>    colorIn;
     
