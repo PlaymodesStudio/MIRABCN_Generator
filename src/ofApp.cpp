@@ -285,7 +285,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             mappers[id-1] = new mapper(id, info.second);
         }
     }
-    else if(moduleTypeName == "vecMapper"){
+    else if(moduleTypeName == "vectorMapper"){
         if(moduleName.size() < 2){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < vecMappers.size() && !foundNullElementInVector) ; i++){

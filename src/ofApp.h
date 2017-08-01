@@ -76,7 +76,7 @@ private:
     vector<oscillatorBank*> oscillatorBanks;
     vector<envelopeGenerator*>  envelopeGens;
     vector<senderManager*>      senderModules;
-    vector<typeConverter<vector<float>, vector<vector<float>>>*> converters;
+    vector<genericTypeConverter*> converters;
     vector<abstractExpressionOperator*> expressionOps;
     vector<delta*>  deltaCalculators;
     vector<midiGateIn*> midiGateIns;

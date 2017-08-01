@@ -12,18 +12,49 @@
 #include "ofMain.h"
 #include "parametersControl.h"
 
+class genericTypeConverter{
+public:
+    genericTypeConverter(){};
+    ~genericTypeConverter(){};
+};
+
 template <typename Tsource,typename Tdest>
-class typeConverter{
+class typeConverter : public genericTypeConverter{
 public:
     typeConverter(int id, ofPoint pos = ofPoint(-1, -1)){
         parameters = new ofParameterGroup();
         parameters->setName("typeConverter " + ofToString(id));
         
-//        parameters->add(source.set("Source-" + ofToString(typeid(Tsource).name()), Tsource()));
-//        parameters->add(dest.set("Dest-" + ofToString(typeid(Tdest).name()), Tdest()));
+        sourceTypeName = "Source - ";
+        if(typeid(Tsource).name() == typeid(float).name()){
+            sourceTypeName += "float";
+        }
+        else if(typeid(Tsource).name() == typeid(vector<float>).name()){
+            sourceTypeName += "vector float";
+        }
+        else if(typeid(Tsource).name() == typeid(vector<vector<float>>).name()){
+            sourceTypeName += "vector vector float";
+        }
+        else{
+            sourceTypeName += "unknown";
+        }
         
-        parameters->add(source.set("Source", Tsource()));
-        parameters->add(dest.set("Dest", Tdest()));
+        destTypeName = "Dest - ";
+        if(typeid(Tdest).name() == typeid(float).name()){
+            destTypeName += "float";
+        }
+        else if(typeid(Tdest).name() == typeid(vector<float>).name()){
+            destTypeName += "vector float";
+        }
+        else if(typeid(Tdest).name() == typeid(vector<vector<float>>).name()){
+            destTypeName += "vector vector float";
+        }
+        else{
+            destTypeName += "unknown";
+        }
+        
+        parameters->add(source.set(sourceTypeName, Tsource()));
+        parameters->add(dest.set(destTypeName, Tdest()));
         
         source.addListener(this, &typeConverter::sourceListener);
         
@@ -33,6 +64,13 @@ public:
     
 private:
     void sourceListener(Tsource &s){
+//        if(typeid(Tsource).name() == typeid(typename Tdest::value_type).name()){
+//            Tdest toSend = {source};
+//            parameters->get(destTypeName).template cast<Tdest>() = toSend;
+//        }else if(typeid(typename Tsource::value_type).name() == typeid(Tdest).name()){
+//            Tdest toSend = source.get()[0];
+//            parameters->get(destTypeName).template cast<Tdest>() = toSend;
+//        }
         if(typeid(Tsource).name() == typeid(vector<float>).name() && typeid(Tdest).name() == typeid(vector<vector<float>>).name()){
             vector<vector<float>> toSend = {source};
             parameters->get("Dest").cast<Tdest>() = toSend;
@@ -42,6 +80,9 @@ private:
     ofParameterGroup*    parameters;
     ofParameter<Tsource>    source;
     ofParameter<Tdest>      dest;
+    
+    string sourceTypeName;
+    string destTypeName;
 };
 
 #endif /* typeConverter_h */
