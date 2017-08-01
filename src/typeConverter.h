@@ -25,7 +25,7 @@ public:
         parameters = new ofParameterGroup();
         parameters->setName("typeConverter " + ofToString(id));
         
-        sourceTypeName = "Source - ";
+        sourceTypeName = "";
         if(typeid(Tsource).name() == typeid(float).name()){
             sourceTypeName += "float";
         }
@@ -39,7 +39,7 @@ public:
             sourceTypeName += "unknown";
         }
         
-        destTypeName = "Dest - ";
+        destTypeName = "";
         if(typeid(Tdest).name() == typeid(float).name()){
             destTypeName += "float";
         }
@@ -53,8 +53,10 @@ public:
             destTypeName += "unknown";
         }
         
-        parameters->add(source.set(sourceTypeName, Tsource()));
-        parameters->add(dest.set(destTypeName, Tdest()));
+        ofParameter<string> label;
+        parameters->add(label.set(sourceTypeName + " to " + destTypeName + "_label", ""));
+        parameters->add(source.set("Source", Tsource()));
+        parameters->add(dest.set("Dest", Tdest()));
         
         source.addListener(this, &typeConverter::sourceListener);
         
@@ -84,5 +86,6 @@ private:
     string sourceTypeName;
     string destTypeName;
 };
+
 
 #endif /* typeConverter_h */

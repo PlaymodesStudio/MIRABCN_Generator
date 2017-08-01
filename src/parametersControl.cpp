@@ -256,6 +256,20 @@ void parametersControl::update(ofEventArgs &args){
             ofStringReplace(splitAddress[1], "_", " ");
             if(splitAddress[1] == "presetLoad"){
                 loadPreset(m.getArgAsString(0), m.getArgAsString(1));
+            }else if(splitAddress[1] == "presetLoadi"){
+                string bankName = m.getArgAsString(0);
+                
+                ofDirectory dir;
+                map<int, string> presets;
+                dir.open("Presets/" + bankName);
+                if(!dir.exists())
+                    dir.createDirectory("Presets/" + bankName);
+                dir.sort();
+                int numPresets = dir.listDir();
+                for ( int i = 0 ; i < numPresets; i++)
+                    presets[ofToInt(ofSplitString(dir.getName(i), "|")[0])] = ofSplitString(dir.getName(i), ".")[0];
+                
+                loadPreset(presets[m.getArgAsInt(1)], bankName);
             }else if(splitAddress[1] == "presetSave"){
                 savePreset(m.getArgAsString(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){

@@ -315,6 +315,7 @@ private:
     vector<pair<int, string>> presetNumbersAndBanks;
     vector<int> presetsTime;
     int presetChangeCounter;
+    vector<pair<int, string>> currentBankPresetList;
     
     int presetToLoad;
     string bankToLoad;

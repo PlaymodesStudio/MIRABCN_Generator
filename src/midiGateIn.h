@@ -16,7 +16,9 @@
 class midiGateIn : ofxMidiListener{
 public:
     midiGateIn(int _id, ofPoint pos = ofPoint(-1, -1));
-    ~midiGateIn(){};
+    ~midiGateIn(){
+        delete parameters;
+    };
     
 private:
     void newMidiMessage(ofxMidiMessage& eventArgs);
