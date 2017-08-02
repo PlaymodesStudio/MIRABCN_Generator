@@ -279,10 +279,7 @@ void parametersControl::update(ofEventArgs &args){
                         groupParam->getBool("Reset Phase") = 0;
                 }
             }else if(splitAddress[1] == "bpm"){
-                for(auto groupParam : parameterGroups){
-                    if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
-                        groupParam->getFloat("BPM") = m.getArgAsFloat(0);
-                }
+                setGlobalBPM(m.getArgAsFloat(0));
             }else if(splitAddress[1] == "nextFrame"){
                 ofNotifyEvent(nextFrameEvent, this);
             }else{
