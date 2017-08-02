@@ -331,6 +331,18 @@ void ofApp::deleteModuleListener(string &moduleName){
         delete oscBankGroups[id-1];
         oscBankGroups[id-1] = nullptr;
     }
+    else if(moduleName == "envelopeGenerator"){
+//        delete envelopeGens[id-1];
+//        envelopeGens[id-1] = nullptr;
+    }
+    else if(moduleName == "midiGateIn"){
+        delete midiGateIns[id-1];
+        midiGateIns[id-1] = nullptr;
+    }
+    else if(moduleName == "delta"){
+        delete deltaCalculators[id-1];
+        deltaCalculators[id-1] = nullptr;
+    }
     else if(moduleName == "expressionOperator"){
         delete expressionOps[id-1];
         expressionOps[id-1] = nullptr;

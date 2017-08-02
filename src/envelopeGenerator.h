@@ -15,7 +15,7 @@
 class envelopeGenerator {
 public:
     envelopeGenerator(int id, ofPoint pos = ofPoint(-1, -1));
-    ~envelopeGenerator(){};
+    ~envelopeGenerator();
     
     
 private:
@@ -38,6 +38,8 @@ private:
     
     vector<float>   oldGateIn;
     vector<float>   outputComputeVec;
+    
+    ofMutex mutex;
 };
 
 #endif /* envelopeGenerator_h */

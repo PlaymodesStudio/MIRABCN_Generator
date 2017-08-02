@@ -28,21 +28,33 @@ envelopeGenerator::envelopeGenerator(int id, ofPoint pos){
     oldGateIn = {0};
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::cyan, pos);
     
+    outputComputeVec = {0};
+    
     gateIn.addListener(this, &envelopeGenerator::gateInChanged);
     Tweenzor::init();
     
     ofAddListener(ofEvents().update, this, &envelopeGenerator::update);
 }
 
+envelopeGenerator::~envelopeGenerator(){
+    gateIn.removeListener(this, &envelopeGenerator::gateInChanged);
+    ofRemoveListener(ofEvents().update, this, &envelopeGenerator::update);
+    delete parameters;
+}
+
 void envelopeGenerator::update(ofEventArgs &e){
-    Tweenzor::update(ofGetElapsedTimeMillis());
-    parameters->get("Output").cast<vector<float>>() = outputComputeVec;
+    if(mutex.try_lock()){
+        Tweenzor::update(ofGetElapsedTimeMillis());
+        mutex.unlock();
+    }
+//    parameters->get("Output").cast<vector<float>>() = outputComputeVec;
 }
 
 void envelopeGenerator::gateInChanged(vector<float> &vf){
+    mutex.lock();
     if(outputComputeVec.size() != vf.size()){
         outputComputeVec.resize(vf.size(), 0);
-    }
+    }else{
     
     if(vf.size() == oldGateIn.size()){
         for(int i = 0; i < vf.size(); i++){
@@ -58,8 +70,10 @@ void envelopeGenerator::gateInChanged(vector<float> &vf){
                 }
             }
         }
+        parameters->get("Output").cast<vector<float>>() = outputComputeVec;
     }
-    parameters->get("Output").cast<vector<float>>() = outputComputeVec;
+    }
+    mutex.unlock();
     oldGateIn = vf;
 }
 

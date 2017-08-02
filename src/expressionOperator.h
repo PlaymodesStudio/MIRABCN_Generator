@@ -46,6 +46,10 @@ public:
         python.executeString(expression.get());
     }
     
+    ~expressionOperator(){
+        delete parameters;
+    }
+    
     
 private:
     void inputReceived(T &val){

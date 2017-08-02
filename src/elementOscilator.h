@@ -25,7 +25,9 @@ enum oscTypes{
 class elementOscilator{
 public:
     elementOscilator();
-    ~elementOscilator(){};
+    ~elementOscilator(){
+        delete parameters;
+    };
     
     void setup(int index = 0);
     

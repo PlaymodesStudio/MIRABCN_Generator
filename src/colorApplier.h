@@ -18,7 +18,9 @@ class colorApplier{
 public:
     
     colorApplier(int _id);
-    ~colorApplier(){};
+    ~colorApplier(){
+        delete parameters;
+    };
     
     
 private:

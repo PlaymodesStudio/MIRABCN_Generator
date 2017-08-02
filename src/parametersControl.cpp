@@ -27,7 +27,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     if(ofStringTimesInString(paramGroup->getName(), "phasor") != 0 && paramGroup->getFloat("BPM").getName() == "BPM" && datGui != nullptr)
         paramGroup->getFloat("BPM") = datGui->getSlider("Global BPM")->getValue();
     
-    shared_ptr<ofxDatGui> tempDatGui = make_shared<ofxDatGui>();
+    shared_ptr<ofxDatGui> tempDatGui = make_shared<ofxDatGui>(0,0);
 //    tempDatGui->setAutoDraw(false);
     
     tempDatGui->setTransformMatrix(transformMatrix);
@@ -93,6 +93,7 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     ofAddListener(paramGroup->parameterChangedE(), this, &parametersControl::listenerFunction);
     
     datGuis.push_back(tempDatGui);
+//    delete theme;
 }
 
 void parametersControl::setup(){
@@ -1570,52 +1571,54 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
 void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connection){
     ofAbstractParameter* source = connection->getSourceParameter();
     ofAbstractParameter* sink = connection->getSinkParameter();
-    if(source->type() == sink->type()){
-        if(source->type() == typeid(ofParameter<vector<float>>).name()){
-            vector<float> tempVec = source->cast<vector<float>>();
-            for (auto &pos : tempVec)
-                pos = ofMap(pos, 0, 1, connection->getMin(), connection->getMax());
-            sink->cast<vector<float>>() = tempVec;
-        }
-        else if(source->type() == typeid(ofParameter<vector<vector<float>>>).name()){
-            vector<vector<float>> tempVec = source->cast<vector<vector<float>>>();
-            for (auto &pos : tempVec){
-                for(auto &pos2 : pos)
-                    pos2 = ofMap(pos2, 0, 1, connection->getMin(), connection->getMax());
+    if(source != nullptr && sink != nullptr){
+        if(source->type() == sink->type()){
+            if(source->type() == typeid(ofParameter<vector<float>>).name()){
+                vector<float> tempVec = source->cast<vector<float>>();
+                for (auto &pos : tempVec)
+                    pos = ofMap(pos, 0, 1, connection->getMin(), connection->getMax());
+                sink->cast<vector<float>>() = tempVec;
             }
-            sink->cast<vector<vector<float>>>() = tempVec;
-        }
-        else if(source->type() == typeid(ofParameter<vector<int>>).name()){
-            vector<int> tempVec = source->cast<vector<int>>();
-            for (auto &pos : tempVec)
-                pos = ofMap(pos, 0, 1, connection->getMin(), connection->getMax());
-            sink->cast<vector<int>>() = tempVec;
-        }
-        else if(source->type() == typeid(ofParameter<vector<vector<int>>>).name()){
-            vector<vector<int>> tempVec = source->cast<vector<vector<int>>>();
-            for (auto &pos : tempVec){
-                for(auto &pos2 : pos)
-                    pos2 = ofMap(pos2, 0, 1, connection->getMin(), connection->getMax());
+            else if(source->type() == typeid(ofParameter<vector<vector<float>>>).name()){
+                vector<vector<float>> tempVec = source->cast<vector<vector<float>>>();
+                for (auto &pos : tempVec){
+                    for(auto &pos2 : pos)
+                        pos2 = ofMap(pos2, 0, 1, connection->getMin(), connection->getMax());
+                }
+                sink->cast<vector<vector<float>>>() = tempVec;
             }
-            sink->cast<vector<vector<int>>>() = tempVec;
-        }
-        else if(source->type() == typeid(ofParameter<vector<vector<ofColor>>>).name()){
-            vector<vector<ofColor>> tempVec = source->cast<vector<vector<ofColor>>>();
-            for (auto &pos : tempVec){
-                for(auto &pos2 : pos)
-                    pos2.setHue(ofMap(pos2.getHue(), 0, 1, connection->getMin(), connection->getMax()));
+            else if(source->type() == typeid(ofParameter<vector<int>>).name()){
+                vector<int> tempVec = source->cast<vector<int>>();
+                for (auto &pos : tempVec)
+                    pos = ofMap(pos, 0, 1, connection->getMin(), connection->getMax());
+                sink->cast<vector<int>>() = tempVec;
             }
-            sink->cast<vector<vector<ofColor>>>() = tempVec;
-        }
-    }else{
-        for(auto &connection : connections){
-            if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
-                connections.erase(remove(connections.begin(), connections.end(), connection));
-                break;
+            else if(source->type() == typeid(ofParameter<vector<vector<int>>>).name()){
+                vector<vector<int>> tempVec = source->cast<vector<vector<int>>>();
+                for (auto &pos : tempVec){
+                    for(auto &pos2 : pos)
+                        pos2 = ofMap(pos2, 0, 1, connection->getMin(), connection->getMax());
+                }
+                sink->cast<vector<vector<int>>>() = tempVec;
+            }
+            else if(source->type() == typeid(ofParameter<vector<vector<ofColor>>>).name()){
+                vector<vector<ofColor>> tempVec = source->cast<vector<vector<ofColor>>>();
+                for (auto &pos : tempVec){
+                    for(auto &pos2 : pos)
+                        pos2.setHue(ofMap(pos2.getHue(), 0, 1, connection->getMin(), connection->getMax()));
+                }
+                sink->cast<vector<vector<ofColor>>>() = tempVec;
+            }
+        }else{
+            for(auto &connection : connections){
+                if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
+                    connections.erase(remove(connections.begin(), connections.end(), connection));
+                    break;
+                }
             }
         }
     }
-        
+    
 }
 
 void parametersControl::destroyModuleAndConnections(int index){
@@ -1628,6 +1631,7 @@ void parametersControl::destroyModuleAndConnections(int index){
     }
     datGuis.erase(datGuis.begin()+index);
     string moduleName = parameterGroups[index]->getName();
+    ofRemoveListener(parameterGroups[index]->parameterChangedE(), this, &parametersControl::listenerFunction);
     ofNotifyEvent(destroyModule, moduleName, this);
     parameterGroups.erase(parameterGroups.begin()+index);
 }

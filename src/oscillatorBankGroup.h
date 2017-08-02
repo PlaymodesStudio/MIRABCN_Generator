@@ -14,7 +14,10 @@
 class oscillatorBankGroup{
 public:
     oscillatorBankGroup(int oscillatorBankSize, int numOfOscillatorBanks, int id = 1, ofPoint pos = ofPoint(-1, -1));
-    ~oscillatorBankGroup(){};
+    ~oscillatorBankGroup(){
+        for (auto i : oscillatorBanks) delete i;
+        delete parameters;
+    };
     
     
 private:

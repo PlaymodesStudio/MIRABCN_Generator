@@ -64,7 +64,7 @@ public:
     }
     
     void connectTo(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p){
-        gui = new ofxDatGui();
+        gui = new ofxDatGui(0, 0);
         gui->setVisible(false);
         gui->addLabel(bindedParameters[0]->getName() + " ==> " + p->getName());
         gui->addSlider(min)->setPrecision(1000);

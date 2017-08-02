@@ -14,7 +14,9 @@
 class delta{
 public:
     delta(int id_, ofPoint pos = ofPoint(-1, -1));
-    ~delta(){};
+    ~delta(){
+        delete parameters;
+    };
     
 private:
     void computeOutput(vector<float> &in);

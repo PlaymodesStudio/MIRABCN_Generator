@@ -61,6 +61,7 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
             }
         }
         oscSender->sendMessage(*messageGrayscale);
+        delete messageGrayscale;
     }
     if(grayscaleSyphonServer != NULL && enableSyphon){
         ofTexture tex;
@@ -71,6 +72,7 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
                     data[i+h*j] = info[j][i]*255*masterFader;
             }
             tex.loadData(data, h, w, GL_LUMINANCE);
+            delete [] data;
         }
         else{
             unsigned char *data = new unsigned char[w * h];
@@ -79,6 +81,7 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
                     data[i+w*j] = info[i][j]*255*masterFader;
             }
             tex.loadData(data, w, h, GL_LUMINANCE);
+            delete [] data;
         }
         grayscaleSyphonServer->publishTexture(&tex);
     }
@@ -99,6 +102,7 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
             }
         }
         oscSender->sendMessage(*messageColor);
+        delete messageColor;
     }
     if(colorSyphonServer != NULL && enableSyphon){
         ofTexture tex;
@@ -112,6 +116,7 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
                 }
             }
             tex.loadData(data, h, w, GL_RGB);
+            delete [] data;
         }else{
             unsigned char *data = new unsigned char[w * h*3];
             for(int i = 0 ; i < w ; i++){
@@ -122,6 +127,7 @@ void senderManager::sendColor(vector<vector<ofColor>> &info){
                 }
             }
             tex.loadData(data, w, h, GL_RGB);
+            delete [] data;
         }
         colorSyphonServer->publishTexture(&tex);
     }

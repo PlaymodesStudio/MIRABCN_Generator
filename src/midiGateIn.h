@@ -17,10 +17,12 @@ class midiGateIn : ofxMidiListener{
 public:
     midiGateIn(int _id, ofPoint pos = ofPoint(-1, -1));
     ~midiGateIn(){
+        ofRemoveListener(ofEvents().update, this, &midiGateIn::update);
         delete parameters;
     };
     
 private:
+    void update(ofEventArgs &e);
     void newMidiMessage(ofxMidiMessage& eventArgs);
     void midiDeviceListener(int &device);
     void noteRangeChanged(int &note);
@@ -35,6 +37,7 @@ private:
     
     ofxMidiIn   midiIn;
     vector<float>   outputStore;
+    ofMutex mutex;
 };
 
 #endif /* midiGateIn_h */
