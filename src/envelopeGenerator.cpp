@@ -43,15 +43,11 @@ envelopeGenerator::~envelopeGenerator(){
 }
 
 void envelopeGenerator::update(ofEventArgs &e){
-    if(mutex.try_lock()){
-        Tweenzor::update(ofGetElapsedTimeMillis());
-        mutex.unlock();
-    }
+    Tweenzor::update(ofGetElapsedTimeMillis());
 //    parameters->get("Output").cast<vector<float>>() = outputComputeVec;
 }
 
 void envelopeGenerator::gateInChanged(vector<float> &vf){
-    mutex.lock();
     if(outputComputeVec.size() != vf.size()){
         outputComputeVec.resize(vf.size(), 0);
     }else{
@@ -73,7 +69,6 @@ void envelopeGenerator::gateInChanged(vector<float> &vf){
         parameters->get("Output").cast<vector<float>>() = outputComputeVec;
     }
     }
-    mutex.unlock();
     oldGateIn = vf;
 }
 

@@ -38,8 +38,6 @@ private:
     
     vector<float>   oldGateIn;
     vector<float>   outputComputeVec;
-    
-    ofMutex mutex;
 };
 
 #endif /* envelopeGenerator_h */

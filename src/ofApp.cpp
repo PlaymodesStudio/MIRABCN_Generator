@@ -332,8 +332,8 @@ void ofApp::deleteModuleListener(string &moduleName){
         oscBankGroups[id-1] = nullptr;
     }
     else if(moduleName == "envelopeGenerator"){
-//        delete envelopeGens[id-1];
-//        envelopeGens[id-1] = nullptr;
+        delete envelopeGens[id-1];
+        envelopeGens[id-1] = nullptr;
     }
     else if(moduleName == "midiGateIn"){
         delete midiGateIns[id-1];

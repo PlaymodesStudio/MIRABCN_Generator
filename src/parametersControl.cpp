@@ -870,7 +870,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             ofStringReplace(noSpaces, " ", "_");
                             
                             //get the value of that parameter if it's not bpm, we don't want to lose sync
-                            if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master"))
+                            if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master") && castedParam.getName() != "Output" && castedParam.getName() != "Phasor Monitor")
                                 castedParam = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                         }
                         else if(absParam.type() == typeid(ofParameter<int>).name()){
