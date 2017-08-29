@@ -14,7 +14,7 @@ audioEngineController::audioEngineController(){
     parameters->setName("audioControls");
     parameters->add(oscHost.set("Osc Host", "localhost"));
     parameters->add(oscPort.set("Osc Port", "11511"));
-    parameters->add(presetNum.set("Preset Num", 0, 0, 40));
+    parameters->add(presetNum.set("Preset Num", 0, 0, 100));
     parameters->add(param_a.set("Param a", 0, 0, 1));
     parameters->add(param_b.set("Param b", 0, 0, 1));
     parameters->add(param_c.set("Param c", 0, 0, 1));

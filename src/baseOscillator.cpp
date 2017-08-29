@@ -115,7 +115,7 @@ void baseOscillator::computeFunc(float &phasor){
         }
         case rand1Osc:
         {
-            if(phasor < oldPhasor)
+            if(linPhase < oldPhasor)
                 val = ofRandom(1);
             else
                 val = oldValuePreMod;
@@ -124,13 +124,13 @@ void baseOscillator::computeFunc(float &phasor){
         }
         case rand2Osc:
         {
-            if(phasor < oldPhasor){
+            if(linPhase < oldPhasor){
                 pastRandom = newRandom;
                 newRandom = ofRandom(1);
                 val = pastRandom;
             }
             else
-                val = pastRandom*(1-phasor) + newRandom*phasor;
+                val = pastRandom*(1-linPhase) + newRandom*linPhase;
             
             break;
         }
@@ -142,7 +142,7 @@ void baseOscillator::computeFunc(float &phasor){
     
     computeMultiplyMod(&val);
     
-    oldPhasor = phasor;
+    oldPhasor = linPhase;
     
     parameters->getFloat("Output") = val;
     pair<int, float> toSend;
