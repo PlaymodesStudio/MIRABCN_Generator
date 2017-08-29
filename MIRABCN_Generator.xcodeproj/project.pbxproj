@@ -57,6 +57,7 @@
 		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
 		9FBCE1851F2F88B900E7E5B1 /* mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */; };
 		9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */; };
+		9FD8862D1F5588310025EC69 /* chartresTextureUnifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */; };
 		A0F842B90C48CC33F069DFDE /* masterControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93873127F6C0FCF3F7EDFBB1 /* masterControl.cpp */; };
 		ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD194746185E2DA11468377 /* IpEndpointName.cpp */; };
 		B436E3388D17A3AA80557209 /* midiGateIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 382A46E8952EBD382834A5A4 /* midiGateIn.cpp */; };
@@ -216,6 +217,8 @@
 		9FBCE1841F2F88B900E7E5B1 /* mapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mapper.h; sourceTree = "<group>"; };
 		9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorMapper.cpp; sourceTree = "<group>"; };
 		9FBCE1871F2F923B00E7E5B1 /* vectorMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorMapper.h; sourceTree = "<group>"; };
+		9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chartresTextureUnifier.cpp; sourceTree = "<group>"; };
+		9FD8862C1F5588310025EC69 /* chartresTextureUnifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chartresTextureUnifier.h; sourceTree = "<group>"; };
 		A081004F20B3CFAB927EEEED /* bpmControl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = bpmControl.cpp; path = src/bpmControl.cpp; sourceTree = SOURCE_ROOT; };
 		A13853A1B21F20177F44EE37 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui_PM/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
 		A2AAA8CA403479E6FCDF920E /* OscHostEndianness.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscHostEndianness.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscHostEndianness.h; sourceTree = SOURCE_ROOT; };
@@ -735,6 +738,8 @@
 				9F89C7111F1924A0008EB023 /* delta.h */,
 				9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */,
 				9F5D44981F28BA8000D1D841 /* audioEngineController.h */,
+				9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */,
+				9FD8862C1F5588310025EC69 /* chartresTextureUnifier.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -954,6 +959,7 @@
 				9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,
 				5864AD82E20F15536D054EA3 /* ofxOscMessage.cpp in Sources */,
+				9FD8862D1F5588310025EC69 /* chartresTextureUnifier.cpp in Sources */,
 				4ADB88E2FB52E76A471065DE /* ofxOscParameterSync.cpp in Sources */,
 				640279EE111671BD026CB013 /* ofxOscReceiver.cpp in Sources */,
 				8F5205AEF8861EF234F0651A /* ofxOscSender.cpp in Sources */,

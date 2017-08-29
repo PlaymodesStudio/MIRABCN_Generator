@@ -1,15 +1,21 @@
 <CONFIGFILE>
   <GeneratorConfig>
-    <Name>CrossingLines</Name>
-    <Width>32</Width>
-    <Height>144</Height>
+    <Name>CHARTRES</Name>
+    <BankGroupsNum>3</BankGroupsNum>
+    <BankGroup1Width>8</BankGroup1Width>
+    <BankGroup1Height>288</BankGroup1Height>
+    <BankGroup2Width>6</BankGroup2Width>
+    <BankGroup2Height>1008</BankGroup2Height>
+    <BankGroup3Width>2</BankGroup3Width>
+    <BankGroup3Height>8</BankGroup3Height>
     <BPMSync>0</BPMSync>
     <BPM>112.5</BPM>
     <FrameRate>60</FrameRate>
+    <AudioControls>false</AudioControls>
     <Color>3</Color>
-    <GroupScopes>1</GroupScopes>
-    <GroupColorScopes>1</GroupColorScopes>
-    <BankScopes>5</BankScopes>
+    <GroupScopes>3</GroupScopes>
+    <GroupColorScopes>6</GroupColorScopes>
+    <BankScopes>6</BankScopes>
     <SyphonSenders>2</SyphonSenders>
     <SyphonSender1GrayName>Main_gray</SyphonSender1GrayName>
     <SyphonSender1ColorName>Main</SyphonSender1ColorName>
@@ -18,8 +24,8 @@
     <SyphonSender2ColorName>Preview</SyphonSender2ColorName>
     <SyphonSender2InvertTexture>1</SyphonSender2InvertTexture>
     <MainWindowPos>0_0</MainWindowPos>
-    <MainWindowSize>2269_1390</MainWindowSize>
-    <PrevWindowPos>2260_45</PrevWindowPos>
-    <PrevWindowSize>300_1000</PrevWindowSize>
+    <MainWindowSize>2905_1750</MainWindowSize>
+    <PrevWindowPos>2899_45</PrevWindowPos>
+    <PrevWindowSize>300_1750</PrevWindowSize>
 	</GeneratorConfig>
 </CONFIGFILE>

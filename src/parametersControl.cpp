@@ -847,7 +847,7 @@ void parametersControl::loadPreset(string presetName, string bank){
         }
         
         //if we have to destroy the module we do it
-        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "typeConverter" && moduleName != "audioControls" && moduleName != "colorApplier"){
+        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "typeConverter" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier"){
             destroyModuleAndConnections(i);
         }
         else{
@@ -1368,7 +1368,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         for(int i = 0; i<datGuis.size(); i++){
             string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
             if(datGuis[i]->hitTest(e)
-               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier" && moduleName != "typeConverter" && moduleName != "audioControls"){
+               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier" && moduleName != "typeConverter" && moduleName != "audioControls" && moduleName != "chartresTextureUnifier"){
                 destroyModuleAndConnections(i);
             }
         }

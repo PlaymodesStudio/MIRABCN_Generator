@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "chartresTextureUnifier.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -35,8 +36,13 @@ void ofApp::setup(){
         if(xml.exists("GeneratorConfig")){
             xml.setTo("GeneratorConfig");
             string name = xml.getValue("Name");
-            width = xml.getIntValue("Width");
-            height = xml.getIntValue("Height");
+            
+            int numBankGroups = xml.getIntValue("BankGroupsNum");
+            for(int i = 0 ; i < numBankGroups; i++){
+                int groupWidth = xml.getIntValue("BankGroup" + ofToString(i+1) + "Width");
+                int groupHeight = xml.getIntValue("BankGroup" + ofToString(i+1) + "Height");
+                oscBankGroups.push_back(new oscillatorBankGroup(groupHeight, groupWidth, oscBankGroups.size()+1));
+            }
             
             float bpm = xml.getFloatValue("BPM");
             if(bpm == 0) bpm = 120;
@@ -46,7 +52,7 @@ void ofApp::setup(){
             int previewColorSize = xml.getIntValue("GroupColorScopes");
             int previewBankSize = xml.getIntValue("BankScopes");
             
-            ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
+            ofSetWindowTitle(name);
             
             for(int i = 0 ; i < hasColorApplier ; i++)
                 colorModules.push_back(new colorApplier(i+1));
@@ -78,12 +84,12 @@ void ofApp::setup(){
             if(prevSize.size() == 2){
                 prevWinRect.setSize(ofToInt(prevSize[0]), ofToInt(prevSize[1]));
             }
-            
-            audioControl = new audioEngineController();
+            if(xml.getBoolValue("AudioControls"))
+                audioControl = new audioEngineController();
             
             
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize);
-            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
+//            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
@@ -93,7 +99,7 @@ void ofApp::setup(){
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
-    
+    new chartresTextureUnifier();
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
@@ -149,13 +155,13 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < oscillatorBanks.size() && !foundNullElementInVector) ; i++){
                 if(oscillatorBanks[i] == nullptr){
-                    int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators? Width is " + ofToString(width) + ", height is " + ofToString(height)));
+                    int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
                     oscillatorBanks[i] = new oscillatorBank(nOscillators, true, i+1, info.second);
                     foundNullElementInVector = true;
                 }
             }
             if(!foundNullElementInVector){
-                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators? Width is " + ofToString(width) + ", height is " + ofToString(height)));
+                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators"));
                 oscillatorBanks.push_back(new oscillatorBank(nOscillators, true, oscillatorBanks.size()+1, info.second));
             }
         }
@@ -170,23 +176,23 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
     }
     
     else if(moduleTypeName == "oscillatorGroup"){
-        if(moduleName.size() < 2){
-            bool foundNullElementInVector = false;
-            for (int i = 0; (i < oscBankGroups.size() && !foundNullElementInVector) ; i++){
-                if(oscBankGroups[i] == nullptr){
-                    oscBankGroups[i] = new oscillatorBankGroup(height, width, i+1, info.second);
-                    foundNullElementInVector = true;
-                }
-            }
-            if(!foundNullElementInVector)
-                oscBankGroups.push_back(new oscillatorBankGroup(height, width, oscBankGroups.size()+1, info.second));
-        }
-        else{
-            int id = ofToInt(moduleName[1]);
-            while(oscBankGroups.size() <= id-1)
-                oscBankGroups.push_back(nullptr);
-            oscBankGroups[id-1] = new oscillatorBankGroup(height, width, id, info.second);
-        }
+//        if(moduleName.size() < 2){
+//            bool foundNullElementInVector = false;
+//            for (int i = 0; (i < oscBankGroups.size() && !foundNullElementInVector) ; i++){
+//                if(oscBankGroups[i] == nullptr){
+//                    oscBankGroups[i] = new oscillatorBankGroup(height, width, i+1, info.second);
+//                    foundNullElementInVector = true;
+//                }
+//            }
+//            if(!foundNullElementInVector)
+//                oscBankGroups.push_back(new oscillatorBankGroup(height, width, oscBankGroups.size()+1, info.second));
+//        }
+//        else{
+//            int id = ofToInt(moduleName[1]);
+//            while(oscBankGroups.size() <= id-1)
+//                oscBankGroups.push_back(nullptr);
+//            oscBankGroups[id-1] = new oscillatorBankGroup(height, width, id, info.second);
+//        }
     }
     
     else if(moduleTypeName == "envelopeGenerator"){
