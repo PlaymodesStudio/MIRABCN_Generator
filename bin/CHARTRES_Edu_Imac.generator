@@ -1,0 +1,25 @@
+<CONFIGFILE>
+  <GeneratorConfig>
+    <Name>CrossingLines</Name>
+    <Width>32</Width>
+    <Height>144</Height>
+    <BPMSync>0</BPMSync>
+    <BPM>112.5</BPM>
+    <FrameRate>60</FrameRate>
+    <Color>3</Color>
+    <GroupScopes>1</GroupScopes>
+    <GroupColorScopes>1</GroupColorScopes>
+    <BankScopes>5</BankScopes>
+    <SyphonSenders>2</SyphonSenders>
+    <SyphonSender1GrayName>Main_gray</SyphonSender1GrayName>
+    <SyphonSender1ColorName>Main</SyphonSender1ColorName>
+    <SyphonSender1InvertTexture>1</SyphonSender1InvertTexture>
+    <SyphonSender2GrayName>Preview_gray</SyphonSender2GrayName>
+    <SyphonSender2ColorName>Preview</SyphonSender2ColorName>
+    <SyphonSender2InvertTexture>1</SyphonSender2InvertTexture>
+    <MainWindowPos>0_0</MainWindowPos>
+    <MainWindowSize>2269_1390</MainWindowSize>
+    <PrevWindowPos>2260_45</PrevWindowPos>
+    <PrevWindowSize>300_1000</PrevWindowSize>
+	</GeneratorConfig>
+</CONFIGFILE>

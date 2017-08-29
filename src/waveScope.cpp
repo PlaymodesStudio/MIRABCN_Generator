@@ -8,21 +8,35 @@
 
 #include "waveScope.h"
 
-waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, bool color, int numBankScopes, ofPoint pos){
+waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes, int colorScopes, int bankScopes, ofPoint pos){
     logBuffer = logBuffer_;
-    hasColor = color;
-    oscillatorBankIns.resize(numBankScopes);
+    hasColor = colorScopes != 0;
+    groupBankIn.resize(groupScopes);
+    colorGroupIn.resize(colorScopes);
+    oscillatorBankIns.resize(bankScopes);
+    
+    activeGroupInCounter.resize(groupScopes, 0);
+    activeColorInCounter.resize(colorScopes, 0);
+    activeOscInCounter.resize(bankScopes, 0);
     
     parameters = new ofParameterGroup();
     parameters->setName("waveScope");
-    parameters->add(mainOutIn.set("Master Scope", {{0}}));
-    if(color){
-        parameters->add(gradientPreview.set("Color Scope", {{ofColor::black}}));
-        parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
+    for(int i = 0; i < groupScopes; i++){
+        parameters->add(groupBankIn[i].set("Group In " + ofToString(i), {{}}));
     }
-    for(int i = 0; i < numBankScopes ; i++)
+    for(int i = 0; i < colorScopes; i++){
+        parameters->add(colorGroupIn[i].set("Color Group In " + ofToString(i), {{}}));
+    }
+//    parameters->add(mainOutIn.set("Master Scope", {{0}}));
+//    if(color){
+//        parameters->add(gradientPreview.set("Color Scope", {{ofColor::black}}));
+//        parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
+//    }
+    for(int i = 0; i < bankScopes ; i++)
         parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {}));
     parameters->add(drawOnSeparateWindow.set("Separate Window", false));
+    
+    ofAddListener(parameters->parameterChangedE(), this, &waveScope::inputListener);
 
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
     
@@ -39,98 +53,115 @@ void waveScope::draw(){
     ofSetColor(255);
 //
     int contentWidth = 2*ofGetWidth()/3 + contentWidthOffset;
-//
-    int masterHeight = 2*ofGetHeight()/3;
 
-    int w = mainOutIn.get().size();
-    int h = mainOutIn.get()[0].size();
     
-    ofTexture tex;
-    tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-    unsigned char *data = new unsigned char[w * h];
-    for(int i = 0 ; i < w ; i++){
-        for ( int j = 0; j < h ; j++)
-            data[i+w*j] = mainOutIn.get()[i][j]*255;
-    }
-    tex.loadData(data, w, h, GL_LUMINANCE);
-    delete[] data;
-    tex.draw(0,0,contentWidth, hasColor ? masterHeight/3 : masterHeight);
-    ofPushStyle();
-    ofSetColor(ofColor::indianRed);
-    ofNoFill();
-    ofSetLineWidth(2);
-    ofDrawRectangle(0, 0, contentWidth, hasColor ? masterHeight/3 : masterHeight);
-    ofPopStyle();
-
-    if(hasColor){
-        w = gradientPreview.get().size();
-        h = gradientPreview.get()[0].size();
-        ofTexture tex2;
-        tex2.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-        unsigned char *colordata = new unsigned char[w * h*3];
-        for(int i = 0 ; i < w ; i++){
-            for ( int j = 0; j < h ; j++){
-                colordata[(i*3)+w*3*j] = gradientPreview.get()[i][j].r;
-                colordata[(i*3)+(w*3*j)+1] = gradientPreview.get()[i][j].g;
-                colordata[(i*3)+(w*3*j)+2] = gradientPreview.get()[i][j].b;
-            }
+    int numActiveGroups = 0;
+    for(auto &in : activeGroupInCounter){
+        if(in > 0){
+            numActiveGroups++;
+            in = in-1;
         }
-        tex2.loadData(colordata, w, h, GL_RGB);
-        delete[] colordata;
-        tex2.draw(0, masterHeight/3, contentWidth, masterHeight/3);
-        ofPushStyle();
-        ofSetColor(ofColor::indianRed);
-        ofNoFill();
-        ofSetLineWidth(2);
-        ofDrawRectangle(0, masterHeight/3, contentWidth, masterHeight/3);
-        ofPopStyle();
-        
-        
-        w = colorTexture.get().size();
-        h = colorTexture.get()[0].size();
-        ofTexture tex3;
-        tex3.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-        unsigned char *color2data = new unsigned char[w * h*3];
-        for(int i = 0 ; i < w ; i++){
-            for ( int j = 0; j < h ; j++){
-                color2data[(i*3)+w*3*j] = colorTexture.get()[i][j].r;
-                color2data[(i*3)+(w*3*j)+1] = colorTexture.get()[i][j].g;
-                color2data[(i*3)+(w*3*j)+2] = colorTexture.get()[i][j].b;
-            }
-        }
-        tex3.loadData(color2data, w, h, GL_RGB);
-        delete[] color2data;
-        tex3.draw(0, 2*masterHeight/3, contentWidth, masterHeight/3);
-        ofPushStyle();
-        ofSetColor(ofColor::indianRed);
-        ofNoFill();
-        ofSetLineWidth(2);
-        ofDrawRectangle(0, 2*masterHeight/3, contentWidth, masterHeight/3);
-        ofPopStyle();
     }
     
+    int numActiveColors = 0;
+    for(auto &in : activeColorInCounter){
+        if(in > 0){
+            numActiveColors++;
+            in = in-1;
+        }
+    }
     
-
     int numActiveOscBanks = 0;
-    for(auto in : oscillatorBankIns)
-        if(in.get().size() > 0) numActiveOscBanks++;
-    
-    //Draw the Bars
-    if(numActiveOscBanks > 0){
-        int elementHeight = (ofGetHeight() - masterHeight) / numActiveOscBanks;
-        for(int i = 0; i < numActiveOscBanks; i++){
-            int topPosition = masterHeight + (elementHeight * i);
-            int numBars = oscillatorBankIns[i].get().size();
-            float wid = (float)contentWidth/numBars;
-            for(int j = 0; j < numBars; j++)
-                ofDrawRectangle((j*wid), (1-oscillatorBankIns[i].get()[j])*elementHeight+topPosition, wid, oscillatorBankIns[i].get()[j]*elementHeight);
-            ofPushStyle();
-            ofSetColor(ofColor::indianRed);
-            ofNoFill();
-            ofSetLineWidth(2);
-            ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
-            ofPopStyle();
+    for(auto &in : activeOscInCounter){
+        if(in > 0){
+            numActiveOscBanks++;
+            in = in-1;
         }
+    }
+    
+    int totalActiveScopes = numActiveGroups + numActiveColors + numActiveOscBanks;
+    if(totalActiveScopes > 0){
+        int elementHeight = ofGetHeight() / totalActiveScopes;
+        int oscDrawIndex = 0;
+        
+        //Draw the groups
+        for(int i = 0; i < groupBankIn.size(); i++){
+            if(activeGroupInCounter[i] > 0){
+                int w = groupBankIn[i].get().size();
+                int h = groupBankIn[i].get()[0].size();
+                
+                ofTexture tex;
+                tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+                unsigned char *data = new unsigned char[w * h];
+                for(int ii = 0 ; ii < w ; ii++){
+                    for ( int jj = 0; jj < h ; jj++)
+                        data[ii+w*jj] = groupBankIn[i].get()[ii][jj]*255;
+                }
+                tex.loadData(data, w, h, GL_LUMINANCE);
+                delete[] data;
+                
+                int topPosition = (elementHeight * oscDrawIndex);
+                tex.draw(0,topPosition, contentWidth, elementHeight);
+                ofPushStyle();
+                ofSetColor(ofColor::indianRed);
+                ofNoFill();
+                ofSetLineWidth(2);
+                ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
+                ofPopStyle();
+                oscDrawIndex++;
+            }
+        }
+        
+        //Draw the Color Groups
+        for(int i = 0; i < colorGroupIn.size(); i++){
+            if(activeColorInCounter[i] > 0){
+                int w = colorGroupIn[i].get().size();
+                int h = colorGroupIn[i].get()[0].size();
+                
+                ofTexture tex;
+                tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+                unsigned char *data = new unsigned char[w * h * 3];
+                for(int ii = 0 ; ii < w ; ii++){
+                    for ( int jj = 0; jj < h ; jj++){
+                        data[(ii*3)+w*3*jj] = colorGroupIn[i].get()[ii][jj].r;
+                        data[(ii*3)+(w*3*jj)+1] = colorGroupIn[i].get()[ii][jj].g;
+                        data[(ii*3)+(w*3*jj)+2] = colorGroupIn[i].get()[ii][jj].b;
+                    }
+                }
+                tex.loadData(data, w, h, GL_RGB);
+                delete[] data;
+                
+                int topPosition = (elementHeight * oscDrawIndex);
+                tex.draw(0,topPosition, contentWidth, elementHeight);
+                ofPushStyle();
+                ofSetColor(ofColor::indianRed);
+                ofNoFill();
+                ofSetLineWidth(2);
+                ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
+                ofPopStyle();
+                oscDrawIndex++;
+            }
+        }
+        
+        //Draw the Bars
+        for(int i = 0; i < oscillatorBankIns.size(); i++){
+            if(activeOscInCounter[i] > 0){
+                int topPosition = (elementHeight * oscDrawIndex);
+                int numBars = oscillatorBankIns[i].get().size();
+                float wid = (float)contentWidth/numBars;
+                for(int j = 0; j < numBars; j++)
+                    ofDrawRectangle((j*wid), (1-oscillatorBankIns[i].get()[j])*elementHeight+topPosition, wid, oscillatorBankIns[i].get()[j]*elementHeight);
+                ofPushStyle();
+                ofSetColor(ofColor::indianRed);
+                ofNoFill();
+                ofSetLineWidth(2);
+                ofDrawRectangle(0, topPosition, contentWidth, elementHeight);
+                ofPopStyle();
+                oscDrawIndex++;
+            }
+        }
+        
+        
     }
     
     
@@ -152,6 +183,25 @@ void waveScope::draw(){
     //Draw the framerate
     ofSetColor(255, 0,0);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 20, ofGetHeight()-10);
+}
+
+
+void waveScope::inputListener(ofAbstractParameter &abs){
+    for(int i = 0; i < groupBankIn.size() ; i++){
+        if(abs.getName() == groupBankIn[i].getName()){
+            activeGroupInCounter[i] = 20;
+        }
+    }
+    for(int i = 0; i < colorGroupIn.size() ; i++){
+        if(abs.getName() == colorGroupIn[i].getName()){
+            activeColorInCounter[i] = 20;
+        }
+    }
+    for(int i = 0; i < oscillatorBankIns.size() ; i++){
+        if(abs.getName() == oscillatorBankIns[i].getName()){
+            activeOscInCounter[i] = 20;
+        }
+    }
 }
 
 

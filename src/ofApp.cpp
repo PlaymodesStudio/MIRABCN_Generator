@@ -43,6 +43,7 @@ void ofApp::setup(){
             
             hasColorApplier = xml.getIntValue("Color");
             int previewGroupSize = xml.getIntValue("GroupScopes");
+            int previewColorSize = xml.getIntValue("GroupColorScopes");
             int previewBankSize = xml.getIntValue("BankScopes");
             
             ofSetWindowTitle(name + " " + ofToString(width)+ "x" + ofToString(height));
@@ -81,7 +82,7 @@ void ofApp::setup(){
             audioControl = new audioEngineController();
             
             
-            preview = new waveScope(logBuffer, hasColorApplier, previewBankSize);
+            preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize);
             converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
