@@ -16,9 +16,9 @@
     <SyphonSender2GrayName>Elans_gray</SyphonSender2GrayName>
     <SyphonSender2ColorName>Elans</SyphonSender2ColorName>
     <SyphonSender2InvertTexture>1</SyphonSender2InvertTexture>
-    <MainWindowPos></MainWindowPos>
-    <MainWindowSize></MainWindowSize>
-    <PrevWindowPos></PrevWindowPos>
-    <PrevWindowSize></PrevWindowSize>
+    <MainWindowPos>-2_-2</MainWindowPos>
+    <MainWindowSize>2748_1750</MainWindowSize>
+    <PrevWindowPos>2747_45</PrevWindowPos>
+    <PrevWindowSize>430_1000</PrevWindowSize>
 	</GeneratorConfig>
 </CONFIGFILE>
