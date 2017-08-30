@@ -23,7 +23,7 @@ private:
     
     
     ofParameter<float>  manualInput;
-    vector<float>       buffer;
+    deque<float>       buffer;
     vector<vector<float>>   auxiliaryBuffers;
     int                 bufferIndex;
     ofParameter<float>  phasorIn;
