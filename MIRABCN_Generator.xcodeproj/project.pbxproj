@@ -58,6 +58,7 @@
 		9FBCE1851F2F88B900E7E5B1 /* mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */; };
 		9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */; };
 		9FD8862D1F5588310025EC69 /* chartresTextureUnifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */; };
+		9FDF67501F56A94400AD1A04 /* manualOscillatorBank.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF674E1F56A94400AD1A04 /* manualOscillatorBank.cpp */; };
 		A0F842B90C48CC33F069DFDE /* masterControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93873127F6C0FCF3F7EDFBB1 /* masterControl.cpp */; };
 		ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADD194746185E2DA11468377 /* IpEndpointName.cpp */; };
 		B436E3388D17A3AA80557209 /* midiGateIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 382A46E8952EBD382834A5A4 /* midiGateIn.cpp */; };
@@ -219,6 +220,8 @@
 		9FBCE1871F2F923B00E7E5B1 /* vectorMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorMapper.h; sourceTree = "<group>"; };
 		9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chartresTextureUnifier.cpp; sourceTree = "<group>"; };
 		9FD8862C1F5588310025EC69 /* chartresTextureUnifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chartresTextureUnifier.h; sourceTree = "<group>"; };
+		9FDF674E1F56A94400AD1A04 /* manualOscillatorBank.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = manualOscillatorBank.cpp; sourceTree = "<group>"; };
+		9FDF674F1F56A94400AD1A04 /* manualOscillatorBank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manualOscillatorBank.h; sourceTree = "<group>"; };
 		A081004F20B3CFAB927EEEED /* bpmControl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = bpmControl.cpp; path = src/bpmControl.cpp; sourceTree = SOURCE_ROOT; };
 		A13853A1B21F20177F44EE37 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui_PM/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
 		A2AAA8CA403479E6FCDF920E /* OscHostEndianness.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscHostEndianness.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscHostEndianness.h; sourceTree = SOURCE_ROOT; };
@@ -740,6 +743,8 @@
 				9F5D44981F28BA8000D1D841 /* audioEngineController.h */,
 				9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */,
 				9FD8862C1F5588310025EC69 /* chartresTextureUnifier.h */,
+				9FDF674E1F56A94400AD1A04 /* manualOscillatorBank.cpp */,
+				9FDF674F1F56A94400AD1A04 /* manualOscillatorBank.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -934,6 +939,7 @@
 				99713A77173E6C750326219F /* parametersControl.cpp in Sources */,
 				6B27E4ED726F82D792E518DB /* phasorClass.cpp in Sources */,
 				9F89C7121F1924A0008EB023 /* delta.cpp in Sources */,
+				9FDF67501F56A94400AD1A04 /* manualOscillatorBank.cpp in Sources */,
 				80C2077E2DE4E2436EE84D82 /* senderManager.cpp in Sources */,
 				C14328667B29F16B6626D88B /* typeConverter.cpp in Sources */,
 				8E3135847B3FB438E44CFCA0 /* waveScope.cpp in Sources */,

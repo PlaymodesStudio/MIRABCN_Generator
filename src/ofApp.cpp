@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include "chartresTextureUnifier.h"
+#include "manualOscillatorBank.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -100,6 +101,7 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
     new chartresTextureUnifier();
+    new manualOscillatorBank(300);
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
