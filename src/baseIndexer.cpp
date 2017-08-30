@@ -92,7 +92,7 @@ void baseIndexer::recomputeIndexs(){
         int shifted_i = i + round(indexOffset_Param);
         if(shifted_i < 0) shifted_i += indexCount;
         shifted_i %= indexCount;
-        indexs[shifted_i] = (((float)index/(float)newNumOfPixels))*numWaves_Param;
+        indexs[shifted_i] = (((float)index/(float)indexCount))*numWaves_Param;
     }
     newIndexs();
 }

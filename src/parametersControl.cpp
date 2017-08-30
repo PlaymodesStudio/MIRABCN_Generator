@@ -238,7 +238,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -702,7 +702,7 @@ void parametersControl::savePreset(string presetName, string bank){
         //if(moduleName == "phasor" || moduleName == "oscillator" || moduleName == "oscillatorBank"){
         xml.addValue("module_" + ofToString(i) + "_name", parameterGroups[i]->getName());
         ofPoint modulePosition = datGuis[i]->getPosition();
-        if(moduleName == "oscillatorBank")
+        if(moduleName == "oscillatorBank" || moduleName == "manualOscillatorBank")
             modulePosition.z = parameterGroups[i]->getInt("Index Modulo").getMax();
         xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
@@ -836,7 +836,7 @@ void parametersControl::loadPreset(string presetName, string bank){
             hasToBeDestroyed = true;
             for(auto module : modulesToCreate){
                 if(groupParam->getName() == module.first){
-                    if(moduleName != "oscillatorBank" || groupParam->getInt("Index Modulo").getMax() == module.second.z){
+                    if((moduleName != "oscillatorBank" && moduleName != "manualOscillatorBank") || groupParam->getInt("Index Modulo").getMax() == module.second.z){
                         datGuis[i]->setPosition(module.second.x, module.second.y);
                         modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
                         hasToBeDestroyed = false;
@@ -1235,7 +1235,7 @@ void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();

@@ -1,6 +1,5 @@
 #include "ofApp.h"
 #include "chartresTextureUnifier.h"
-#include "manualOscillatorBank.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -101,7 +100,6 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
     new chartresTextureUnifier();
-    new manualOscillatorBank(300);
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
@@ -163,7 +161,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 }
             }
             if(!foundNullElementInVector){
-                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators"));
+                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
                 oscillatorBanks.push_back(new oscillatorBank(nOscillators, true, oscillatorBanks.size()+1, info.second));
             }
         }
@@ -313,6 +311,30 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             vecMappers[id-1] = new vectorMapper(id, info.second);
         }
     }
+    else if(moduleTypeName == "manualOscillatorBank"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < manualOscBanks.size() && !foundNullElementInVector) ; i++){
+                if(manualOscBanks[i] == nullptr){
+                    int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
+                    manualOscBanks[i] = new manualOscillatorBank(nOscillators, i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector){
+                int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
+                manualOscBanks.push_back(new manualOscillatorBank(nOscillators, manualOscBanks.size()+1, info.second));
+            }
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(manualOscBanks.size() <= id-1)
+                manualOscBanks.push_back(nullptr);
+            int nOscillators = info.second.z;
+            info.second.z = 0;
+            manualOscBanks[id-1] = new manualOscillatorBank(nOscillators, id, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -363,6 +385,10 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "vectorMapper"){
         delete vecMappers[id-1];
         vecMappers[id-1] = nullptr;
+    }
+    else if(moduleName == "manualOscillatorBank"){
+        delete manualOscBanks[id-1];
+        manualOscBanks[id-1] = nullptr;
     }
 }
 

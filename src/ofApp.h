@@ -22,6 +22,7 @@
 #include "audioEngineController.h"
 #include "mapper.h"
 #include "vectorMapper.h"
+#include "manualOscillatorBank.h"
 
 
 static const int WIDTH = 0;
@@ -82,6 +83,7 @@ private:
     vector<midiGateIn*> midiGateIns;
     vector<mapper*> mappers;
     vector<vectorMapper*> vecMappers;
+    vector<manualOscillatorBank*>   manualOscBanks;
 //    Wave2DControl   waveControl;
     audioEngineController*      audioControl;
     parametersControl*          paramsControl;

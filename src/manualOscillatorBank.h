@@ -13,7 +13,7 @@
 
 class manualOscillatorBank: public baseIndexer{
 public:
-    manualOscillatorBank(int nOscillators);
+    manualOscillatorBank(int nOscillators, int _bankId = 0, ofPoint pos = ofPoint(-1, -1));
     ~manualOscillatorBank(){};
     
     

@@ -9,8 +9,9 @@
 #include "manualOscillatorBank.h"
 #include "parametersControl.h"
 
-manualOscillatorBank::manualOscillatorBank(int nOscillators) : baseIndexer(nOscillators){
+manualOscillatorBank::manualOscillatorBank(int nOscillators, int _bankId, ofPoint pos) : baseIndexer(nOscillators){
     
+    parameters->setName("manualOscillatorBank " + ofToString(_bankId));
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     parameters->add(manualInput.set("Manual In", 0, 0, 1));
     parameters->add(delay.set("Delay", 0, 0, 1000));
@@ -19,7 +20,7 @@ manualOscillatorBank::manualOscillatorBank(int nOscillators) : baseIndexer(nOsci
     phasorIn.addListener(this, &manualOscillatorBank::computeValues);
     manualInput.addListener(this, &manualOscillatorBank::manualInputChanged);
     
-    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::blueSteel);
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::blueSteel, pos);
 
     bufferIndex = 0;
     oldPhasor = 0;
@@ -38,7 +39,7 @@ void manualOscillatorBank::computeValues(float &f){
 //    if(oldPhasor > f) bufferIndex = 0;
     
 //    if(bufferIndex >= buffer.size()){
-    buffer.push_back(manualInput);
+    buffer.push_front(manualInput);
 //    }else{
 //        buffer[bufferIndex] = manualInput;
 //    }
@@ -47,16 +48,16 @@ void manualOscillatorBank::computeValues(float &f){
     vector<float>   tempOut;
     tempOut.resize(indexs.size(), 0);
     
-    int lastIndex = 0;
+    int maxIndex = 0;
     for(int i = 0; i < indexs.size(); i++){
         int newBuffIndex = int(indexs[i]*delay*indexs.size());
         if(newBuffIndex < buffer.size()){
             tempOut[i] = buffer[newBuffIndex];
         }
-        lastIndex = max(newBuffIndex, lastIndex);
+        maxIndex = max(newBuffIndex, maxIndex);
     }
-    while(buffer.size() > lastIndex){
-        buffer.pop_front();
+    while(buffer.size() > maxIndex){
+        buffer.pop_back();
     }
     
     parameters->get("Output").cast<vector<float>>() = tempOut;
