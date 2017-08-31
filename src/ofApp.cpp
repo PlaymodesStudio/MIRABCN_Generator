@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include "chartresTextureUnifier.h"
+#include "dataRecorder.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -46,6 +47,9 @@ void ofApp::setup(){
             
             float bpm = xml.getFloatValue("BPM");
             if(bpm == 0) bpm = 120;
+            
+            int frameRate = xml.getIntValue("FrameRate");
+            ofSetFrameRate(frameRate);
             
             hasColorApplier = xml.getIntValue("Color");
             int previewGroupSize = xml.getIntValue("GroupScopes");
@@ -100,6 +104,7 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
     new chartresTextureUnifier();
+    new dataRecorder();
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
