@@ -24,6 +24,7 @@ manualOscillatorBank::manualOscillatorBank(int nOscillators, int _bankId, ofPoin
 
     bufferIndex = 0;
     oldPhasor = 0;
+    bufferOverflow = 0;
 }
 
 void manualOscillatorBank::manualInputChanged(float &f){
@@ -35,30 +36,31 @@ void manualOscillatorBank::manualInputChanged(float &f){
 }
 
 void manualOscillatorBank::computeValues(float &f){
-//    bufferIndex++;
-//    if(oldPhasor > f) bufferIndex = 0;
-    
-//    if(bufferIndex >= buffer.size()){
-    buffer.push_front(manualInput);
-//    }else{
-//        buffer[bufferIndex] = manualInput;
-//    }
-    
+    if(oldPhasor > f) bufferOverflow++;
     oldPhasor = f;
+    
+    indexedBuffer.push_front(make_pair(f+bufferOverflow, manualInput));
+    
     vector<float>   tempOut;
     tempOut.resize(indexs.size(), 0);
     
     int maxIndex = 0;
     for(int i = 0; i < indexs.size(); i++){
-        int newBuffIndex = int(indexs[i]*delay*indexs.size());
-        if(newBuffIndex < buffer.size()){
-            tempOut[i] = buffer[newBuffIndex];
+        float newBuffIndex = f+bufferOverflow - float(indexs[i]*delay);
+        for(int j = 1; j < indexedBuffer.size(); j++){
+            if(signbit(indexedBuffer[j-1].first - newBuffIndex) != signbit(indexedBuffer[j].first - newBuffIndex)){
+                tempOut[i] = (indexedBuffer[j-1].second + indexedBuffer[j].second)*0.5;
+                j = indexedBuffer.size();
+            }
         }
-        maxIndex = max(newBuffIndex, maxIndex);
+//        if(newBuffIndex < buffer.size()){
+//            tempOut[i] = buffer[newBuffIndex];
+//        }
+//        maxIndex = max(newBuffIndex, maxIndex);
     }
-    while(buffer.size() > maxIndex){
-        buffer.pop_back();
-    }
+//    while(buffer.size() > maxIndex){
+//        buffer.pop_back();
+//    }
     
     parameters->get("Output").cast<vector<float>>() = tempOut;
 }

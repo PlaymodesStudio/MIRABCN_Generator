@@ -23,9 +23,10 @@ private:
     
     
     ofParameter<float>  manualInput;
-    deque<float>       buffer;
-    vector<vector<float>>   auxiliaryBuffers;
-    int                 bufferIndex;
+    deque<float>        buffer;
+    deque<pair<float, float>>    indexedBuffer;
+    int bufferOverflow;
+    float               bufferIndex;
     ofParameter<float>  phasorIn;
     float               oldPhasor;
     ofParameter<int>    delay;
