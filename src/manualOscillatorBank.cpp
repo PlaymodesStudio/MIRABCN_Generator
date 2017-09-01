@@ -14,7 +14,8 @@ manualOscillatorBank::manualOscillatorBank(int nOscillators, int _bankId, ofPoin
     parameters->setName("manualOscillatorBank " + ofToString(_bankId));
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     parameters->add(manualInput.set("Manual In", 0, 0, 1));
-    parameters->add(delay.set("Delay", 0, 0, 1000));
+    parameters->add(damping.set("Damping", 0, 0, 1));
+    parameters->add(dampingPow.set("Damping Pow", 0, -40, 40));
     parameters->add(output.set("Output", {}));
     
     phasorIn.addListener(this, &manualOscillatorBank::computeValues);
@@ -44,23 +45,40 @@ void manualOscillatorBank::computeValues(float &f){
     vector<float>   tempOut;
     tempOut.resize(indexs.size(), 0);
     
-    int maxIndex = 0;
+    int minBufferOverflow = 1000;
     for(int i = 0; i < indexs.size(); i++){
-        float newBuffIndex = f+bufferOverflow - float(indexs[i]*delay);
+        float newBuffIndex = f+bufferOverflow - float(indexs[i]);
         for(int j = 1; j < indexedBuffer.size(); j++){
             if(signbit(indexedBuffer[j-1].first - newBuffIndex) != signbit(indexedBuffer[j].first - newBuffIndex)){
-                tempOut[i] = (indexedBuffer[j-1].second + indexedBuffer[j].second)*0.5;
+                //Average tempOut[i] = (indexedBuffer[j-1].second + indexedBuffer[j].second)*0.5;
+                
+                if (abs(indexedBuffer[j-1].first - newBuffIndex) <= abs(indexedBuffer[j].first - newBuffIndex)) {
+                    tempOut[i] = indexedBuffer[j-1].second;
+                }else{
+                    tempOut[i] = indexedBuffer[j].second;
+                }
+                    
+                //Damping
+                if(dampingPow < 0){
+                    tempOut[i] *= pow((1-(indexs[i]*damping)), 1/(float)(-dampingPow + 1));
+                }else{
+                    tempOut[i] *= pow((1-(indexs[i]*damping)), (dampingPow + 1));
+                }
                 j = indexedBuffer.size();
             }
         }
-//        if(newBuffIndex < buffer.size()){
-//            tempOut[i] = buffer[newBuffIndex];
-//        }
-//        maxIndex = max(newBuffIndex, maxIndex);
+
+        minBufferOverflow = min((int)newBuffIndex, minBufferOverflow);
     }
-//    while(buffer.size() > maxIndex){
-//        buffer.pop_back();
-//    }
+    if((int)indexedBuffer.back().first < minBufferOverflow){
+        bufferOverflow--;
+        while((int)indexedBuffer.back().first < minBufferOverflow){
+            indexedBuffer.pop_back();
+        }
+        for(auto &bufPos : indexedBuffer){
+            bufPos.first -= 1;
+        }
+    }
     
     parameters->get("Output").cast<vector<float>>() = tempOut;
 }

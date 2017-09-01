@@ -29,7 +29,8 @@ private:
     float               bufferIndex;
     ofParameter<float>  phasorIn;
     float               oldPhasor;
-    ofParameter<int>    delay;
+    ofParameter<float>  damping;
+    ofParameter<float>  dampingPow;
     ofParameter<vector<float>>  output;
 };
 

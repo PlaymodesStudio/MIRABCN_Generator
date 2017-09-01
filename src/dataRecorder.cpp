@@ -32,9 +32,10 @@ dataRecorder::dataRecorder(){
 void dataRecorder::phasorInListener(float &f){
     if(autoRecLoop){
         if(f < oldPhasor){
-            record = !record;
+            parameters->getBool("Record") = !record;
         }
     }
+    oldPhasor = f;
 }
 
 void dataRecorder::inputListener(vector<vector<ofColor> > &info){
@@ -66,7 +67,7 @@ void dataRecorder::inputListener(vector<vector<ofColor> > &info){
             img.setFromPixels(data, w, h, OF_IMAGE_COLOR);
             delete [] data;
         }
-        img.save(filename.get() + "_" + ofToString(frameCounter, 4, '0') + ".png");
+        img.save("recordings/" + filename.get() + "/" + filename.get() + "_" + ofToString(frameCounter, 4, '0') + ".png");
         frameCounter++;
     }
     
