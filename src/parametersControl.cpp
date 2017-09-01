@@ -650,10 +650,12 @@ void parametersControl::loadMidiMapping(){
     while(xml.exists("MidiFloat_" + ofToString(i))){
         xml.setTo("MidiFloat_" + ofToString(i));
         for(auto &paramGroup : parameterGroups){
-            if(paramGroup->getName() == xml.getValue("SourceGroup"))
+            if(paramGroup->getName() == xml.getValue("SourceGroup")){
                 midiFloatConnections.push_back(midiConnection<float>(&paramGroup->getFloat(xml.getValue("SourceName"))));
+                midiFloatConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+            }
         }
-        midiFloatConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+//        midiFloatConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
         xml.setToParent();
         i++;
     }
