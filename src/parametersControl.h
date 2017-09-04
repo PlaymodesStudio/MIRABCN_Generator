@@ -153,7 +153,7 @@ public:
                 if(pos != ofPoint(-1, -1));
                    gui->setPosition(pos.x, pos.y);
             }else{
-                path.setStrokeWidth(1);
+                path.setStrokeWidth(2);
                 path.setStrokeColor(ofColor::white);
                 gui->setVisible(false);
             }
