@@ -245,8 +245,8 @@ public:
     
     void changePresetLabelHighliht(ofxDatGuiButton* presetToHighlight);
     
-    void saveMidiMapping();
-    void loadMidiMapping();
+    void saveMidiMapping(string presetName, string bank);
+    void loadMidiMapping(string presetName, string bank);
     
     void saveGuiArrangement();
     void loadGuiArrangement();

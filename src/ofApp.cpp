@@ -33,6 +33,7 @@ void ofApp::setup(){
     bpmControl::getInstance().setup();
     
     ofXml xml;
+    bool configured = false;
     if(xml.load(result.getPath())){
         if(xml.exists("GeneratorConfig")){
             xml.setTo("GeneratorConfig");
@@ -97,8 +98,12 @@ void ofApp::setup(){
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
+            
+            configured = true;
         }
     }
+    
+    if(!configured) ofExit();
     
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
@@ -417,7 +422,6 @@ void ofApp::draw(){
 void ofApp::exit(){
     if(paramsControl != nullptr){
         paramsControl->saveGuiArrangement();
-        paramsControl->saveMidiMapping();
     }
     
     ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");

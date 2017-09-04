@@ -216,9 +216,6 @@ void parametersControl::setup(){
         midiIn.back().addListener(this);
     }
     
-    loadMidiMapping();
-
-    
     
     autoPreset = false;
     
@@ -566,7 +563,7 @@ bool parametersControl::loadPresetsSequence(){
     return true;
 }
 
-void parametersControl::saveMidiMapping(){
+void parametersControl::saveMidiMapping(string presetName, string bank){
     ofXml xml2;
     xml2.clear();
     
@@ -621,12 +618,16 @@ void parametersControl::saveMidiMapping(){
         xml2.setToParent();
     }
     
-    xml2.save("MidiMapping.xml");
+    xml2.save("Presets/" + bank + "/.midi/" + presetName + "_midimap.xml");
 }
 
-void parametersControl::loadMidiMapping(){
+void parametersControl::loadMidiMapping(string presetName, string bank){
+    midiIntConnections.clear();
+    midiFloatConnections.clear();
+    midiBoolConnections.clear();
+    
     //Test if there is no problem with the file
-    if(!xml.load("MidiMapping.xml"))
+    if(!xml.load("Presets/" + bank + "/.midi/" + presetName + "_midimap.xml"))
         return;
     
     int i = 0;
@@ -672,8 +673,6 @@ void parametersControl::loadMidiMapping(){
         xml.setToParent();
         i++;
     }
-    
-    ofLog()<<"Load Midi Mapping";
 }
 
 void parametersControl::savePreset(string presetName, string bank){
@@ -788,6 +787,8 @@ void parametersControl::savePreset(string presetName, string bank){
     
     ofLog() <<"Save " << presetName;
     xml.save("Presets/" + bank + "/" + presetName + ".xml");
+    
+    saveMidiMapping(presetName, bank);
     
     ofxOscMessage m;
     m.setAddress("presetSave");
@@ -993,6 +994,7 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     
     ofLog()<<"Load " << presetName;
+    loadMidiMapping(presetName, bank);
     
     ofxOscMessage m;
     m.setAddress("presetLoad");
@@ -1125,10 +1127,10 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     if(parameter.type() == typeid(ofParameter<float>).name()){
                         bool erasedConnection = false;
                         if(ofGetKeyPressed(OF_KEY_SHIFT)){
-                            for(int i = 0 ; i < midiFloatConnections.size(); i++){
+                            for(int j = 0 ; j < midiFloatConnections.size(); j++){
                                 if(midiFloatConnections[i].getParameter() == &parameter){
                                     erasedConnection = true;
-                                    midiFloatConnections.erase(midiFloatConnections.begin()+i);
+                                    midiFloatConnections.erase(midiFloatConnections.begin()+j);
                                     return;
                                 }
                             }
@@ -1139,11 +1141,11 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     else if(parameter.type() == typeid(ofParameter<int>).name()){
                         bool erasedConnection = false;
                         if(ofGetKeyPressed(OF_KEY_SHIFT)){
-                            for(int i = 0 ; i < midiIntConnections.size(
-                                ); i++){
-                                if(midiIntConnections[i].getParameter() == &parameter){
+                            for(int j = 0 ; j < midiIntConnections.size(
+                                ); j++){
+                                if(midiIntConnections[j].getParameter() == &parameter){
                                     erasedConnection = true;
-                                    midiIntConnections.erase(midiIntConnections.begin()+i);
+                                    midiIntConnections.erase(midiIntConnections.begin()+j);
                                     return;
                                 }
                             }
@@ -1154,10 +1156,10 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     else if(parameter.type() == typeid(ofParameter<bool>).name()){
                         bool erasedConnection = false;
                         if(ofGetKeyPressed(OF_KEY_SHIFT)){
-                            for(int i = 0 ; i < midiBoolConnections.size(); i++){
-                                if(midiBoolConnections[i].getParameter() == &parameter){
+                            for(int j = 0 ; j < midiBoolConnections.size(); j++){
+                                if(midiBoolConnections[j].getParameter() == &parameter){
                                     erasedConnection = true;
-                                    midiBoolConnections.erase(midiBoolConnections.begin()+i);
+                                    midiBoolConnections.erase(midiBoolConnections.begin()+j);
                                     return;
                                 }
                             }

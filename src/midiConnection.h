@@ -28,6 +28,7 @@ public:
         midiListenMode = false;
         if(ofGetKeyPressed(OF_KEY_COMMAND))
             toggle = true;
+        *bindedParameter = *bindedParameter;
     }
     
     int sendValue(){

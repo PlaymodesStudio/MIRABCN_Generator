@@ -65,8 +65,8 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
         }
         for(int i = 0 ; i < w ; i++){
             for (int j = 0 ; j < h ; j++){
-                tempColors[i][j] =  ofColor::white * inputVec[i][j];
-                tempGradient[i][j] = ofColor::white;
+                tempColors[i][j] =  colorPickerParam[0].get() * inputVec[i][j];
+                tempGradient[i][j] = colorPickerParam[0].get();
             }
         }
         parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
