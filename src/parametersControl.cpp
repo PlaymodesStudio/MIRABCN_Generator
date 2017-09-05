@@ -374,11 +374,13 @@ void parametersControl::draw(ofEventArgs &args){
     ofSetLineWidth(2);
     for(auto connection : connections){
         ofPath path = connection->getPath();
-        if(connection->getParentGuis(1)->getHeader()->getName() == "waveScope"){
-            path.setColor(ofColor(50,50,50));
+        if(connection->closedLine){
+            if(connection->getParentGuis(1)->getHeader()->getName() == "waveScope"){
+                path.setColor(ofColor(50,50,50));
+            }
+            if(connection->getMin() != 0 || connection->getMax() != 1)
+                path.setColor(ofColor::navajoWhite);
         }
-        if(connection->getMin() != 0 || connection->getMax() != 1)
-            path.setColor(ofColor::navajoWhite);
         path.draw();
     }
     ofPopStyle();

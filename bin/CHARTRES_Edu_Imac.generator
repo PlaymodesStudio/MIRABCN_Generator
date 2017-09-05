@@ -10,7 +10,7 @@
     <BankGroup3Height>8</BankGroup3Height>
     <BPMSync>0</BPMSync>
     <BPM>112.5</BPM>
-    <FrameRate>60</FrameRate>
+    <FrameRate>30</FrameRate>
     <AudioControls>false</AudioControls>
     <Color>3</Color>
     <GroupScopes>3</GroupScopes>
@@ -18,14 +18,14 @@
     <BankScopes>6</BankScopes>
     <SyphonSenders>2</SyphonSenders>
     <SyphonSender1GrayName>Main_gray</SyphonSender1GrayName>
-    <SyphonSender1ColorName>Main</SyphonSender1ColorName>
+    <SyphonSender1ColorName>CHARTRES_LINES</SyphonSender1ColorName>
     <SyphonSender1InvertTexture>1</SyphonSender1InvertTexture>
     <SyphonSender2GrayName>Preview_gray</SyphonSender2GrayName>
     <SyphonSender2ColorName>Preview</SyphonSender2ColorName>
     <SyphonSender2InvertTexture>1</SyphonSender2InvertTexture>
     <MainWindowPos>0_0</MainWindowPos>
-    <MainWindowSize>2905_1750</MainWindowSize>
-    <PrevWindowPos>2899_45</PrevWindowPos>
+    <MainWindowSize>2899_1751</MainWindowSize>
+    <PrevWindowPos>2900_45</PrevWindowPos>
     <PrevWindowSize>300_1750</PrevWindowSize>
 	</GeneratorConfig>
 </CONFIGFILE>
