@@ -12,6 +12,20 @@
 #include "ofMain.h"
 #include "parametersControl.h"
 
+
+//#define CONVERT_FLOAT_TO_VECFLOAT = 1;
+//#define CONVERT_VECFLOAT_TO_VECVECFLOAT = 2;
+//#define CONVERT_VECFLOAT_TO_FLOAT = 3;
+//#define CONVERT_VECVECFLOAT_TO_VECFLOAT = 4;
+
+enum converterTypes{
+    CONVERT_FLOAT_TO_VECFLOAT = 1,
+    CONVERT_VECFLOAT_TO_VECVECFLOAT = 2,
+    CONVERT_VECFLOAT_TO_FLOAT = 3,
+    CONVERT_VECVECFLOAT_TO_VECFLOAT = 4
+};
+
+
 class genericTypeConverter{
 public:
     genericTypeConverter(){};
@@ -30,10 +44,10 @@ public:
             sourceTypeName += "float";
         }
         else if(typeid(Tsource).name() == typeid(vector<float>).name()){
-            sourceTypeName += "vector float";
+            sourceTypeName += "vector<float>";
         }
         else if(typeid(Tsource).name() == typeid(vector<vector<float>>).name()){
-            sourceTypeName += "vector vector float";
+            sourceTypeName += "vector<vector<float>>";
         }
         else{
             sourceTypeName += "unknown";
@@ -44,17 +58,23 @@ public:
             destTypeName += "float";
         }
         else if(typeid(Tdest).name() == typeid(vector<float>).name()){
-            destTypeName += "vector float";
+            destTypeName += "vector<float>";
         }
         else if(typeid(Tdest).name() == typeid(vector<vector<float>>).name()){
-            destTypeName += "vector vector float";
+            destTypeName += "vector<vector<float>>";
         }
         else{
             destTypeName += "unknown";
         }
         
+        int type = 0;
+        if(sourceTypeName == "float" && destTypeName == "vector<float>") type = 1;
+        else if(sourceTypeName == "vector<float>" && destTypeName == "vector<vector<float>>") type = 2;
+        else if(sourceTypeName == "vector<float>" && destTypeName == "float") type = 3;
+        else if(sourceTypeName == "vector<vector<float>>" && destTypeName == "vector<float>") type = 4;
+        
         ofParameter<string> label;
-        parameters->add(label.set(sourceTypeName + " to " + destTypeName + "_label", ""));
+        parameters->add(label.set(ofToString(type) + ". " + sourceTypeName + " to " + destTypeName + "_label", ""));
         parameters->add(source.set("Source", Tsource()));
         parameters->add(dest.set("Dest", Tdest()));
         
@@ -64,20 +84,9 @@ public:
     };
     ~typeConverter(){};
     
-private:
+protected:
     void sourceListener(Tsource &s){
-//        if(typeid(Tsource).name() == typeid(typename Tdest::value_type).name()){
-//            Tdest toSend = {source};
-//            parameters->get(destTypeName).template cast<Tdest>() = toSend;
-//        }else if(typeid(typename Tsource::value_type).name() == typeid(Tdest).name()){
-//            Tdest toSend = source.get()[0];
-//            parameters->get(destTypeName).template cast<Tdest>() = toSend;
-//        }
-        if(typeid(Tsource).name() == typeid(vector<float>).name() && typeid(Tdest).name() == typeid(vector<vector<float>>).name()){
-            vector<vector<float>> toSend = {source};
-            parameters->get("Dest").cast<Tdest>() = toSend;
-        }
-    }
+    };
     
     ofParameterGroup*    parameters;
     ofParameter<Tsource>    source;
@@ -86,6 +95,7 @@ private:
     string sourceTypeName;
     string destTypeName;
 };
+
 
 
 #endif /* typeConverter_h */

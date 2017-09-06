@@ -345,6 +345,76 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             manualOscBanks[id-1] = new manualOscillatorBank(nOscillators, id, info.second);
         }
     }
+    else if(moduleTypeName == "typeConverter"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < converters.size() && !foundNullElementInVector) ; i++){
+                if(converters[i] == nullptr){
+                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type:"));
+                    switch(static_cast<converterTypes>(type)){
+                        case CONVERT_FLOAT_TO_VECFLOAT:
+                            converters[i] = new typeConverter<float, vector<float>>(i+1, info.second);
+                            break;
+                        case CONVERT_VECFLOAT_TO_FLOAT:
+                            converters[i] = new typeConverter<vector<float>, float>(i+1, info.second);
+                            break;
+                        case CONVERT_VECFLOAT_TO_VECVECFLOAT:
+                            converters[i] = new typeConverter<vector<float>, vector<vector<float>>>(i+1, info.second);
+                            break;
+                        case CONVERT_VECVECFLOAT_TO_VECFLOAT:
+                            converters[i] = new typeConverter<vector<vector<float>>, vector<float>>(i+1, info.second);
+                            break;
+                        default:
+                            break;
+                            
+                    }
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector){
+                int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float>"));
+                switch(static_cast<converterTypes>(type)){
+                    case CONVERT_FLOAT_TO_VECFLOAT:
+                        converters.push_back(new typeConverter<float, vector<float>>(converters.size()+1, info.second));
+                        break;
+                    case CONVERT_VECFLOAT_TO_FLOAT:
+                        converters.push_back(new typeConverter<vector<float>, float>(converters.size()+1, info.second));
+                        break;
+                    case CONVERT_VECFLOAT_TO_VECVECFLOAT:
+                        converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(converters.size()+1, info.second));
+                        break;
+                    case CONVERT_VECVECFLOAT_TO_VECFLOAT:
+                        converters.push_back(new typeConverter<vector<vector<float>>, vector<float>>(converters.size()+1, info.second));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(converters.size() <= id-1)
+                converters.push_back(nullptr);
+            int type = info.second.z;
+            info.second.z = 0;
+            switch(static_cast<converterTypes>(type)){
+                case CONVERT_FLOAT_TO_VECFLOAT:
+                    converters.push_back(new typeConverter<float, vector<float>>(id, info.second));
+                    break;
+                case CONVERT_VECFLOAT_TO_FLOAT:
+                    converters.push_back(new typeConverter<vector<float>, float>(id, info.second));
+                    break;
+                case CONVERT_VECFLOAT_TO_VECVECFLOAT:
+                    converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(id, info.second));
+                    break;
+                case CONVERT_VECVECFLOAT_TO_VECFLOAT:
+                    converters.push_back(new typeConverter<vector<vector<float>>, vector<float>>(id, info.second));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -399,6 +469,10 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "manualOscillatorBank"){
         delete manualOscBanks[id-1];
         manualOscBanks[id-1] = nullptr;
+    }
+    else if(moduleName == "typeConverter"){
+        delete converters[id-1];
+        converters[id-1] = nullptr;
     }
 }
 

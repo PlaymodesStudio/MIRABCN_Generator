@@ -235,7 +235,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -710,6 +710,9 @@ void parametersControl::savePreset(string presetName, string bank){
         ofPoint modulePosition = datGuis[i]->getPosition();
         if(moduleName == "oscillatorBank" || moduleName == "manualOscillatorBank")
             modulePosition.z = parameterGroups[i]->getInt("Index Modulo").getMax();
+        if(moduleName == "typeConverter"){
+            modulePosition.z = ofToInt(ofSplitString(parameterGroups[i]->getName(0), " ")[0]);
+        }
         xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
     }
@@ -754,10 +757,12 @@ void parametersControl::savePreset(string presetName, string bank){
                     xml.addValue(noSpaces, castedParam.get());
                 }
                 else if(absParam.type() == typeid(ofParameter<string>).name()){
-                    ofParameter<string> castedParam = absParam.cast<string>();
-                    string noSpaces = castedParam.getName();
-                    ofStringReplace(noSpaces, " ", "_");
-                    xml.addValue(noSpaces, castedParam.get());
+                    if(ofSplitString(absParam.getName(), "_").back() != "label"){
+                        ofParameter<string> castedParam = absParam.cast<string>();
+                        string noSpaces = castedParam.getName();
+                        ofStringReplace(noSpaces, " ", "_");
+                        xml.addValue(noSpaces, castedParam.get());
+                    }
                 }
                 else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
                     ofParameter<ofColor> castedParam = absParam.cast<ofColor>();
@@ -855,7 +860,7 @@ void parametersControl::loadPreset(string presetName, string bank){
         }
         
         //if we have to destroy the module we do it
-        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "typeConverter" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup" && moduleName != "dataRecorder"){
+        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup" && moduleName != "dataRecorder"){
             destroyModuleAndConnections(i);
         }
         else{
@@ -1244,7 +1249,7 @@ void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();
@@ -1377,7 +1382,7 @@ void parametersControl::mousePressed(ofMouseEventArgs &e){
         for(int i = 0; i<datGuis.size(); i++){
             string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
             if(datGuis[i]->hitTest(e)
-               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier" && moduleName != "typeConverter" && moduleName != "audioControls" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup"){
+               && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "colorApplier" && moduleName != "audioControls" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup"){
                 destroyModuleAndConnections(i);
             }
         }
