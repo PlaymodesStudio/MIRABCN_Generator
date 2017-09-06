@@ -25,6 +25,7 @@
 #include "manualOscillatorBank.h"
 #include "vectorGetter.h"
 #include "vectorChain.h"
+#include "oscInput.h"
 
 
 static const int WIDTH = 0;

@@ -108,8 +108,9 @@ void ofApp::setup(){
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
     soundStream.setup(this, 0, 2, 44100, 512, 4);
     
-    new chartresTextureUnifier();
-    new dataRecorder();
+    new oscInput(1);
+//    new chartresTextureUnifier();
+//    new dataRecorder();
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
