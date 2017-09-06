@@ -350,7 +350,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < converters.size() && !foundNullElementInVector) ; i++){
                 if(converters[i] == nullptr){
-                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type:"));
+                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float>"));
                     switch(static_cast<converterTypes>(type)){
                         case CONVERT_FLOAT_TO_VECFLOAT:
                             converters[i] = new typeConverter<float, vector<float>>(i+1, info.second);
@@ -415,6 +415,26 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             }
         }
     }
+    else if(moduleTypeName == "vectorGetter"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < vectorGetters.size() && !foundNullElementInVector) ; i++){
+                if(vectorGetters[i] == nullptr){
+                    vectorGetters[i] = new vectorGetter(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                vectorGetters.push_back(new vectorGetter(vectorGetters.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(vectorGetters.size() <= id-1)
+                vectorGetters.push_back(nullptr);
+            vectorGetters[id-1] = new vectorGetter(id, info.second);
+        }
+    }
+
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -473,6 +493,10 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "typeConverter"){
         delete converters[id-1];
         converters[id-1] = nullptr;
+    }
+    else if(moduleName == "vectorGetter"){
+        delete vectorGetters[id-1];
+        vectorGetters[id-1] = nullptr;
     }
 }
 

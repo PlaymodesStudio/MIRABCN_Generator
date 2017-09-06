@@ -52,6 +52,7 @@
 		99F9413A08923B8F81AC69ED /* bufferLoggerChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D54B0D218CD6FA617A7BD18 /* bufferLoggerChannel.cpp */; };
 		9BD777923C7E370A961526AC /* envelopeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4655B54F461ED6D3FD64F179 /* envelopeGenerator.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
+		9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */; };
 		9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */; };
 		9F89C70E1F191D8A008EB023 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F89C70D1F191D8A008EB023 /* aubio.framework */; };
 		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
@@ -209,6 +210,8 @@
 		9BF3AA0D4FAA89D0F8A0E545 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = OscReceivedElements.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscReceivedElements.cpp; sourceTree = SOURCE_ROOT; };
 		9D2C29B96659EBB7A0C5672F /* ofxAubioPitch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAubioPitch.h; path = ../../../addons/ofxAubio/src/ofxAubioPitch.h; sourceTree = SOURCE_ROOT; };
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
+		9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorGetter.cpp; sourceTree = "<group>"; };
+		9F30E37E1F60210F00F2ABAC /* vectorGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorGetter.h; sourceTree = "<group>"; };
 		9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioEngineController.cpp; sourceTree = "<group>"; };
 		9F5D44981F28BA8000D1D841 /* audioEngineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioEngineController.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
@@ -750,6 +753,8 @@
 				9FD8862C1F5588310025EC69 /* chartresTextureUnifier.h */,
 				9FDF674E1F56A94400AD1A04 /* manualOscillatorBank.cpp */,
 				9FDF674F1F56A94400AD1A04 /* manualOscillatorBank.h */,
+				9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */,
+				9F30E37E1F60210F00F2ABAC /* vectorGetter.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -949,6 +954,7 @@
 				80C2077E2DE4E2436EE84D82 /* senderManager.cpp in Sources */,
 				C14328667B29F16B6626D88B /* typeConverter.cpp in Sources */,
 				8E3135847B3FB438E44CFCA0 /* waveScope.cpp in Sources */,
+				9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */,
 				479DCA850DD8BB469A777AD4 /* ofxAubioBeat.cpp in Sources */,
 				C60077973A257D8F44947E2E /* ofxAubioBlock.cpp in Sources */,
 				67383740F5CC47ED5F955A76 /* ofxAubioMelBands.cpp in Sources */,
