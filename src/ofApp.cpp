@@ -327,13 +327,15 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             for (int i = 0; (i < manualOscBanks.size() && !foundNullElementInVector) ; i++){
                 if(manualOscBanks[i] == nullptr){
                     int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
-                    manualOscBanks[i] = new manualOscillatorBank(nOscillators, i+1, info.second);
+                    if(nOscillators > 0)
+                        manualOscBanks[i] = new manualOscillatorBank(nOscillators, i+1, info.second);
                     foundNullElementInVector = true;
                 }
             }
             if(!foundNullElementInVector){
                 int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
-                manualOscBanks.push_back(new manualOscillatorBank(nOscillators, manualOscBanks.size()+1, info.second));
+                if(nOscillators > 0)
+                    manualOscBanks.push_back(new manualOscillatorBank(nOscillators, manualOscBanks.size()+1, info.second));
             }
         }
         else{
@@ -342,7 +344,8 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 manualOscBanks.push_back(nullptr);
             int nOscillators = info.second.z;
             info.second.z = 0;
-            manualOscBanks[id-1] = new manualOscillatorBank(nOscillators, id, info.second);
+            if(nOscillators > 0)
+                manualOscBanks[id-1] = new manualOscillatorBank(nOscillators, id, info.second);
         }
     }
     else if(moduleTypeName == "typeConverter"){
@@ -434,6 +437,33 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             vectorGetters[id-1] = new vectorGetter(id, info.second);
         }
     }
+    else if(moduleTypeName == "vectorChain"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < vectorChains.size() && !foundNullElementInVector) ; i++){
+                if(vectorChains[i] == nullptr){
+                    int nInputs = ofToInt(ofSystemTextBoxDialog("How many Inputs?"));
+                    if(nInputs > 0)
+                        vectorChains[i] = new vectorChain(nInputs, i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector){
+                int nInputs = ofToInt(ofSystemTextBoxDialog("How many Inputs?"));
+                if(nInputs > 0)
+                    vectorChains.push_back(new vectorChain(nInputs, vectorChains.size()+1, info.second));
+            }
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(vectorChains.size() <= id-1)
+                vectorChains.push_back(nullptr);
+            int nInputs = info.second.z;
+            info.second.z = 0;
+            if(nInputs > 0)
+                vectorChains[id-1] = new vectorChain(nInputs, id, info.second);
+        }
+    }
 
 }
 
@@ -497,6 +527,10 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "vectorGetter"){
         delete vectorGetters[id-1];
         vectorGetters[id-1] = nullptr;
+    }
+    else if(moduleName == "vectorChain"){
+        delete vectorChains[id-1];
+        vectorChains[id-1] = nullptr;
     }
 }
 

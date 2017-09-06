@@ -53,6 +53,7 @@
 		9BD777923C7E370A961526AC /* envelopeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4655B54F461ED6D3FD64F179 /* envelopeGenerator.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
 		9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */; };
+		9F30E3821F60270D00F2ABAC /* vectorChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E3801F60270D00F2ABAC /* vectorChain.cpp */; };
 		9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */; };
 		9F89C70E1F191D8A008EB023 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F89C70D1F191D8A008EB023 /* aubio.framework */; };
 		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
@@ -212,6 +213,8 @@
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
 		9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorGetter.cpp; sourceTree = "<group>"; };
 		9F30E37E1F60210F00F2ABAC /* vectorGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorGetter.h; sourceTree = "<group>"; };
+		9F30E3801F60270D00F2ABAC /* vectorChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorChain.cpp; sourceTree = "<group>"; };
+		9F30E3811F60270D00F2ABAC /* vectorChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorChain.h; sourceTree = "<group>"; };
 		9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioEngineController.cpp; sourceTree = "<group>"; };
 		9F5D44981F28BA8000D1D841 /* audioEngineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioEngineController.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
@@ -755,6 +758,8 @@
 				9FDF674F1F56A94400AD1A04 /* manualOscillatorBank.h */,
 				9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */,
 				9F30E37E1F60210F00F2ABAC /* vectorGetter.h */,
+				9F30E3801F60270D00F2ABAC /* vectorChain.cpp */,
+				9F30E3811F60270D00F2ABAC /* vectorChain.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -938,6 +943,7 @@
 				056127A65BC11487F78B4F2B /* baseOscillator.cpp in Sources */,
 				8EEB7B47DAB773397BA707AD /* bpmControl.cpp in Sources */,
 				99F9413A08923B8F81AC69ED /* bufferLoggerChannel.cpp in Sources */,
+				9F30E3821F60270D00F2ABAC /* vectorChain.cpp in Sources */,
 				1B9F9695C79C723D1C54DA16 /* colorApplier.cpp in Sources */,
 				1654BF82222C68AE9D2387B7 /* elementOscilator.cpp in Sources */,
 				9BD777923C7E370A961526AC /* envelopeGenerator.cpp in Sources */,

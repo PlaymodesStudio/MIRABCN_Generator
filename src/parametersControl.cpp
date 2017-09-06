@@ -235,7 +235,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -710,8 +710,13 @@ void parametersControl::savePreset(string presetName, string bank){
         ofPoint modulePosition = datGuis[i]->getPosition();
         if(moduleName == "oscillatorBank" || moduleName == "manualOscillatorBank")
             modulePosition.z = parameterGroups[i]->getInt("Index Modulo").getMax();
-        if(moduleName == "typeConverter"){
+        else if(moduleName == "typeConverter"){
             modulePosition.z = ofToInt(ofSplitString(parameterGroups[i]->getName(0), " ")[0]);
+        }
+        else if(moduleName == "vectorChain"){
+            modulePosition.z = 0;
+            while(datGuis[i]->getLabel("Input "+ofToString((int)modulePosition.z))->getName() != "X")
+                modulePosition.z += 1;
         }
         xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
@@ -1249,7 +1254,7 @@ void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();
