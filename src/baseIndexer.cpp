@@ -56,6 +56,8 @@ void baseIndexer::recomputeIndexs(){
             symmetry_Param--;
         
         bool odd = false;
+        if((abs(indexOffset_Param) - (int)abs(indexOffset_Param)) > 0.5) odd = !odd;
+        
         if((int)((index)/(newNumOfPixels/(symmetry_Param+1)))%2 == 1 ) odd = true;
         
         
