@@ -14,7 +14,7 @@
 
 class oscInput{
 public:
-    oscInput(int id, ofPoint pos = ofPoint(-1, -1));
+    oscInput();
     ~oscInput(){};
     
 private:

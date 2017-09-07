@@ -865,7 +865,7 @@ void parametersControl::loadPreset(string presetName, string bank){
         }
         
         //if we have to destroy the module we do it
-        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup" && moduleName != "dataRecorder"){
+        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup" && moduleName != "dataRecorder" && moduleName != "audioAnalyzer" && moduleName != "oscInput"){
             destroyModuleAndConnections(i);
         }
         else{

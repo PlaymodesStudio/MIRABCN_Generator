@@ -26,6 +26,7 @@
 #include "vectorGetter.h"
 #include "vectorChain.h"
 #include "oscInput.h"
+#include "audioAnalyzer.h"
 
 
 static const int WIDTH = 0;
@@ -94,6 +95,7 @@ private:
     parametersControl*          paramsControl;
     senderManager*              senderModule;
     waveScope*                  preview;
+    audioAnalyzer*              audioAnalysis;
     vector<colorApplier*>               colorModules;
     vector<oscillatorBankGroup*>       oscBankGroups;
     

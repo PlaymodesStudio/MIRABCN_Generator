@@ -92,6 +92,18 @@ void ofApp::setup(){
             if(xml.getBoolValue("AudioControls"))
                 audioControl = new audioEngineController();
             
+            if(xml.getBoolValue("OscInput")){
+                new oscInput();
+            }
+            if(xml.getIntValue("AudioAnalyzer") > 0){
+                audioAnalysis = new audioAnalyzer(xml.getIntValue("AudioAnalyzer"));
+            }
+            if(xml.getBoolValue("TextureUnifier")){
+                new chartresTextureUnifier();
+            }
+            if(xml.getBoolValue("DataRecorder")){
+                new dataRecorder();
+            }
             
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize);
 //            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
@@ -106,11 +118,10 @@ void ofApp::setup(){
     if(!configured) ofExit();
     
     //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
-    soundStream.setup(this, 0, 2, 44100, 512, 4);
+    soundStream.setup(this, 0, 4
+                      , 44100, 512, 4);
     
-    new oscInput(1);
-//    new chartresTextureUnifier();
-//    new dataRecorder();
+    
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
@@ -580,6 +591,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
         if(phasors[i] != nullptr)
             phasors[i]->audioIn(input, bufferSize, nChannels);
     }
+    if(audioAnalysis != nullptr) audioAnalysis->audioIn(input, bufferSize, nChannels);
     
     bpmControl::getInstance().audioIn(input, bufferSize, nChannels);
 }

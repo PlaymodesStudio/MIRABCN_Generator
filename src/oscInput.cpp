@@ -9,9 +9,9 @@
 #include "oscInput.h"
 #include "parametersControl.h"
 
-oscInput::oscInput(int id, ofPoint pos){
+oscInput::oscInput(){
     parameters = new ofParameterGroup();
-    parameters->setName("oscInput " + ofToString(id));
+    parameters->setName("oscInput");
     
     parameters->add(oscPort.set("Osc Port", "12321"));
     individualOutputs.resize(5);
@@ -20,7 +20,7 @@ oscInput::oscInput(int id, ofPoint pos){
     }
     parameters->add(joinedOutput.set("Joined Output", vector<float>(40)));
     
-    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::aliceBlue, pos);
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::aliceBlue);
     oscReceiver.setup(12321);
     
     ofAddListener(ofEvents().update, this, &oscInput::update);
