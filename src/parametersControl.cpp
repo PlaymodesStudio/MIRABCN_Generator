@@ -713,7 +713,7 @@ void parametersControl::savePreset(string presetName, string bank){
         else if(moduleName == "typeConverter"){
             modulePosition.z = ofToInt(ofSplitString(parameterGroups[i]->getName(0), " ")[0]);
         }
-        else if(moduleName == "vectorChain"){
+        else if(moduleName == "vectorChain" || moduleName == "expressionOperator"){
             modulePosition.z = 0;
             while(datGuis[i]->getLabel("Input "+ofToString((int)modulePosition.z))->getName() != "X")
                 modulePosition.z += 1;

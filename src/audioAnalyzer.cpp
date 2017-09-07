@@ -23,10 +23,10 @@ audioAnalyzer::audioAnalyzer(int nChannels){
     for(int i = 0 ; i < amplitudeOuts.size() ; i++){
         parameters->add(amplitudeOuts[i].set("Amplitude " + ofToString(i), 0, 0, 1));
     }
-    fftOuts.resize(nChannels);
-    for(int i = 0 ; i < fftOuts.size() ; i++){
-        parameters->add(fftOuts[i].set("Fft " + ofToString(i), {}));
-    }
+//    fftOuts.resize(nChannels);
+//    for(int i = 0 ; i < fftOuts.size() ; i++){
+//        parameters->add(fftOuts[i].set("Fft " + ofToString(i), {}));
+//    }
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green);
     

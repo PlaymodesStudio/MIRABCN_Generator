@@ -6,6 +6,7 @@
 void ofApp::setup(){
     //Turn off quit app on ESC press.
     ofSetEscapeQuitsApp(false);
+    configured = false;
     
     ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
     string path = *buffer.getLines().begin();
@@ -33,7 +34,6 @@ void ofApp::setup(){
     bpmControl::getInstance().setup();
     
     ofXml xml;
-    bool configured = false;
     if(xml.load(result.getPath())){
         if(xml.exists("GeneratorConfig")){
             xml.setTo("GeneratorConfig");
@@ -95,9 +95,16 @@ void ofApp::setup(){
             if(xml.getBoolValue("OscInput")){
                 new oscInput();
             }
-            if(xml.getIntValue("AudioAnalyzer") > 0){
-                audioAnalysis = new audioAnalyzer(xml.getIntValue("AudioAnalyzer"));
+            int audioChanels = xml.getIntValue("AudioAnalyzer");
+            if(audioChanels > 0){
+                audioAnalysis = new audioAnalyzer(audioChanels);
+                //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
+                soundStream.setup(this, 0, audioChanels, 44100, 512, 4);
+            }else{
+                //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
+                soundStream.setup(this, 0, 2, 44100, 512, 4);
             }
+            
             if(xml.getBoolValue("TextureUnifier")){
                 new chartresTextureUnifier();
             }
@@ -116,10 +123,6 @@ void ofApp::setup(){
     }
     
     if(!configured) ofExit();
-    
-    //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
-    soundStream.setup(this, 0, 4
-                      , 44100, 512, 4);
     
     
     preview->activateSeparateWindow(prevWinRect);
@@ -281,18 +284,26 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < expressionOps.size() && !foundNullElementInVector) ; i++){
                 if(expressionOps[i] == nullptr){
-                    expressionOps[i] = new expressionOperator<vector<float>>(i+1, 3, info.second);
+                    int nInputs = ofToInt(ofSystemTextBoxDialog("How many Inputs?"));
+                    if(nInputs > 0 && nInputs < 4)
+                        expressionOps[i] = new expressionOperator<vector<float>>(i+1, nInputs, info.second);
                     foundNullElementInVector = true;
                 }
             }
-            if(!foundNullElementInVector)
-                expressionOps.push_back(new expressionOperator<vector<float>>(expressionOps.size()+1, 3,info.second));
+            if(!foundNullElementInVector){
+                int nInputs = ofToInt(ofSystemTextBoxDialog("How many Inputs?"));
+                if(nInputs > 0 && nInputs < 4)
+                    expressionOps.push_back(new expressionOperator<vector<float>>(expressionOps.size()+1, nInputs,info.second));
+            }
         }
         else{
             int id = ofToInt(moduleName[1]);
             while(expressionOps.size() <= id-1)
                 expressionOps.push_back(nullptr);
-            expressionOps[id-1] = new expressionOperator<vector<float>>(id, 3, info.second);
+            int nInputs = info.second.z;
+            info.second.z = 0;
+            if(nInputs > 0 && nInputs < 4)
+                expressionOps[id-1] = new expressionOperator<vector<float>>(id, nInputs, info.second);
         }
     }
     else if(moduleTypeName == "mapper"){
@@ -556,32 +567,32 @@ void ofApp::update(){
     }
 }
 
-#pragma mark -------- Second window events --------
-
 //--------------------------------------------------------------
 void ofApp::draw(){
     
 }
 
 void ofApp::exit(){
-    if(paramsControl != nullptr){
-        paramsControl->saveGuiArrangement();
-    }
-    
-    ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
-    string path = *buffer.getLines().begin();
-    
-    ofXml xml;
-    if(xml.load(path)){
-        if(xml.exists("GeneratorConfig")){
-            xml.setTo("GeneratorConfig");
-            xml.setValue("MainWindowPos", ofToString(ofGetWindowPositionX()) + "_" + ofToString(ofGetWindowPositionX()));
-            xml.setValue("MainWindowSize", ofToString(ofGetWindowSize().x) + "_" + ofToString(ofGetWindowSize().y));
-            xml.setValue("PrevWindowPos", ofToString(preview->getWindow()->getWindowPosition().x) + "_" + ofToString(preview->getWindow()->getWindowPosition().y));
-            xml.setValue("PrevWindowSize", ofToString(preview->getWindow()->getWidth()) + "_" + ofToString(preview->getWindow()->getHeight()));
+    if(configured){
+        if(paramsControl != nullptr){
+            paramsControl->saveGuiArrangement();
         }
+        
+        ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
+        string path = *buffer.getLines().begin();
+        
+        ofXml xml;
+        if(xml.load(path)){
+            if(xml.exists("GeneratorConfig")){
+                xml.setTo("GeneratorConfig");
+                xml.setValue("MainWindowPos", ofToString(ofGetWindowPositionX()) + "_" + ofToString(ofGetWindowPositionX()));
+                xml.setValue("MainWindowSize", ofToString(ofGetWindowSize().x) + "_" + ofToString(ofGetWindowSize().y));
+                xml.setValue("PrevWindowPos", ofToString(preview->getWindow()->getWindowPosition().x) + "_" + ofToString(preview->getWindow()->getWindowPosition().y));
+                xml.setValue("PrevWindowSize", ofToString(preview->getWindow()->getWidth()) + "_" + ofToString(preview->getWindow()->getHeight()));
+            }
+        }
+        xml.save(path);
     }
-    xml.save(path);
 }
 
 

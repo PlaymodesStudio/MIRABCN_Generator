@@ -28,7 +28,21 @@ public:
         parameters = new ofParameterGroup();
         parameters->setName("expressionOperator " + ofToString(_id));
         
-        parameters->add(expression.set("Expression_paragraph", "import math\nfrom openframeworks import *\nprint \"LOL\"\ndef compute(x1, x2, x3):\n    return x1+x2+x3"));
+        string expressionInit = "import math\nfrom openframeworks import *\n";
+        switch(numInputs){
+            case 1:
+                expressionInit += "def compute(x1):\n    return x1";
+                break;
+            case 2:
+                expressionInit += "def compute(x1, x2):\n    return x1+x2";
+                break;
+            case 3:
+                expressionInit += "def compute(x1, x2, x3):\n    return x1+x2+x3";
+                break;
+                
+        }
+        parameters->add(expression.set("Expression_paragraph", expressionInit));
+        
         inputs.resize(numInputs);
         floatInputs.resize(numInputs, 0);
         for(int i = 0; i< numInputs; i++){
@@ -70,7 +84,20 @@ private:
                 else
                     floatInputs[j] = 0;
             }
-            auto result = python.getObject("compute")(ofxPythonObject::fromFloat(floatInputs[0]), ofxPythonObject::fromFloat(floatInputs[1]), ofxPythonObject::fromFloat(floatInputs[2]));
+            ofxPythonObject result;
+            switch(inputs.size()){
+                case 1:
+                    result = python.getObject("compute")(ofxPythonObject::fromFloat(floatInputs[0]));
+                    break;
+                case 2:
+                    result = python.getObject("compute")(ofxPythonObject::fromFloat(floatInputs[0]), ofxPythonObject::fromFloat(floatInputs[1]));
+                    break;
+                case 3:
+                    result = python.getObject("compute")(ofxPythonObject::fromFloat(floatInputs[0]), ofxPythonObject::fromFloat(floatInputs[1]), ofxPythonObject::fromFloat(floatInputs[2]));
+                    break;
+                    
+            }
+            
             tempOut[i] = ofToFloat(result.repr());
         }
         
