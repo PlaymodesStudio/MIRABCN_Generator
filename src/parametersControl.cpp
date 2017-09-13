@@ -705,8 +705,9 @@ void parametersControl::savePreset(string presetName, string bank){
     
     for(int i = 0; i < parameterGroups.size() ; i++){
         string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
-        //if(moduleName == "phasor" || moduleName == "oscillator" || moduleName == "oscillatorBank"){
-        xml.addValue("module_" + ofToString(i) + "_name", parameterGroups[i]->getName());
+        xml.addChild("MODULE_" + ofToString(i));
+        xml.setTo("MODULE_" + ofToString(i));
+        xml.addValue("name", parameterGroups[i]->getName());
         ofPoint modulePosition = datGuis[i]->getPosition();
         if(moduleName == "oscillatorBank" || moduleName == "manualOscillatorBank")
             modulePosition.z = parameterGroups[i]->getInt("Index Modulo").getMax();
@@ -718,10 +719,10 @@ void parametersControl::savePreset(string presetName, string bank){
             while(datGuis[i]->getLabel("Input "+ofToString((int)modulePosition.z))->getName() != "X")
                 modulePosition.z += 1;
         }
-        xml.addValue("module_" + ofToString(i) + "_pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
+        xml.addValue("pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
+        xml.setToParent();
     }
-    
     xml.setToParent();
     
     
@@ -789,15 +790,19 @@ void parametersControl::savePreset(string presetName, string bank){
     xml.addChild("CONNECTIONS");
     xml.setTo("CONNECTIONS");
     for(int i = 0; i < connections.size(); i++){
+        xml.addChild("CONNECTION_" + ofToString(i));
+        xml.setTo("CONNECTION_" + ofToString(i));
+        
         vector<string> groupNames = connections[i]->getSourceParameter()->getGroupHierarchyNames();
-        xml.addValue("connection_" + ofToString(i) + "_source", groupNames[0] + "-|-" + groupNames[1]);
+        xml.addValue("source", groupNames[0] + "-|-" + groupNames[1]);
         
         groupNames = connections[i]->getSinkParameter()->getGroupHierarchyNames();
-        xml.addValue("connection_" + ofToString(i) + "_sink", groupNames[0] + "-|-" + groupNames[1]);
+        xml.addValue("sink", groupNames[0] + "-|-" + groupNames[1]);
         
         float min = connections[i]->getMin();
         float max = connections[i]->getMax();
-        xml.addValue("connection_" + ofToString(i) + "_minmax", ofToString(min) + "-|-" + ofToString(max));
+        xml.addValue("minmax", ofToString(min) + "-|-" + ofToString(max));
+        xml.setToParent();
     }
     
     ofLog() <<"Save " << presetName;
@@ -827,13 +832,15 @@ void parametersControl::loadPreset(string presetName, string bank){
         xml.setTo("DYNAMIC_NODES");
         
         int i = 0;
-        while(xml.getValue("module_" + ofToString(i) + "_name") != ""){
+        while(xml.exists("MODULE_" + ofToString(i))){
+            xml.setTo("MODULE_" + ofToString(i));
             pair<string, ofPoint> newModule;
-            newModule.first = xml.getValue("module_" + ofToString(i) + "_name");
-            vector<string> strPoint = ofSplitString(xml.getValue("module_" + ofToString(i) + "_pos"), "_");
+            newModule.first = xml.getValue("name");
+            vector<string> strPoint = ofSplitString(xml.getValue("pos"), "_");
             newModule.second = ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]), ofToInt(strPoint[2]));
             modulesToCreate.push_back(newModule);
             i++;
+            xml.setToParent();
         }
     }
     
@@ -967,10 +974,11 @@ void parametersControl::loadPreset(string presetName, string bank){
     if(xml.exists("CONNECTIONS")){
         xml.setTo("CONNECTIONS");
         int i = 0;
-        while(xml.getValue("connection_" + ofToString(i) + "_source") != ""){
-            vector<string> sourceInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_source"), "-|-");
-            vector<string> sinkInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_sink"), "-|-");
-            vector<string> minMaxInfo = ofSplitString(xml.getValue("connection_" + ofToString(i) + "_minmax"), "-|-");
+        while(xml.exists("CONNECTION_" + ofToString(i))){
+            xml.setTo("CONNECTION_" + ofToString(i));
+            vector<string> sourceInfo = ofSplitString(xml.getValue("source"), "-|-");
+            vector<string> sinkInfo = ofSplitString(xml.getValue("sink"), "-|-");
+            vector<string> minMaxInfo = ofSplitString(xml.getValue("minmax"), "-|-");
             if(minMaxInfo.size() != 2) minMaxInfo = {"0", "1"};
             ofStringReplace(sourceInfo[0], "_", " ");
             ofStringReplace(sinkInfo[0], "_", " ");
@@ -992,6 +1000,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                 }
             }
             i++;
+            xml.setToParent();
         }
     }
     
