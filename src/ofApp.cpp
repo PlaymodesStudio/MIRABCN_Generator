@@ -425,16 +425,16 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             info.second.z = 0;
             switch(static_cast<converterTypes>(type)){
                 case CONVERT_FLOAT_TO_VECFLOAT:
-                    converters.push_back(new typeConverter<float, vector<float>>(id, info.second));
+                    converters[id-1] = new typeConverter<float, vector<float>>(id, info.second);
                     break;
                 case CONVERT_VECFLOAT_TO_FLOAT:
-                    converters.push_back(new typeConverter<vector<float>, float>(id, info.second));
+                    converters[id-1] = new typeConverter<vector<float>, float>(id, info.second);
                     break;
                 case CONVERT_VECFLOAT_TO_VECVECFLOAT:
-                    converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(id, info.second));
+                    converters[id-1] = new typeConverter<vector<float>, vector<vector<float>>>(id, info.second);
                     break;
                 case CONVERT_VECVECFLOAT_TO_VECFLOAT:
-                    converters.push_back(new typeConverter<vector<vector<float>>, vector<float>>(id, info.second));
+                    converters[id-1] = new typeConverter<vector<vector<float>>, vector<float>>(id, info.second);
                     break;
                 default:
                     break;
