@@ -24,6 +24,10 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
     //Put parameterGroup into vector
     parameterGroups.push_back(paramGroup);
     
+    if(ofStringTimesInString(paramGroup->getName(), "senderManager") != 0){
+        senderGroups.push_back(paramGroup);
+    }
+    
     if(ofStringTimesInString(paramGroup->getName(), "phasor") != 0 && paramGroup->getFloat("BPM").getName() == "BPM" && datGui != nullptr)
         paramGroup->getFloat("BPM") = datGui->getSlider("Global BPM")->getValue();
     
@@ -235,7 +239,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer", "Smoother", "Vec Smoother"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer", "Smoother", "Vec Smoother", "Vector Operations"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -346,18 +350,18 @@ void parametersControl::update(ofEventArgs &args){
 
     
     //Auto preset
-    if(randomPresetsArrange.size()>0 && autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
-        presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
-        int index = randomPresetsArrange[presetChangeCounter];
-        loadPresetWithFade(presetNumbersAndBanks.at(index).first, presetNumbersAndBanks.at(index).second);
-        periodTime = presetsTime[index];
-        presetChangeCounter++;
-        if(presetChangeCounter >= randomPresetsArrange.size()){
-            presetChangeCounter = 0;
-            mt19937 g(static_cast<uint32_t>(time(0)));
-            shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
-        }
-    }
+//    if(randomPresetsArrange.size()>0 && autoPreset && (ofGetElapsedTimef()-presetChangedTimeStamp) > periodTime){
+//        presetChangedTimeStamp = presetChangedTimeStamp+periodTime;
+//        int index = randomPresetsArrange[presetChangeCounter];
+//        loadPresetWithFade(presetNumbersAndBanks.at(index).first, presetNumbersAndBanks.at(index).second);
+//        periodTime = presetsTime[index];
+//        presetChangeCounter++;
+//        if(presetChangeCounter >= randomPresetsArrange.size()){
+//            presetChangeCounter = 0;
+//            mt19937 g(static_cast<uint32_t>(time(0)));
+//            shuffle(randomPresetsArrange.begin(), randomPresetsArrange.end(), g);
+//        }
+//    }
     
     if(newBpm != 0){
         setGlobalBPM(newBpm);
@@ -1032,30 +1036,38 @@ void parametersControl::loadPreset(string presetName, string bank){
     }
 }
 
-void parametersControl::loadPresetWithFade(int presetNum, string bank){
-//    ofXml xml2;
-//    if(xml2.load("Preset_"+ofToString(presetNum)+"_"+bank+".xml")){
-//        presetToLoad = presetNum;
-//        bankToLoad = bank;
-//        ofxOscMessage m;
-//        m.setAddress("bankSelect");
-//        m.addStringArg(bank);
-//        oscSender.sendMessage(m);
-//        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
-//        Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-//        isFading = true;
-//    }
+void parametersControl::loadPresetWithFade(string presetName, string bank){
+    ofXml xml2;
+    if(xml2.load("Presets/" + bank + "/" + presetName + ".xml")){
+        presetToLoad = presetName;
+        bankToLoad = bank;
+        ofxOscMessage m;
+        m.setAddress("bankSelect");
+        m.addStringArg(bank);
+        oscSender.sendMessage(m);
+        for(auto &s : senderGroups){
+            Tweenzor::add((float*)&s->getFloat("Master Fader").get(), s->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+        }
+        if(senderGroups.size() > 0){
+            Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&senderGroups[0]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+        }
+        isFading = true;
+    }
 }
 
 void parametersControl::loadPresetWhenFadeOutCompletes(float *arg){
-//    if(*arg == 0){
-//        loadPreset(presetToLoad, bankToLoad);
-//        Tweenzor::add((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
-//         Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&parameterGroups[parameterGroups.size()-1]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-//    }
-//    else if(*arg == 1.0f){
-//        isFading = false;
-//    }
+    if(*arg == 0){
+        loadPreset(presetToLoad, bankToLoad);
+        for(auto &s : senderGroups){
+            Tweenzor::add((float*)&s->getFloat("Master Fader").get(), 0.0f, 1.0f, 0.0f, fadeTime);
+        }
+        if(senderGroups.size() > 0){
+            Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&senderGroups[0]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+        }
+    }
+    else if(*arg == 1.0f){
+        isFading = false;
+    }
 }
 
 void parametersControl::onGuiButtonEvent(ofxDatGuiButtonEvent e){
@@ -1249,7 +1261,7 @@ void parametersControl::onGuiScrollViewEvent(ofxDatGuiScrollViewEvent e){
         savePreset(e.target->getName(), bankSelect->getSelected()->getName());
     }else{
         changePresetLabelHighliht(e.target);
-        loadPreset(e.target->getName(), bankSelect->getSelected()->getName());
+        loadPresetWithFade(e.target->getName(), bankSelect->getSelected()->getName());
         if(autoPreset)
             presetChangedTimeStamp = ofGetElapsedTimef();
     }
@@ -1263,7 +1275,7 @@ void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain", "valueSmoother", "vectorValueSmoother"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain", "valueSmoother", "vectorValueSmoother", "vectorOperator"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();

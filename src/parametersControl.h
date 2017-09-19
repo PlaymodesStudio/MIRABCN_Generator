@@ -241,7 +241,7 @@ public:
     
     void savePreset(string presetName, string bank);
     void loadPreset(string presetName, string bank);
-    void loadPresetWithFade(int presetNum, string bank);
+    void loadPresetWithFade(string presetName, string bank);
     
     void changePresetLabelHighliht(ofxDatGuiButton* presetToHighlight);
     
@@ -294,7 +294,8 @@ private:
     ofxDatGuiScrollView* presetsList;
     
     vector<shared_ptr<ofxDatGui>> datGuis;
-    vector<ofParameterGroup*> parameterGroups;
+    vector<ofParameterGroup*>   parameterGroups;
+    vector<ofParameterGroup*>   senderGroups;
     
     ofxDatGui *popUpMenu;
     
@@ -317,7 +318,7 @@ private:
     int presetChangeCounter;
     vector<pair<int, string>> currentBankPresetList;
     
-    int presetToLoad;
+    string presetToLoad;
     string bankToLoad;
     
     bool isFading;

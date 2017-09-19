@@ -222,6 +222,7 @@
 		9F30E3811F60270D00F2ABAC /* vectorChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorChain.h; sourceTree = "<group>"; };
 		9F30E3831F60499500F2ABAC /* oscInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscInput.cpp; sourceTree = "<group>"; };
 		9F30E3841F60499500F2ABAC /* oscInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscInput.h; sourceTree = "<group>"; };
+		9F3588C61F710DAB00614338 /* vectorOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vectorOperations.h; sourceTree = "<group>"; };
 		9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioEngineController.cpp; sourceTree = "<group>"; };
 		9F5D44981F28BA8000D1D841 /* audioEngineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioEngineController.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
@@ -772,6 +773,7 @@
 				9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */,
 				9F135F4A1F6142AE007E3736 /* audioAnalyzer.h */,
 				9F18BC301F7046BA0018CD78 /* valueSmoother.h */,
+				9F3588C61F710DAB00614338 /* vectorOperations.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

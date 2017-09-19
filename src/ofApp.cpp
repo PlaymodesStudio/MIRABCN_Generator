@@ -525,6 +525,25 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             vecSmoothers[id-1] = new vectorValueSmoother(id, info.second);
         }
     }
+    else if(moduleTypeName == "vectorOperator"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < vecOperations.size() && !foundNullElementInVector) ; i++){
+                if(vecOperations[i] == nullptr){
+                    vecOperations[i] = new vectorOperations(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                vecOperations.push_back(new vectorOperations(vecOperations.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(vecOperations.size() <= id-1)
+                vecOperations.push_back(nullptr);
+            vecOperations[id-1] = new vectorOperations(id, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -591,6 +610,18 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "vectorChain"){
         delete vectorChains[id-1];
         vectorChains[id-1] = nullptr;
+    }
+    else if(moduleName == "valueSmoother"){
+        delete smoothers[id-1];
+        smoothers[id-1] = nullptr;
+    }
+    else if(moduleName == "vectorValueSmoother"){
+        delete vecSmoothers[id-1];
+        vecSmoothers[id-1] = nullptr;
+    }
+    else if(moduleName == "vectorOperator"){
+        delete vecOperations[id-1];
+        vecOperations[id-1] = nullptr;
     }
 }
 

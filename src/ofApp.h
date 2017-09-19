@@ -28,6 +28,7 @@
 #include "oscInput.h"
 #include "audioAnalyzer.h"
 #include "valueSmoother.h"
+#include "vectorOperations.h"
 
 
 static const int WIDTH = 0;
@@ -93,6 +94,7 @@ private:
     vector<vectorChain*>    vectorChains;
     vector<valueSmoother*>   smoothers;
     vector<vectorValueSmoother*> vecSmoothers;
+    vector<vectorOperations*>   vecOperations;
 //    Wave2DControl   waveControl;
     audioEngineController*      audioControl;
     parametersControl*          paramsControl;
