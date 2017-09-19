@@ -58,7 +58,7 @@ void baseIndexer::recomputeIndexs(){
         bool odd = false;
         if((abs(indexOffset_Param) - (int)abs(indexOffset_Param)) > 0.5) odd = !odd;
         
-        if((int)((index)/(newNumOfPixels/(symmetry_Param+1)))%2 == 1 ) odd = true;
+        if((int)((index)/(newNumOfPixels/(symmetry_Param+1)))%2 == 1) odd = true;
         
         
         //SYMMETRY santi
@@ -66,8 +66,13 @@ void baseIndexer::recomputeIndexs(){
         index = veusSym-abs((((int)(index/veusSym)%2) * veusSym)-(index%veusSym));
         
         
-        if(newNumOfPixels % 2 == 0)
+        if(newNumOfPixels % 2 == 0){
             index += odd ? 1 : 0;
+        }
+        else if(symmetry_Param > 0){
+            index += 1;
+            index %= newNumOfPixels;;
+        }
         
         
         //INVERSE
@@ -94,7 +99,7 @@ void baseIndexer::recomputeIndexs(){
         int shifted_i = i + round(indexOffset_Param);
         if(shifted_i < 0) shifted_i += indexCount;
         shifted_i %= indexCount;
-        indexs[shifted_i] = (((float)index/(float)indexCount))*(numWaves_Param*((float)indexCount/(float)newNumOfPixels));
+        indexs[shifted_i] = (((float)index/(float)indexCount))*(numWaves_Param*((float)indexCount/(float)newNumOfPixels))*(symmetry_Param+1);
     }
     newIndexs();
 }
