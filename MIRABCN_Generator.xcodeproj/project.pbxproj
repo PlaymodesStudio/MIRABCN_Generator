@@ -215,6 +215,7 @@
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
 		9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioAnalyzer.cpp; sourceTree = "<group>"; };
 		9F135F4A1F6142AE007E3736 /* audioAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioAnalyzer.h; sourceTree = "<group>"; };
+		9F18BC301F7046BA0018CD78 /* valueSmoother.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = valueSmoother.h; sourceTree = "<group>"; };
 		9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorGetter.cpp; sourceTree = "<group>"; };
 		9F30E37E1F60210F00F2ABAC /* vectorGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorGetter.h; sourceTree = "<group>"; };
 		9F30E3801F60270D00F2ABAC /* vectorChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorChain.cpp; sourceTree = "<group>"; };
@@ -770,6 +771,7 @@
 				9F30E3841F60499500F2ABAC /* oscInput.h */,
 				9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */,
 				9F135F4A1F6142AE007E3736 /* audioAnalyzer.h */,
+				9F18BC301F7046BA0018CD78 /* valueSmoother.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
