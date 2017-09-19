@@ -171,7 +171,7 @@ void parametersControl::setup(){
     datGui->addToggle("BPM Sync")->setChecked(false);
     //datGui->addToggle("Automatic Preset");
     //datGui->addButton("Reload Sequence");
-    datGui->addSlider(fadeTime.set("Fade Time", 1, 0, 10));
+    datGui->addSlider(fadeTime.set("Fade Time", 0, 0, 10));
 //    datGui->addSlider(presetChangeBeatsPeriod.set("Beats Period", 4, 1, 120));
     
     datGui->addLabel("Midi settings");
@@ -865,12 +865,31 @@ void parametersControl::loadPreset(string presetName, string bank){
             hasToBeDestroyed = true;
             for(auto module : modulesToCreate){
                 if(groupParam->getName() == module.first){
-                    if((moduleName != "oscillatorBank" && moduleName != "manualOscillatorBank") || groupParam->getInt("Index Modulo").getMax() == module.second.z){
+                    hasToBeDestroyed = false;
+                    if(moduleName == "oscillatorBank" || moduleName == "manualOscillatorBank"){
+                        if(groupParam->getInt("Index Modulo").getMax() != module.second.z){
+                            hasToBeDestroyed = true;
+                        }
+                    }
+                    if(moduleName == "typeConverter"){
+                        if(ofToInt(ofSplitString(groupParam->getString(0), ".")[0]) != module.second.z){
+                            hasToBeDestroyed = true;
+                        }
+                    }
+                    if(moduleName == "vectorChain" || moduleName == "expressionOperator"){
+                        int inputSize = 0;
+                        while(datGuis[i]->getLabel("Input "+ofToString((int)inputSize))->getName() != "X")
+                            inputSize += 1;
+                        if(inputSize != module.second.z){
+                            hasToBeDestroyed = true;
+                        }
+                    }
+                    
+                    if(!hasToBeDestroyed){
                         datGuis[i]->setPosition(module.second.x, module.second.y);
                         modulesToCreate.erase(remove(modulesToCreate.begin(), modulesToCreate.end(), module));
-                        hasToBeDestroyed = false;
-                        break;
                     }
+                    break;
                 }
             }
         }
@@ -1038,20 +1057,25 @@ void parametersControl::loadPreset(string presetName, string bank){
 
 void parametersControl::loadPresetWithFade(string presetName, string bank){
     ofXml xml2;
-    if(xml2.load("Presets/" + bank + "/" + presetName + ".xml")){
-        presetToLoad = presetName;
-        bankToLoad = bank;
-        ofxOscMessage m;
-        m.setAddress("bankSelect");
-        m.addStringArg(bank);
-        oscSender.sendMessage(m);
-        for(auto &s : senderGroups){
-            Tweenzor::add((float*)&s->getFloat("Master Fader").get(), s->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+    if(fadeTime > 0){
+        if(xml2.load("Presets/" + bank + "/" + presetName + ".xml")){
+            presetToLoad = presetName;
+            bankToLoad = bank;
+            ofxOscMessage m;
+            m.setAddress("bankSelect");
+            m.addStringArg(bank);
+            oscSender.sendMessage(m);
+            for(auto &s : senderGroups){
+                Tweenzor::add((float*)&s->getFloat("Master Fader").get(), s->getFloat("Master Fader").get(), 0.0f, 0.0f, fadeTime);
+            }
+            if(senderGroups.size() > 0){
+                Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&senderGroups[0]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
+            }
+            isFading = true;
         }
-        if(senderGroups.size() > 0){
-            Tweenzor::addCompleteListener(Tweenzor::getTween((float*)&senderGroups[0]->getFloat("Master Fader").get()), this, &parametersControl::loadPresetWhenFadeOutCompletes);
-        }
-        isFading = true;
+    }
+    else{
+        loadPreset(presetName, bank);
     }
 }
 

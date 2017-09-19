@@ -23,7 +23,6 @@ private:
     ofParameterGroup *parameters;
     ofParameter<string> oscPort;
     vector<ofParameter<vector<float>>> individualOutputs;
-    ofParameter<vector<float>>  joinedOutput;
     
     ofxOscReceiver oscReceiver;
 };

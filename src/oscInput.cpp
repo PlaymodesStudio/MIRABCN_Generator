@@ -18,7 +18,6 @@ oscInput::oscInput(){
     for(int i = 0 ; i < individualOutputs.size() ; i++){
         parameters->add(individualOutputs[i].set("Output " + ofToString(i), vector<float>(8)));
     }
-    parameters->add(joinedOutput.set("Joined Output", vector<float>(32)));
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::aliceBlue);
     oscReceiver.setup(12321);
@@ -41,27 +40,14 @@ void oscInput::update(ofEventArgs &args){
             dupOut[note] = m.getArgAsFloat(0);
             individualOutputs[ovalID] = dupOut;
             
-            if(ovalID < 5){
-                vector<float> dupMultiOut = joinedOutput;
-                dupMultiOut[note + (8 * ovalID)] = m.getArgAsFloat(0);
-                joinedOutput = dupMultiOut;
-            }
-            
         }else if(message == "noteOff"){
             vector<float> dupOut = individualOutputs[ovalID];
             dupOut[note] = 0;
             individualOutputs[ovalID] = dupOut;
-            
-            if(ovalID < 5){
-                vector<float> dupMultiOut = joinedOutput;
-                dupMultiOut[note + (8 * ovalID)] = 0;
-                joinedOutput = dupMultiOut;
-            }
         }
     }
     for(int i = 0; i < individualOutputs.size(); i++){
         int ovalID = i;
         parameters->get("Output " + ofToString(ovalID)).cast<vector<float>>() = individualOutputs[ovalID];
     }
-    parameters->get("Joined Output").cast<vector<float>>() = joinedOutput;
 }
