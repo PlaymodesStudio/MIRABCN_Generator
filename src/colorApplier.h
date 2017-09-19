@@ -31,6 +31,8 @@ private:
     void colorSliderListener(int &i);
     void colorHueListener(int &i);
     
+    void imageFileChangedListener(string &s);
+    
     ofParameterGroup*        parameters;
     ofParameter<bool>       bypass;
     ofParameter<ofColor>    colorPickerParam[2];
@@ -40,6 +42,7 @@ private:
     ofParameter<int>        colorHParam[2];
     
     ofParameter<float>  colorDisplacement;
+    ofParameter<string> imageTextureFile;
 //    ofParameter<int>        randomColorStepsParam;
 //    ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
@@ -55,6 +58,8 @@ private:
     vector<vector<float>> colorDisplacementVector;
     
     bool colorIsChanging;
+    ofImage imageTexture;
+    bool isImageLoaded;
 };
 
 #endif /* colorApplier_h */

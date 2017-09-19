@@ -14,20 +14,22 @@ colorApplier::colorApplier(int _id){
     parameters->setName("colorApplier " + ofToString(_id));
     parameters->add(bypass.set("Bypass", false));
     parameters->add(colorPickerParam[0].set("Color 1", ofColor::white));
-    parameters->add(colorRParam[0].set("Color 1 R", 0, 0, 255));
-    parameters->add(colorGParam[0].set("Color 1 G", 0, 0, 255));
-    parameters->add(colorBParam[0].set("Color 1 B", 0, 0, 255));
+    parameters->add(colorRParam[0].set("Color 1 R", 255, 0, 255));
+    parameters->add(colorGParam[0].set("Color 1 G", 255, 0, 255));
+    parameters->add(colorBParam[0].set("Color 1 B", 255, 0, 255));
     parameters->add(colorHParam[0].set("Color 1 Hue", 0, 0, 360));
 
     parameters->add(colorPickerParam[1].set("Color 2", ofColor::white));
-    parameters->add(colorRParam[1].set("Color 2 R", 255, 0, 255));
-    parameters->add(colorGParam[1].set("Color 2 G", 255, 0, 255));
-    parameters->add(colorBParam[1].set("Color 2 B", 255, 0, 255));
+    parameters->add(colorRParam[1].set("Color 2 R", 0, 0, 255));
+    parameters->add(colorGParam[1].set("Color 2 G", 0, 0, 255));
+    parameters->add(colorBParam[1].set("Color 2 B", 0, 0, 255));
     parameters->add(colorHParam[1].set("Color 2 Hue", 0, 0, 360));
     parameters->add(colorDisplacement.set("Color Displacement", 0, 0, 1));
     
 //    parameters->add(randomColorStepsParam.set("Rnd Color Steps", 4, 0, 255));
 //    sharedResources::addDropdownToParameterGroupFromParameters(parameters, "Rnd ChangeTypes", {"no", "on presset", "onTrigger"}, randomizeTypeColorParam);
+    
+    parameters->add(imageTextureFile.set("Img Tex File", ""));
     
     parameters->add(indexIn.set("Indexs", {0}));
     parameters->add(grayScaleIn.set("Input", {{0}}));
@@ -52,6 +54,9 @@ colorApplier::colorApplier(int _id){
     colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
     grayScaleIn.addListener(this, &colorApplier::applyColor);
     
+    imageTextureFile.addListener(this, &colorApplier::imageFileChangedListener);
+    isImageLoaded = false;
+    
     colorIsChanging = false;
 }
 
@@ -63,10 +68,27 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
             tempColors.resize(w, vector<ofColor>(h));
             tempGradient.resize(w, vector<ofColor>(h));
         }
-        for(int i = 0 ; i < w ; i++){
-            for (int j = 0 ; j < h ; j++){
-                tempColors[i][j] =  colorPickerParam[0].get() * inputVec[i][j];
-                tempGradient[i][j] = colorPickerParam[0].get();
+        if(isImageLoaded){
+            if(imageTexture.getWidth() == h && imageTexture.getHeight() == w){
+                imageTexture.rotate90(1);
+            }
+            if(imageTexture.getWidth() == w && imageTexture.getHeight() == h){
+                for(int i = 0 ; i < w ; i++){
+                    for (int j = 0 ; j < h ; j++){
+                        tempColors[i][j] =  imageTexture.getColor(i, j) * inputVec[i][j];
+                        tempGradient[i][j] = imageTexture.getColor(i, j);
+                    }
+                }
+            }else{
+                isImageLoaded = false;
+            }
+        }
+        else{
+            for(int i = 0 ; i < w ; i++){
+                for (int j = 0 ; j < h ; j++){
+                    tempColors[i][j] =  colorPickerParam[0].get() * inputVec[i][j];
+                    tempGradient[i][j] = colorPickerParam[0].get();
+                }
             }
         }
         parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
@@ -155,4 +177,8 @@ void colorApplier::colorHueListener(int &i){
         }
         colorIsChanging = false;
     }
+}
+
+void colorApplier::imageFileChangedListener(string &s){
+    isImageLoaded = imageTexture.load("colorTextures/" + s);
 }
