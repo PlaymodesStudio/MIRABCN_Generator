@@ -374,7 +374,7 @@ void parametersControl::draw(ofEventArgs &args){
     ofPushMatrix();
     ofMultMatrix(transformMatrix);
     ofPushStyle();
-     ofSetColor(ofColor::white);
+    ofSetColor(ofColor::white);
     ofSetLineWidth(2);
     for(auto connection : connections){
         ofPath path = connection->getPath();
@@ -709,9 +709,10 @@ void parametersControl::savePreset(string presetName, string bank){
     
     for(int i = 0; i < parameterGroups.size() ; i++){
         string moduleName = ofSplitString(parameterGroups[i]->getName(), " ")[0];
-        xml.addChild("MODULE_" + ofToString(i));
-        xml.setTo("MODULE_" + ofToString(i));
-        xml.addValue("name", parameterGroups[i]->getName());
+        ofXml tempXml;
+        tempXml.addChild("MODULE");
+        tempXml.setTo("MODULE");
+        tempXml.addValue("name", parameterGroups[i]->getName());
         ofPoint modulePosition = datGuis[i]->getPosition();
         if(moduleName == "oscillatorBank" || moduleName == "manualOscillatorBank")
             modulePosition.z = parameterGroups[i]->getInt("Index Modulo").getMax();
@@ -723,9 +724,10 @@ void parametersControl::savePreset(string presetName, string bank){
             while(datGuis[i]->getLabel("Input "+ofToString((int)modulePosition.z))->getName() != "X")
                 modulePosition.z += 1;
         }
-        xml.addValue("pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
+        tempXml.addValue("pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
-        xml.setToParent();
+        xml.addXml(tempXml);
+//        xml.setToParent();
     }
     xml.setToParent();
     
@@ -794,19 +796,20 @@ void parametersControl::savePreset(string presetName, string bank){
     xml.addChild("CONNECTIONS");
     xml.setTo("CONNECTIONS");
     for(int i = 0; i < connections.size(); i++){
-        xml.addChild("CONNECTION_" + ofToString(i));
-        xml.setTo("CONNECTION_" + ofToString(i));
+        ofXml tempXml;
+        tempXml.addChild("CONNECTION");
+        tempXml.setTo("CONNECTION");
         
         vector<string> groupNames = connections[i]->getSourceParameter()->getGroupHierarchyNames();
-        xml.addValue("source", groupNames[0] + "-|-" + groupNames[1]);
+        tempXml.addValue("source", groupNames[0] + "-|-" + groupNames[1]);
         
         groupNames = connections[i]->getSinkParameter()->getGroupHierarchyNames();
-        xml.addValue("sink", groupNames[0] + "-|-" + groupNames[1]);
+        tempXml.addValue("sink", groupNames[0] + "-|-" + groupNames[1]);
         
         float min = connections[i]->getMin();
         float max = connections[i]->getMax();
-        xml.addValue("minmax", ofToString(min) + "-|-" + ofToString(max));
-        xml.setToParent();
+        tempXml.addValue("minmax", ofToString(min) + "-|-" + ofToString(max));
+        xml.addXml(tempXml);
     }
     
     ofLog() <<"Save " << presetName;
@@ -836,8 +839,8 @@ void parametersControl::loadPreset(string presetName, string bank){
         xml.setTo("DYNAMIC_NODES");
         
         int i = 0;
-        while(xml.exists("MODULE_" + ofToString(i))){
-            xml.setTo("MODULE_" + ofToString(i));
+        while(xml.exists("MODULE[" + ofToString(i) + "]")){
+            xml.setTo("MODULE[" + ofToString(i) + "]");
             pair<string, ofPoint> newModule;
             newModule.first = xml.getValue("name");
             vector<string> strPoint = ofSplitString(xml.getValue("pos"), "_");
@@ -997,8 +1000,8 @@ void parametersControl::loadPreset(string presetName, string bank){
     if(xml.exists("CONNECTIONS")){
         xml.setTo("CONNECTIONS");
         int i = 0;
-        while(xml.exists("CONNECTION_" + ofToString(i))){
-            xml.setTo("CONNECTION_" + ofToString(i));
+        while(xml.exists("CONNECTION[" + ofToString(i) + "]")){
+            xml.setTo("CONNECTION[" + ofToString(i) + "]");
             vector<string> sourceInfo = ofSplitString(xml.getValue("source"), "-|-");
             vector<string> sinkInfo = ofSplitString(xml.getValue("sink"), "-|-");
             vector<string> minMaxInfo = ofSplitString(xml.getValue("minmax"), "-|-");
@@ -1362,6 +1365,7 @@ void parametersControl::keyPressed(ofKeyEventArgs &e){
     }
     else if(e.key == ' '  && !canvasDragging){
         glfwSetCursor((GLFWwindow*)ofGetWindowPtr()->getWindowContext(), openedHandCursor);
+        if(ofGetMousePressed()) dragCanvasInitialPoint = ofPoint(ofGetMouseX(), ofGetMouseY());
         canvasDragging = true;
     }
         
@@ -1390,7 +1394,7 @@ void parametersControl::mouseDragged(ofMouseEventArgs &e){
         if(!connections.back()->closedLine){
             connections.back()->moveLine(transformedPos);
         }
-    }else if(e.button == 0 && canvasDragging){
+    }if(canvasDragging){
         transformMatrix.translate(e - dragCanvasInitialPoint);
         for(auto &gui : datGuis)
             gui->setTransformMatrix(transformMatrix);//gui->setTransformMatrix(ofMatrix4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));

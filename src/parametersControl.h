@@ -41,8 +41,8 @@ public:
         bindedComponentsParent[0] = g;
         bindedParameters[0] = p;
         path.setFilled(false);
+        path.setStrokeWidth(2);
         path.setStrokeColor(ofColor::white);
-        path.setStrokeWidth(1);
         path.setCurveResolution(50);
         path.moveTo(points[0]);
     }
