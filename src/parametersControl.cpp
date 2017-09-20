@@ -198,8 +198,8 @@ void parametersControl::setup(){
         if(host != ""){
             oscReceiver.setup(xml.getIntValue("ReceiverPort"));
             oscSender.setup(host, xml.getIntValue("SenderPort"));
-            ofLog() << "Listening on port " << 12345;
-            ofLog() << "Sending to host: " << host << " on port: " << 54321;
+            ofLog() << "Listening on port " << xml.getIntValue("ReceiverPort");
+            ofLog() << "Sending to host: " << host << " on port: " << xml.getIntValue("SenderPort");
         }else
             ofLog() << "NO OSC";
     }
@@ -921,7 +921,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             ofStringReplace(noSpaces, " ", "_");
                             
                             //get the value of that parameter if it's not bpm, we don't want to lose sync
-                            if(castedParam.getName() != "BPM" && xml.exists(noSpaces)  && !ofStringTimesInString(groupParam->getName(), "master") && castedParam.getName() != "Output" && castedParam.getName() != "Phasor Monitor")
+                            if(castedParam.getName() != "BPM" && xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master") && castedParam.getName() != "Output" && castedParam.getName() != "Input" && castedParam.getName() != "Phasor Monitor" && !ofStringTimesInString(groupParam->getName(), "Amplitude"))
                                 castedParam = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                         }
                         else if(absParam.type() == typeid(ofParameter<int>).name()){
