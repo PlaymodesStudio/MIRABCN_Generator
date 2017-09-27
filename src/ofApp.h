@@ -29,6 +29,7 @@
 #include "audioAnalyzer.h"
 #include "valueSmoother.h"
 #include "vectorOperations.h"
+#include "textureUnifier.h"
 
 
 static const int WIDTH = 0;

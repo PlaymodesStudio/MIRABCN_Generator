@@ -15,7 +15,7 @@ chartresTextureUnifier::chartresTextureUnifier(){
     parameters->add(in288_8.set("In 288x8", {{}}));
     parameters->add(in1008_6.set("In 1008x6", {{}}));
     parameters->add(in8_2.set("In 8x2", {{}}));
-    parameters->add(out.set("Out", {{}}));
+    parameters->add(output.set("Output", {{}}));
     
     in288_8.addListener(this, &chartresTextureUnifier::computeOutput);
     
@@ -70,5 +70,5 @@ void chartresTextureUnifier::computeOutput(vector<vector<ofColor> > &in){
         currentLine += 2;
     }
     
-    parameters->get("Out").cast<vector<vector<ofColor>>>() = outInfo;
+    parameters->get("Output").cast<vector<vector<ofColor>>>() = outInfo;
 }

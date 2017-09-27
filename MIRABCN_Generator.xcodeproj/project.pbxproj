@@ -56,6 +56,7 @@
 		9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */; };
 		9F30E3821F60270D00F2ABAC /* vectorChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E3801F60270D00F2ABAC /* vectorChain.cpp */; };
 		9F30E3851F60499500F2ABAC /* oscInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E3831F60499500F2ABAC /* oscInput.cpp */; };
+		9F4BAEAD1F755C6700423CFD /* textureUnifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F4BAEAC1F755C6700423CFD /* textureUnifier.cpp */; };
 		9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */; };
 		9F89C70E1F191D8A008EB023 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F89C70D1F191D8A008EB023 /* aubio.framework */; };
 		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
@@ -223,6 +224,8 @@
 		9F30E3831F60499500F2ABAC /* oscInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscInput.cpp; sourceTree = "<group>"; };
 		9F30E3841F60499500F2ABAC /* oscInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscInput.h; sourceTree = "<group>"; };
 		9F3588C61F710DAB00614338 /* vectorOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vectorOperations.h; sourceTree = "<group>"; };
+		9F4BAEAB1F755C6700423CFD /* textureUnifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = textureUnifier.h; sourceTree = "<group>"; };
+		9F4BAEAC1F755C6700423CFD /* textureUnifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textureUnifier.cpp; sourceTree = "<group>"; };
 		9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioEngineController.cpp; sourceTree = "<group>"; };
 		9F5D44981F28BA8000D1D841 /* audioEngineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioEngineController.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
@@ -710,6 +713,8 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				9F4BAEAB1F755C6700423CFD /* textureUnifier.h */,
+				9F4BAEAC1F755C6700423CFD /* textureUnifier.cpp */,
 				9FDF676B1F5873CB00AD1A04 /* dataRecorder.cpp */,
 				9FDF676C1F5873CB00AD1A04 /* dataRecorder.h */,
 				9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */,
@@ -954,6 +959,7 @@
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				FB432C8B786B713661F10584 /* baseIndexer.cpp in Sources */,
+				9F4BAEAD1F755C6700423CFD /* textureUnifier.cpp in Sources */,
 				056127A65BC11487F78B4F2B /* baseOscillator.cpp in Sources */,
 				9F135F4B1F6142AE007E3736 /* audioAnalyzer.cpp in Sources */,
 				8EEB7B47DAB773397BA707AD /* bpmControl.cpp in Sources */,

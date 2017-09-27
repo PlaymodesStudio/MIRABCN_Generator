@@ -101,12 +101,14 @@ void ofApp::setup(){
                 //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
                 soundStream.setup(this, 0, audioChanels, 44100, 512, 4);
             }else{
+                audioAnalysis = nullptr;
                 //Setup the soundStream so we can use the audio rate called function "audioIn" to update the phasor and have it better synced
                 soundStream.setup(this, 0, 2, 44100, 512, 4);
             }
             
-            if(xml.getBoolValue("TextureUnifier")){
-                new chartresTextureUnifier();
+            int unifierNum = xml.getIntValue("TextureUnifier");
+            if(unifierNum > 0){
+                new textureUnifier(unifierNum);
             }
             if(xml.getBoolValue("DataRecorder")){
                 new dataRecorder();

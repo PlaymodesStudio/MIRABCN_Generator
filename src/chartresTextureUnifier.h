@@ -24,7 +24,7 @@ private:
     ofParameter<vector<vector<ofColor>>>    in288_8;
     ofParameter<vector<vector<ofColor>>>    in1008_6;
     ofParameter<vector<vector<ofColor>>>    in8_2;
-    ofParameter<vector<vector<ofColor>>>    out;
+    ofParameter<vector<vector<ofColor>>>    output;
 };
 
 #endif /* chartresTextureUnifier_h */
