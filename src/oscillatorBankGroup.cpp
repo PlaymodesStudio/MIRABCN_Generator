@@ -13,7 +13,6 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
     //Last one is for preview, vector modulation does not affect this one
     for(int i=0 ; i < numOfOscillatorBanks + 1 ; i++){
         oscillatorBanks.push_back(new oscillatorBank(oscillatorBankSize, false, i));
-        ofAddListener(oscillatorBanks[i]->eventInGroup, this, &oscillatorBankGroup::oscillatorBankResult);
     }
 
     result.resize(numOfOscillatorBanks, {0});
@@ -82,8 +81,13 @@ oscillatorBankGroup::oscillatorBankGroup(int oscillatorBankSize, int numOfOscill
 }
 
 void oscillatorBankGroup::phasorInListener(float &phase){
-    for(auto &oscBank : oscillatorBanks)
-        oscBank->phasorIn = phase;
+    for (int i = 0; i < oscillatorBanks.size() - 1; i++){
+        result[i] = oscillatorBanks[i]->computeBank(phase);
+    }
+    parameters->get("Main Out").cast<vector<vector<float>>>() = result;
+    fill(resultFilledChecker.begin(), resultFilledChecker.end(), 0);
+    
+    parameters->get("Preview Out").cast<vector<float>>() = oscillatorBanks.back()->computeBank(phase);
 }
 
 void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
@@ -260,19 +264,5 @@ void oscillatorBankGroup::parameterChanged(ofAbstractParameter &p){
     else if(p.getName() == invert_vecParam.getName()){
         for(int i = 0; i < oscillatorBanks.size() -1; i++)
             oscillatorBanks[i]->invert_Param = ofMap(invert_vecParam.get()[i], 0, 1, invert_Param.getMin(), invert_Param.getMax());
-    }
-}
-
-void oscillatorBankGroup::oscillatorBankResult(int &oscBankInfo){
-    if (oscBankInfo < result.size()){
-        result[oscBankInfo] = oscillatorBanks[oscBankInfo]->oscillatorOut;
-        resultFilledChecker[oscBankInfo] = 1;
-        
-        if(resultFilledChecker.size() == accumulate(resultFilledChecker.begin(), resultFilledChecker.end(), 0)){
-            parameters->get("Main Out").cast<vector<vector<float>>>() = result;
-            fill(resultFilledChecker.begin(), resultFilledChecker.end(), 0);
-        }
-    }else{
-        parameters->get("Preview Out").cast<vector<float>>() = oscillatorBanks[oscBankInfo]->oscillatorOut;
     }
 }

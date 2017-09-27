@@ -23,7 +23,6 @@ public:
 private:
     
     void parameterChanged(ofAbstractParameter &p);
-    void oscillatorBankResult(int &oscBankInfo);
     void phasorInListener(float &phase);
     
     ofParameterGroup    *parameters;

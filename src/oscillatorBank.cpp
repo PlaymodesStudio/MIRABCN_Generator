@@ -13,7 +13,6 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     for(int i=0 ; i < nOscillators ; i++){
         oscillators.push_back(new baseOscillator(i));
         oscillators[i]->setIndexNormalized(indexs[i]);
-        ofAddListener(oscillators[i]->resultGenerated, this, &oscillatorBank::oscillatorResult);
     }
     result.resize(nOscillators, 0);
     resultFilledChecker.resize(nOscillators, 0);
@@ -59,34 +58,29 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     skew_Param.addListener(this, &oscillatorBank::newSkewParam);
 }
 
+vector<float> oscillatorBank::computeBank(float phasor){
+    for(int i = 0; i < oscillators.size(); i++){
+        result[i] = oscillators[i]->computeFunc(phasor);
+    }
+    if(waveSelect_Param == 6 || waveSelect_Param == 7){
+        auto resultCopy = result;
+        for(int i = 0 ; i < result.size() ; i++){
+            int new_i = (floor(((float)i/((float)result.size())*(float)indexQuant_Param)) * floor(((float)result.size())/(float)indexQuant_Param));
+            result[i] = resultCopy[new_i];
+        }
+    }
+    return result;
+}
+
 void oscillatorBank::newIndexs(){
     for(int i=0 ; i < oscillators.size() ; i++){
         oscillators[i]->setIndexNormalized(indexs[i]);
     }
 }
 
-void oscillatorBank::oscillatorResult(pair<int, float> &oscInfo){
-    result[oscInfo.first] = oscInfo.second;
-    resultFilledChecker[oscInfo.first] = 1;
-    
-    if(resultFilledChecker.size() == accumulate(resultFilledChecker.begin(), resultFilledChecker.end(), 0)){
-        if(waveSelect_Param == 6 || waveSelect_Param == 7){
-            auto resultCopy = result;
-            for(int i = 0 ; i<result.size() ; i++){
-                int new_i = floor(i/((float)result.size()/(float)indexQuant_Param));
-                result[i] = resultCopy[new_i];
-            }
-        }
-        parameters->get("Oscillator Out").cast<vector<float>>() = result;
-        fill(resultFilledChecker.begin(), resultFilledChecker.end(), 0);
-        ofNotifyEvent(eventInGroup, bankId, this);
-    }
-}
-
 void oscillatorBank::newPhasorIn(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->phasorIn = f;
-    }
+    computeBank(f);
+    parameters->get("Oscillator Out").cast<vector<float>>() = result;
 }
 
 void oscillatorBank::newPowParam(float &f){

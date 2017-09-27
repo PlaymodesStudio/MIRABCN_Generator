@@ -34,7 +34,7 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     parameters->add(output.set("Output", 0, 0, 1));
     
     
-    phasorIn.addListener(this, &baseOscillator::computeFunc);
+    phasorIn.addListener(this, &baseOscillator::funcListener);
     
     if(gui)
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::orange, pos);
@@ -44,7 +44,13 @@ baseOscillator::baseOscillator(int id, bool gui, ofPoint pos){
     indexNormalized = 0;
 }
 
-void baseOscillator::computeFunc(float &phasor){
+void baseOscillator::funcListener(float &phasor){
+    float val = computeFunc(phasor);
+    
+    parameters->getFloat("Output") = val;
+}
+
+float baseOscillator::computeFunc(float phasor){
     //get phasor to be w (radial freq)
     float w = (phasor*2*PI);
     
@@ -144,11 +150,7 @@ void baseOscillator::computeFunc(float &phasor){
     
     oldPhasor = linPhase;
     
-    parameters->getFloat("Output") = val;
-    pair<int, float> toSend;
-    toSend.first = oscId;
-    toSend.second = val;
-    ofNotifyEvent(resultGenerated, toSend, this);
+    return val;
 }
 
 void baseOscillator::computeMultiplyMod(float *value){

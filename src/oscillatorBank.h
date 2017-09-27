@@ -21,7 +21,6 @@ public:
     };
     
 //     ofEvent<pair<int, vector<float>>> eventInGroup;
-    ofEvent<int> eventInGroup;
 
     
     ofParameter<float>    phasorIn;
@@ -41,10 +40,10 @@ public:
 
     ofParameter<vector<float>>      oscillatorOut;
 
+    vector<float>   computeBank(float phasor);
     
 private:
     virtual void newIndexs();
-    void oscillatorResult(pair<int, float> &oscInfo);
     void newPhasorIn(float &f);
     void newPowParam(float &f);
     void newpulseWidthParam(float &f);

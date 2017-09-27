@@ -180,5 +180,6 @@ void colorApplier::colorHueListener(int &i){
 }
 
 void colorApplier::imageFileChangedListener(string &s){
-    isImageLoaded = imageTexture.load("colorTextures/" + s);
+    if(s != "")
+        isImageLoaded = imageTexture.load("colorTextures/" + s);
 }

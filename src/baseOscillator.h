@@ -32,7 +32,6 @@ public:
     
     void setIndexNormalized(float index){indexNormalized = index;};
     
-    ofEvent<pair<int,float>> resultGenerated;
     ofParameter<float>  phasorIn;
     ofParameter<float>  pow_Param; //Pow of the funcion, working on sin, cos....
     ofParameter<float>  pulseWidth_Param;
@@ -48,9 +47,11 @@ public:
     ofParameter<float>  invert_Param;
     ofParameter<float>  skew_Param;
     ofParameter<float>  output;
+    
+    float computeFunc(float phasor);
 
 private:
-    void computeFunc(float &phasor);
+    void funcListener(float &phasor);
     void computeMultiplyMod(float* value);
 
     int oscId;
