@@ -60,6 +60,7 @@
 		9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */; };
 		9F89C70E1F191D8A008EB023 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F89C70D1F191D8A008EB023 /* aubio.framework */; };
 		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
+		9F9ABA3B1F7C0771007F22EB /* speakerPowerCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */; };
 		9FBCE1851F2F88B900E7E5B1 /* mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */; };
 		9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */; };
 		9FD8862D1F5588310025EC69 /* chartresTextureUnifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */; };
@@ -232,6 +233,8 @@
 		9F89C70D1F191D8A008EB023 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = aubio.framework; sourceTree = "<group>"; };
 		9F89C7101F1924A0008EB023 /* delta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = delta.cpp; sourceTree = "<group>"; };
 		9F89C7111F1924A0008EB023 /* delta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delta.h; sourceTree = "<group>"; };
+		9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = speakerPowerCalculator.cpp; sourceTree = "<group>"; };
+		9F9ABA3A1F7C0771007F22EB /* speakerPowerCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speakerPowerCalculator.h; sourceTree = "<group>"; };
 		9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mapper.cpp; sourceTree = "<group>"; };
 		9FBCE1841F2F88B900E7E5B1 /* mapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mapper.h; sourceTree = "<group>"; };
 		9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorMapper.cpp; sourceTree = "<group>"; };
@@ -779,6 +782,8 @@
 				9F135F4A1F6142AE007E3736 /* audioAnalyzer.h */,
 				9F18BC301F7046BA0018CD78 /* valueSmoother.h */,
 				9F3588C61F710DAB00614338 /* vectorOperations.h */,
+				9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */,
+				9F9ABA3A1F7C0771007F22EB /* speakerPowerCalculator.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -985,6 +990,7 @@
 				9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */,
 				479DCA850DD8BB469A777AD4 /* ofxAubioBeat.cpp in Sources */,
 				C60077973A257D8F44947E2E /* ofxAubioBlock.cpp in Sources */,
+				9F9ABA3B1F7C0771007F22EB /* speakerPowerCalculator.cpp in Sources */,
 				67383740F5CC47ED5F955A76 /* ofxAubioMelBands.cpp in Sources */,
 				9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */,
 				101D2DB773940813A5C898CD /* ofxAubioPitch.cpp in Sources */,
