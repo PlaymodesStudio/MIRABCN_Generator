@@ -21,11 +21,11 @@ private:
     
     
     vector<vector<float>>   widthManualWindowing;
-    vector<vector<float>>   heightManualWindowing;
+    vector<float>   heightManualWindowing;
     
     int width, height;
     ofParameterGroup*   parameters;
-    ofParameter<int>    
+    ofParameter<int>    computeFunc;
     ofParameter<vector<vector<ofColor>>>    input;
     ofParameter<vector<vector<float>>> output;
 };

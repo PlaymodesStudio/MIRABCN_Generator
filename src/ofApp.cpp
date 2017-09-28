@@ -1,6 +1,7 @@
 #include "ofApp.h"
 #include "chartresTextureUnifier.h"
 #include "dataRecorder.h"
+#include "speakerPowerCalculator.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -126,7 +127,7 @@ void ofApp::setup(){
     
     if(!configured) ofExit();
     
-    
+    new speakerPowerCalculator(8);
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
