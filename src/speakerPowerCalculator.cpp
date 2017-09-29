@@ -17,7 +17,8 @@ speakerPowerCalculator::speakerPowerCalculator(int lenght){
     parameters = new ofParameterGroup();
     parameters->setName("speakerPowerCalculator");
     parameters->add(input.set("Input", {{}}));
-    parameters->add(computeFunc.set("ComputeFunc", 0, 0, 1));
+//    parameters->add(computeFunc.set("ComputeFunc", 0, 0, 1));
+    parametersControl::addDropdownToParameterGroupFromParameter(parameters, "Function", {"Sum", "Max", "Mean", "Min"}, computeFunc);
     parameters->add(output.set("Output", {{}}));
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green);
@@ -75,8 +76,8 @@ void speakerPowerCalculator::inputListener(vector<vector<ofColor>> &in){
                     //iterate each point in arch
                     sumR = sumR + (in[i][j].getBrightness()/255.);
                 }
-                stereoSplit[0][i] = sumL/(float)w;
-                stereoSplit[1][i] = sumR/(float)w;
+                stereoSplit[0][i] = ofClamp(sumL, 0, 1);
+                stereoSplit[1][i] = ofClamp(sumR, 0, 1);
                 break;
             }
             case 1: //max;
@@ -100,6 +101,27 @@ void speakerPowerCalculator::inputListener(vector<vector<ofColor>> &in){
                 stereoSplit[1][i] = maxR;
                 break;
             }
+            case 2: //mean;
+            {
+                float sumL = 0;
+                float sumR = 0;
+                for(int j = 0; j < widthToPan; j++){
+                    //iterate each point in arch
+                    sumL = sumL + (in[i][j].getBrightness()/255.);
+                }
+                for(int j = widthToPan; j < widthToPan*2; j++){
+                    //iterate each point in arch
+                    sumL = sumL + (in[i][j].getBrightness()/255.)*widthManualWindowing[0][j-widthToPan];
+                    sumR = sumR + (in[i][j].getBrightness()/255.)*widthManualWindowing[1][j-widthToPan];
+                }
+                for(int j = widthToPan*2; j < w; j++){
+                    //iterate each point in arch
+                    sumR = sumR + (in[i][j].getBrightness()/255.);
+                }
+                stereoSplit[0][i] = sumL/(float)w;
+                stereoSplit[1][i] = sumR/(float)w;
+                break;
+            }
         }
     }
     
@@ -108,34 +130,50 @@ void speakerPowerCalculator::inputListener(vector<vector<ofColor>> &in){
     
     for(int i = 0; i < width; i++){
         switch (computeFunc) {
-            case 0:{
+            case 0:{ //Sum
                 for(int j = 1; j < h; j += 4){
                     int initialVal = max(0, (int)ceil((j+.5) - h/2));
                     int finalVal = min(h-1, (int)floor((j+.5) + h/2));
                     float sum = 0;
                     for(int k = initialVal; k <= finalVal; k++){
                         int manualWindowIndex = (h/2);
-                        if(k < (j+.5)) manualWindowIndex - ceil(abs((float)k - (j+.5)));
-                        else manualWindowIndex + floor((float)k - (j+.5));
+                        if(k < (j+.5)) manualWindowIndex -= ceil(abs((float)k - ((float)j+.5)));
+                        else manualWindowIndex += floor((float)k - ((float)j+.5));
                         sum = sum + (stereoSplit[i][k] * heightManualWindowing[manualWindowIndex]);
                     }
-                    lenghtShrink[i][(j-1)/4] = (float)sum / float(abs(finalVal-initialVal));
+                    lenghtShrink[i][(j-1)/4] = ofClamp(sum, 0, 1);
                 }
+                cout<<endl;
                 break;
             }
-            case 1:{
+            case 1:{ //Max
                 for(int j = 1; j < h; j += 4){
                     int initialVal = max(0, (int)ceil((j+.5) - h/2));
                     int finalVal = min(h-1, (int)floor((j+.5) + h/2));
                     float max = 0;
                     for(int k = initialVal; k <= finalVal; k++){
                         int manualWindowIndex = (h/2);
-                        if(k < (j+.5)) manualWindowIndex - ceil(abs((float)k - (j+.5)));
-                        else manualWindowIndex + floor((float)k - (j+.5));
+                        if(k < (j+.5)) manualWindowIndex -= ceil(abs((float)k - (j+.5)));
+                        else manualWindowIndex += floor((float)k - (j+.5));
                         float actualVal = (stereoSplit[i][k] * heightManualWindowing[manualWindowIndex]);
                         if(actualVal > max) max = actualVal;
                     }
                     lenghtShrink[i][(j-1)/4] = max;
+                }
+                break;
+            }
+            case 2:{ //Mean
+                for(int j = 1; j < h; j += 4){
+                    int initialVal = max(0, (int)ceil((j+.5) - h/2));
+                    int finalVal = min(h-1, (int)floor((j+.5) + h/2));
+                    float sum = 0;
+                    for(int k = initialVal; k <= finalVal; k++){
+                        int manualWindowIndex = (h/2);
+                        if(k < (j+.5)) manualWindowIndex -= ceil(abs((float)k - ((float)j+.5)));
+                        else manualWindowIndex += floor((float)k - ((float)j+.5));
+                        sum = sum + (stereoSplit[i][k] * heightManualWindowing[manualWindowIndex]);
+                    }
+                    lenghtShrink[i][(j-1)/4] = (float)sum / float(abs(finalVal-initialVal));
                 }
                 break;
             }
