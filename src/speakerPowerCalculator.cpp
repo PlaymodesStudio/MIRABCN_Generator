@@ -143,7 +143,6 @@ void speakerPowerCalculator::inputListener(vector<vector<ofColor>> &in){
                     }
                     lenghtShrink[i][(j-1)/4] = ofClamp(sum, 0, 1);
                 }
-                cout<<endl;
                 break;
             }
             case 1:{ //Max

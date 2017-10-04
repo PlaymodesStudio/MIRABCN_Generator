@@ -76,5 +76,7 @@ void dataRecorder::inputListener(vector<vector<ofColor> > &info){
 void dataRecorder::recordListener(bool &b){
     if(b){
         frameCounter = 0;
+    }else{
+        parameters->getBool("Auto Rec Loop") = false;
     }
 }

@@ -115,6 +115,11 @@ void ofApp::setup(){
                 new dataRecorder();
             }
             
+            int speakerPowerCalculatorSize = xml.getIntValue("SpeakerPowerCalculator");
+            if(speakerPowerCalculatorSize > 0){
+                new speakerPowerCalculator(speakerPowerCalculatorSize);
+            }
+            
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize);
 //            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             //Create main gui, and add listeners when all guis are created
@@ -127,7 +132,6 @@ void ofApp::setup(){
     
     if(!configured) ofExit();
     
-    new speakerPowerCalculator(8);
     preview->activateSeparateWindow(prevWinRect);
     
     ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
