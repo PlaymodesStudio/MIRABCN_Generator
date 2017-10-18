@@ -2,6 +2,7 @@
 #include "chartresTextureUnifier.h"
 #include "dataRecorder.h"
 #include "speakerPowerCalculator.h"
+#include "bankDimensionCombinator.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -129,6 +130,8 @@ void ofApp::setup(){
             configured = true;
         }
     }
+    
+    new bankDimensionCombinator();
     
     if(!configured) ofExit();
     

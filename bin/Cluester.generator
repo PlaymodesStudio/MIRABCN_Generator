@@ -1,0 +1,33 @@
+<CONFIGFILE>
+  <GeneratorConfig>
+    <Name>TEST</Name>
+    <BankGroupsNum>2</BankGroupsNum>
+    <BankGroup1Width>24</BankGroup1Width>
+    <BankGroup1Height>162</BankGroup1Height>
+    <BankGroup2Width>5</BankGroup2Width>
+    <BankGroup2Height>1</BankGroup2Height>
+    <BPMSync>0</BPMSync>
+    <BPM>112.5</BPM>
+    <FrameRate>60</FrameRate>
+    <Color>2</Color>
+    <GroupScopes>2</GroupScopes>
+    <GroupColorScopes>2</GroupColorScopes>
+    <BankScopes>6</BankScopes>
+    <SyphonSenders>2</SyphonSenders>
+    <SyphonSender1GrayName>MIRABCN_Generator</SyphonSender1GrayName>
+    <SyphonSender1ColorName>MIRABCN_Generator_tinted</SyphonSender1ColorName>
+    <SyphonSender1InvertTexture>0</SyphonSender1InvertTexture>
+    <SyphonSender2GrayName>Spots_gray</SyphonSender2GrayName>
+    <SyphonSender2ColorName>Spots</SyphonSender2ColorName>
+    <SyphonSender2InvertTexture>0</SyphonSender2InvertTexture>
+    <AudioControls>0</AudioControls>
+    <OscInput>0</OscInput>
+    <AudioAnalyzer>0</AudioAnalyzer>
+    <TextureUnifier>0</TextureUnifier>
+    <DataRecorder>0</DataRecorder>
+    <MainWindowPos>0_0</MainWindowPos>
+    <MainWindowSize>2560_1391</MainWindowSize>
+    <PrevWindowPos>-383_45</PrevWindowPos>
+    <PrevWindowSize>383_1035</PrevWindowSize>
+	</GeneratorConfig>
+</CONFIGFILE>
