@@ -58,6 +58,7 @@ void ofApp::setup(){
             int previewGroupSize = xml.getIntValue("GroupScopes");
             int previewColorSize = xml.getIntValue("GroupColorScopes");
             int previewBankSize = xml.getIntValue("BankScopes");
+            bool previewGrid = xml.getBoolValue("GridScope");
             
             ofSetWindowTitle(name);
             
@@ -121,7 +122,7 @@ void ofApp::setup(){
                 new speakerPowerCalculator(speakerPowerCalculatorSize);
             }
             
-            preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize);
+            preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize, previewGrid);
 //            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();

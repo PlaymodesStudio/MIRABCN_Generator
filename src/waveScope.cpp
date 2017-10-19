@@ -8,7 +8,7 @@
 
 #include "waveScope.h"
 
-waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes, int colorScopes, int bankScopes, ofPoint pos){
+waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes, int colorScopes, int bankScopes, bool gridScope, ofPoint pos){
     logBuffer = logBuffer_;
     hasColor = colorScopes != 0;
     groupBankIn.resize(groupScopes);
@@ -27,17 +27,21 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes
     for(int i = 0; i < colorScopes; i++){
         parameters->add(colorGroupIn[i].set("Color Group In " + ofToString(i), {{}}));
     }
-//    parameters->add(mainOutIn.set("Master Scope", {{0}}));
-//    if(color){
-//        parameters->add(gradientPreview.set("Color Scope", {{ofColor::black}}));
-//        parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
-//    }
+    //    parameters->add(mainOutIn.set("Master Scope", {{0}}));
+    //    if(color){
+    //        parameters->add(gradientPreview.set("Color Scope", {{ofColor::black}}));
+    //        parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
+    //    }
     for(int i = 0; i < bankScopes ; i++)
         parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {}));
     parameters->add(drawOnSeparateWindow.set("Separate Window", false));
     
+    if(gridScope) {
+        parameters->add(gridIn.set("Grid In", {}));
+    }
+    
     ofAddListener(parameters->parameterChangedE(), this, &waveScope::inputListener);
-
+    
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
     
     contentWidthOffset = 0;
@@ -51,9 +55,9 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes
 void waveScope::draw(){
     ofBackground(0);
     ofSetColor(255);
-//
+    //
     int contentWidth = 2*ofGetWidth()/3 + contentWidthOffset;
-
+    
     
     int numActiveGroups = 0;
     for(auto &in : activeGroupInCounter){
@@ -77,6 +81,9 @@ void waveScope::draw(){
             numActiveOscBanks++;
             in = in-1;
         }
+    }
+    if (activeGridCounter > 0) {
+        activeGridCounter -=1;
     }
     
     int totalActiveScopes = numActiveGroups + numActiveColors + numActiveOscBanks;
@@ -163,6 +170,40 @@ void waveScope::draw(){
         
         
     }
+    if(activeGridCounter > 0 ){
+        ofRectangle gridRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight()/3);
+        int lin_size = gridIn.get().size();
+        int width = 0, height = 0;
+        if(pow(int(sqrt(lin_size)), 2) ==  lin_size){
+            width = sqrt(lin_size);
+            height = sqrt(lin_size);
+        }
+        else{
+            for(int i = floor(sqrt(lin_size)); i > 0; i--){
+                if((lin_size/i) == int(lin_size/i)){
+                    height = i;
+                    width = lin_size/i;
+                    break;
+                }
+            }
+        }
+        ofTexture tex;
+        tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+        unsigned char *data = new unsigned char[lin_size];
+        for(int i = 0 ; i < lin_size ; i++){
+            data[i] = gridIn.get()[i] * 255;
+        }
+        tex.loadData(data, width, height, GL_LUMINANCE);
+        delete[] data;
+        
+        tex.draw(gridRectangle);
+        ofPushStyle();
+        ofSetColor(ofColor::indianRed);
+        ofNoFill();
+        ofSetLineWidth(2);
+        ofDrawRectangle(gridRectangle);
+        ofPopStyle();
+    }
     
     
     //Draw notifiers
@@ -170,10 +211,15 @@ void waveScope::draw(){
     
     int lineHeigh = 15;
     
-//    ofRectangle debugRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
-    ofRectangle debugRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight());
+    ofRectangle debugRectangle;
+    if(activeGridCounter > 0 ){
+        debugRectangle = ofRectangle(contentWidth, ofGetHeight()/3, ofGetWidth()-contentWidth, 2*ofGetHeight()/3);
+    }else{
+        debugRectangle = ofRectangle(contentWidth, 0, ofGetWidth()-contentWidth, ofGetHeight());
+    }
+    
     while(logBuffer->getSize()*lineHeigh > debugRectangle.getHeight()) logBuffer->eraseLastLine();
-
+    
     for (int i = 0; i < logBuffer->getSize(); i++){
         string line = logBuffer->getLine(i);
         ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (lineHeigh*(i+1)));
@@ -201,6 +247,9 @@ void waveScope::inputListener(ofAbstractParameter &abs){
         if(abs.getName() == oscillatorBankIns[i].getName()){
             activeOscInCounter[i] = 20;
         }
+    }
+    if(abs.getName() == gridIn.getName()){
+        activeGridCounter = 20;
     }
 }
 

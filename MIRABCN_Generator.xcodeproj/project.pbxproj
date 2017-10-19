@@ -52,6 +52,7 @@
 		99F9413A08923B8F81AC69ED /* bufferLoggerChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D54B0D218CD6FA617A7BD18 /* bufferLoggerChannel.cpp */; };
 		9BD777923C7E370A961526AC /* envelopeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4655B54F461ED6D3FD64F179 /* envelopeGenerator.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
+		9F0EB9001F9770D0009E0847 /* bankDimensionCombinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */; };
 		9F135F4B1F6142AE007E3736 /* audioAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */; };
 		9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */; };
 		9F30E3821F60270D00F2ABAC /* vectorChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E3801F60270D00F2ABAC /* vectorChain.cpp */; };
@@ -215,6 +216,8 @@
 		9BF3AA0D4FAA89D0F8A0E545 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = OscReceivedElements.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscReceivedElements.cpp; sourceTree = SOURCE_ROOT; };
 		9D2C29B96659EBB7A0C5672F /* ofxAubioPitch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAubioPitch.h; path = ../../../addons/ofxAubio/src/ofxAubioPitch.h; sourceTree = SOURCE_ROOT; };
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
+		9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bankDimensionCombinator.cpp; sourceTree = "<group>"; };
+		9F0EB8FF1F9770D0009E0847 /* bankDimensionCombinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bankDimensionCombinator.h; sourceTree = "<group>"; };
 		9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioAnalyzer.cpp; sourceTree = "<group>"; };
 		9F135F4A1F6142AE007E3736 /* audioAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioAnalyzer.h; sourceTree = "<group>"; };
 		9F18BC301F7046BA0018CD78 /* valueSmoother.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = valueSmoother.h; sourceTree = "<group>"; };
@@ -784,6 +787,8 @@
 				9F3588C61F710DAB00614338 /* vectorOperations.h */,
 				9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */,
 				9F9ABA3A1F7C0771007F22EB /* speakerPowerCalculator.h */,
+				9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */,
+				9F0EB8FF1F9770D0009E0847 /* bankDimensionCombinator.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1007,6 +1012,7 @@
 				C6FE64F74F1EA1D98C8F9847 /* ofxMidiMessage.cpp in Sources */,
 				83D9F930112E0944444124EE /* ofxMidiOut.cpp in Sources */,
 				63D0FD8734D5760B8080C901 /* RtMidi.cpp in Sources */,
+				9F0EB9001F9770D0009E0847 /* bankDimensionCombinator.cpp in Sources */,
 				9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */,
 				9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,

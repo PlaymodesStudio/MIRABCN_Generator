@@ -13,6 +13,7 @@
     <GroupScopes>2</GroupScopes>
     <GroupColorScopes>2</GroupColorScopes>
     <BankScopes>6</BankScopes>
+    <GridScope>1</GridScope>
     <SyphonSenders>2</SyphonSenders>
     <SyphonSender1GrayName>MIRABCN_Generator</SyphonSender1GrayName>
     <SyphonSender1ColorName>MIRABCN_Generator_tinted</SyphonSender1ColorName>
@@ -27,7 +28,7 @@
     <DataRecorder>0</DataRecorder>
     <MainWindowPos>0_0</MainWindowPos>
     <MainWindowSize>2560_1391</MainWindowSize>
-    <PrevWindowPos>-383_45</PrevWindowPos>
+    <PrevWindowPos>-496_45</PrevWindowPos>
     <PrevWindowSize>383_1035</PrevWindowSize>
 	</GeneratorConfig>
 </CONFIGFILE>

@@ -15,7 +15,7 @@
 
 class waveScope{
 public:
-    waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr, int groupScopes = 1, int colorScopes = 1, int bankScopes = 2, ofPoint pos = ofPoint(-1, -1));
+    waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr, int groupScopes = 1, int colorScopes = 1, int bankScopes = 2, bool gridScope = false, ofPoint pos = ofPoint(-1, -1));
     ~waveScope(){
         delete parameters;
         if(prevWindow != nullptr)
@@ -42,10 +42,12 @@ private:
     vector<ofParameter<vector<float>>>          oscillatorBankIns;
     vector<ofParameter<vector<vector<float>>>>  groupBankIn;
     vector<ofParameter<vector<vector<ofColor>>>>    colorGroupIn;
+    ofParameter<vector<float>>  gridIn;
     
     vector<float>   activeGroupInCounter;
     vector<float>   activeColorInCounter;
     vector<float>   activeOscInCounter;
+    float   activeGridCounter;
     
     ofParameter<vector<vector<float>>> mainOutIn;
     ofParameter<vector<vector<ofColor>>> gradientPreview;
