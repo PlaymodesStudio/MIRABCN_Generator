@@ -8,6 +8,11 @@
 
 #include "waveScope.h"
 
+void window_no_close_scope(GLFWwindow* window){
+    glfwSetWindowShouldClose(window, GL_FALSE);
+};
+
+
 waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes, int colorScopes, int bankScopes, bool gridScope, ofPoint pos){
     logBuffer = logBuffer_;
     hasColor = colorScopes != 0;
@@ -18,6 +23,7 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes
     activeGroupInCounter.resize(groupScopes, 0);
     activeColorInCounter.resize(colorScopes, 0);
     activeOscInCounter.resize(bankScopes, 0);
+    activeGridCounter = 0;
     
     parameters = new ofParameterGroup();
     parameters->setName("waveScope");
@@ -316,6 +322,9 @@ void waveScope::changeDrawLocation(bool &b){
         ofAddListener(prevWindow->events().mousePressed, this, &waveScope::mousePressed);
         ofAddListener(prevWindow->events().mouseReleased, this, &waveScope::mouseReleased);
         ofAddListener(prevWindow->events().mouseDragged, this, &waveScope::mouseDragged);
+        ofAppGLFWWindow * ofWindow = (ofAppGLFWWindow*)prevWindow.get();
+        GLFWwindow * glfwWindow = ofWindow->getGLFWWindow();
+        glfwSetWindowCloseCallback(glfwWindow, window_no_close_scope);
     }
     else{
         prevWindowRect.setPosition(prevWindow->getWindowPosition());

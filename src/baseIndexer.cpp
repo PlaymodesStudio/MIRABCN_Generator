@@ -8,6 +8,10 @@
 
 #include "baseIndexer.h"
 
+void window_no_close_indexer(GLFWwindow* window){
+    glfwSetWindowShouldClose(window, GL_FALSE);
+};
+
 baseIndexer::baseIndexer(int numIndexs){
     indexCount = numIndexs;
     indexs.resize(indexCount, 0);
@@ -15,6 +19,11 @@ baseIndexer::baseIndexer(int numIndexs){
     for(int i = 0; i < indexRand.size(); i++)
         indexRand[i] = i-((float)indexRand.size()/2.f);
     indexRand_Param_previous = 0;
+    
+    reindexGrid.resize(indexCount, vector<bool>(indexCount, false));
+    for(int i = 0; i < indexCount; i++){
+        reindexGrid[i][i] = true;
+    }
     
     parameters = new ofParameterGroup;
     parameters->setName("Indexer");
@@ -26,6 +35,7 @@ baseIndexer::baseIndexer(int numIndexs){
     parameters->add(indexQuant_Param.set("Index Quantization", indexCount, 1, indexCount));
     parameters->add(combination_Param.set("Index Combination", 0, 0, 1));
     parameters->add(modulo_Param.set("Index Modulo", indexCount, 1, indexCount));
+    parameters->add(manualReindex_Param.set("Manual Reindex", false));
     
     numWaves_Param.addListener(this, &baseIndexer::parameterFloatListener);
     indexInvert_Param.addListener(this, &baseIndexer::parameterFloatListener);
@@ -37,7 +47,10 @@ baseIndexer::baseIndexer(int numIndexs){
     modulo_Param.addListener(this, &baseIndexer::parameterIntListener);
     
     indexRand_Param.addListener(this, &baseIndexer::indexRandChanged);
+    
+    manualReindex_Param.addListener(this, &baseIndexer::drawManualReindex);
 
+    reindexWindowRect.setPosition(-1, -1);
     
     recomputeIndexs();
 }
@@ -108,4 +121,109 @@ void baseIndexer::indexRandChanged(float &val){
     if(indexRand_Param_previous == 0)
         random_shuffle(indexRand.begin(), indexRand.end());
     indexRand_Param_previous = val;
+}
+
+
+
+//Reindex
+
+void baseIndexer::draw(ofEventArgs &e){
+    ofBackground(127);
+    ofSetColor(255);
+    int x_margin = 10;
+    int y_margin = 10;
+    int x_labelWidth = 20;
+    int y_labelHeight = 20;
+    float x_step = (ofGetWidth() - x_margin*2 - x_labelWidth)/indexCount;
+    float y_step = (ofGetHeight() - y_margin*2 - y_labelHeight)/indexCount;
+    for(int i = 0; i < indexCount; i++){
+        ofDrawBitmapString(ofToString(i), (i+0.5)*x_step + x_margin + x_labelWidth, 10);
+        for(int j = 0; j < indexCount; j++){
+            if(i == 0){
+                ofDrawBitmapString(ofToString(j), 5, (j+0.5)*y_step + y_margin + y_labelHeight);
+            }
+            ofSetRectMode(OF_RECTMODE_CORNER);
+            ofNoFill();
+            ofDrawRectangle(i*x_step + x_margin + x_labelWidth, j*y_step + y_margin + y_labelHeight, x_step, y_step);
+            if(reindexGrid[i][j]){
+                ofDrawLine((i+0.25)*x_step + x_margin + x_labelWidth
+                           , (j+0.25)*y_step + y_margin + y_labelHeight
+                           , (i+0.75)*x_step + x_margin + x_labelWidth
+                           , (j+0.75)*y_step + y_margin + y_labelHeight);
+                ofDrawLine((i+0.75)*x_step + x_margin + x_labelWidth
+                           , (j+0.25)*y_step + y_margin + y_labelHeight
+                           , (i+0.25)*x_step + x_margin + x_labelWidth
+                           , (j+0.75)*y_step + y_margin + y_labelHeight);
+            }
+        }
+    }
+}
+
+
+
+void baseIndexer::mouseMoved(ofMouseEventArgs &a){
+    
+}
+
+void baseIndexer::mousePressed(ofMouseEventArgs &a){
+    int x_margin = 10;
+    int y_margin = 10;
+    int x_labelWidth = 20;
+    int y_labelHeight = 20;
+    float x_step = (ofGetWidth() - x_margin*2 - x_labelWidth)/indexCount;
+    float y_step = (ofGetHeight() - y_margin*2 - y_labelHeight)/indexCount;
+    for(int i = 0; i < indexCount; i++){
+        for(int j = 0; j < indexCount; j++){
+            ofSetRectMode(OF_RECTMODE_CORNER);
+            ofRectangle rect(i*x_step + x_margin + x_labelWidth, j*y_step + y_margin + y_labelHeight, x_step, y_step);
+            if(rect.inside(a)){
+                reindexGrid[i][j] = !reindexGrid[i][j];
+                break;
+            }
+        }
+    }
+}
+
+void baseIndexer::mouseReleased(ofMouseEventArgs &a){
+    
+}
+
+void baseIndexer::mouseDragged(ofMouseEventArgs &a){
+
+}
+
+void baseIndexer::drawManualReindex(bool &b){
+    if(b){
+        ofAppBaseWindow* mainWindow = ofGetWindowPtr();
+        
+        ofGLFWWindowSettings prevSettings;
+        if(reindexWindowRect.getPosition() == ofPoint(-1, -1)){
+            prevSettings.width = 1024;
+            prevSettings.height = 1024;
+            prevSettings.setPosition(ofVec2f(ofGetScreenWidth()-1024, ofGetScreenHeight()-1024));
+        }
+        else{
+            prevSettings.width = reindexWindowRect.width;
+            prevSettings.height = reindexWindowRect.height;
+            prevSettings.setPosition(reindexWindowRect.position);
+        }
+        prevSettings.windowMode = OF_WINDOW;
+        prevSettings.resizable = true;
+        reindexWindow = ofCreateWindow(prevSettings);
+        reindexWindow->setWindowTitle(parameters->getName());
+        ofAddListener(reindexWindow->events().draw, this, &baseIndexer::draw);
+        ofAddListener(reindexWindow->events().mouseMoved, this, &baseIndexer::mouseMoved);
+        ofAddListener(reindexWindow->events().mousePressed, this, &baseIndexer::mousePressed);
+        ofAddListener(reindexWindow->events().mouseReleased, this, &baseIndexer::mouseReleased);
+        ofAddListener(reindexWindow->events().mouseDragged, this, &baseIndexer::mouseDragged);
+        ofAppGLFWWindow * ofWindow = (ofAppGLFWWindow*)reindexWindow.get();
+        GLFWwindow * glfwWindow = ofWindow->getGLFWWindow();
+        glfwSetWindowCloseCallback(glfwWindow, window_no_close_indexer);
+    }
+    else if(reindexWindow != nullptr){
+        reindexWindowRect.setPosition(reindexWindow->getWindowPosition());
+        reindexWindowRect.setSize(reindexWindow->getWidth(), reindexWindow->getHeight());
+        reindexWindow->setWindowShouldClose();
+        reindexWindow = nullptr;
+    }
 }

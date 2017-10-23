@@ -15,7 +15,7 @@ bankDimensionCombinator::bankDimensionCombinator(){
     
     parameters->add(x_input.set("Input X", {}));
     parameters->add(y_input.set("Input Y", {}));
-    parametersControl::addDropdownToParameterGroupFromParameter(parameters, "Operation", {"+", "x", "-"}, operationSelector);
+    parametersControl::addDropdownToParameterGroupFromParameter(parameters, "Operation", {"+", "x", "-", "mean"}, operationSelector);
     
     parameters->add(output.set("Output", {}));
     
@@ -79,8 +79,10 @@ void bankDimensionCombinator::paramListener(vector<float> &vf){
                 case 2:
                     tempOut[i] = ofClamp(x_input.get()[width_i] - y_input.get()[height_i],0,1);
                     break;
+                case 3:
+                    tempOut[i] = ofClamp(x_input.get()[width_i]*.5 + y_input.get()[height_i]*.5, 0, 1);
+                    break;
             }
-//            tempOut[i] = x_input.get()[width_i] + y_input.get()[height_i];
         }
         parameters->get("Output").cast<vector<float>>() = tempOut;
     }

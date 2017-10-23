@@ -18,8 +18,9 @@ public:
     waveScope(shared_ptr<bufferLoggerChannel> logBuffer_ = nullptr, int groupScopes = 1, int colorScopes = 1, int bankScopes = 2, bool gridScope = false, ofPoint pos = ofPoint(-1, -1));
     ~waveScope(){
         delete parameters;
-        if(prevWindow != nullptr)
+        if(prevWindow != nullptr){
             prevWindow->setWindowShouldClose();
+        }
     };
     
     void activateSeparateWindow(ofRectangle winRect = ofRectangle(-1, -1, 100, 100));

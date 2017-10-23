@@ -16,6 +16,9 @@ public:
     baseIndexer(int numIndexs);
     ~baseIndexer(){
         delete parameters;
+        if(reindexWindow != nullptr){
+            reindexWindow->setWindowShouldClose();
+        }
     };
     
     ofParameter<float>  numWaves_Param; //Desphase Quantity
@@ -26,6 +29,14 @@ public:
     ofParameter<int>    indexQuant_Param;
     ofParameter<float>  combination_Param;
     ofParameter<int>    modulo_Param;
+    ofParameter<bool>   manualReindex_Param;
+    
+    void draw(ofEventArgs &e);
+    
+    void mouseMoved(ofMouseEventArgs &a);
+    void mousePressed(ofMouseEventArgs &a);
+    void mouseReleased(ofMouseEventArgs &a);
+    void mouseDragged(ofMouseEventArgs &a);
     
 protected:
     ofParameterGroup*   parameters;
@@ -34,13 +45,17 @@ protected:
     virtual void        newIndexs(){};
     
 private:
+    void drawManualReindex(bool &b);
+    shared_ptr<ofAppBaseWindow> reindexWindow;
+    ofRectangle                 reindexWindowRect;
+    
     void parameterBoolListener(bool &b){recomputeIndexs();};
     void parameterFloatListener(float &f){recomputeIndexs();};
     void parameterIntListener(int &i){recomputeIndexs();};
     void recomputeIndexs();
     void indexRandChanged(float &val);
     
-   
+    vector<vector<bool>> reindexGrid;
     
     int                 indexCount; //The max number you will get from index
     

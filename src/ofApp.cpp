@@ -672,6 +672,7 @@ void ofApp::exit(){
         }
         xml.save(path);
     }
+    delete preview;
 }
 
 
