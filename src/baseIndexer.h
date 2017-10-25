@@ -44,6 +44,8 @@ protected:
     vector<float>       indexs;
     virtual void        newIndexs(){};
     
+    vector<vector<bool>> reindexGrid;
+    
 private:
     void drawManualReindex(bool &b);
     shared_ptr<ofAppBaseWindow> reindexWindow;
@@ -55,7 +57,6 @@ private:
     void recomputeIndexs();
     void indexRandChanged(float &val);
     
-    vector<vector<bool>> reindexGrid;
     
     int                 indexCount; //The max number you will get from index
     
