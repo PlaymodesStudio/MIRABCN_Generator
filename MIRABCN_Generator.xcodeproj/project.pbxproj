@@ -64,6 +64,7 @@
 		9F9ABA3B1F7C0771007F22EB /* speakerPowerCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */; };
 		9FBCE1851F2F88B900E7E5B1 /* mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */; };
 		9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */; };
+		9FC5A42A1FA0F56200E8F902 /* SubDimensionCombinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FC5A4281FA0F56200E8F902 /* SubDimensionCombinator.cpp */; };
 		9FD8862D1F5588310025EC69 /* chartresTextureUnifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */; };
 		9FDF67501F56A94400AD1A04 /* manualOscillatorBank.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF674E1F56A94400AD1A04 /* manualOscillatorBank.cpp */; };
 		9FDF676D1F5873CB00AD1A04 /* dataRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FDF676B1F5873CB00AD1A04 /* dataRecorder.cpp */; };
@@ -242,6 +243,8 @@
 		9FBCE1841F2F88B900E7E5B1 /* mapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mapper.h; sourceTree = "<group>"; };
 		9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorMapper.cpp; sourceTree = "<group>"; };
 		9FBCE1871F2F923B00E7E5B1 /* vectorMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorMapper.h; sourceTree = "<group>"; };
+		9FC5A4281FA0F56200E8F902 /* SubDimensionCombinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SubDimensionCombinator.cpp; sourceTree = "<group>"; };
+		9FC5A4291FA0F56200E8F902 /* SubDimensionCombinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubDimensionCombinator.h; sourceTree = "<group>"; };
 		9FD8862B1F5588310025EC69 /* chartresTextureUnifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chartresTextureUnifier.cpp; sourceTree = "<group>"; };
 		9FD8862C1F5588310025EC69 /* chartresTextureUnifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chartresTextureUnifier.h; sourceTree = "<group>"; };
 		9FDF674E1F56A94400AD1A04 /* manualOscillatorBank.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = manualOscillatorBank.cpp; sourceTree = "<group>"; };
@@ -789,6 +792,8 @@
 				9F9ABA3A1F7C0771007F22EB /* speakerPowerCalculator.h */,
 				9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */,
 				9F0EB8FF1F9770D0009E0847 /* bankDimensionCombinator.h */,
+				9FC5A4281FA0F56200E8F902 /* SubDimensionCombinator.cpp */,
+				9FC5A4291FA0F56200E8F902 /* SubDimensionCombinator.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1013,6 +1018,7 @@
 				83D9F930112E0944444124EE /* ofxMidiOut.cpp in Sources */,
 				63D0FD8734D5760B8080C901 /* RtMidi.cpp in Sources */,
 				9F0EB9001F9770D0009E0847 /* bankDimensionCombinator.cpp in Sources */,
+				9FC5A42A1FA0F56200E8F902 /* SubDimensionCombinator.cpp in Sources */,
 				9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */,
 				9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,

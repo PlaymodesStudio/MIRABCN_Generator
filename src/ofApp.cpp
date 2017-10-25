@@ -3,6 +3,7 @@
 #include "dataRecorder.h"
 #include "speakerPowerCalculator.h"
 #include "bankDimensionCombinator.h"
+#include "SubDimensionCombinator.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -133,6 +134,7 @@ void ofApp::setup(){
     }
     
     new bankDimensionCombinator();
+    new subDimensionCombinator();
     
     if(!configured) ofExit();
     
