@@ -78,8 +78,12 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
         else if(absParam.type() == typeid(ofParameterGroup).name()){
             tempDatGui->addLabel(paramGroup->getGroup(i).getName());
             tempDatGui->addDropdown(paramGroup->getGroup(i).getName(), ofSplitString(paramGroup->getGroup(i).getString(0), "-|-"))->select(paramGroup->getGroup(i).getInt(1));
+        }
+        else if(absParam.type() == typeid(ofParameter<vector<vector<bool>>>).name()){
+            
         }else{
-            tempDatGui->addLabel(absParam.getName());
+            if(absParam.getName() != "ReindexGrid")
+                tempDatGui->addLabel(absParam.getName());
         }
     }
     
@@ -787,6 +791,16 @@ void parametersControl::savePreset(string presetName, string bank){
                     ofStringReplace(noSpaces, " ", "_");
                     xml.addValue(noSpaces, groupParam->getGroup(j).getInt(1).get());
                 }
+                else if(absParam.getName() == "ReindexGrid"){
+                    ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
+                    string matrixInfo;
+                    for(int i = 0; i < castedParam.get().size(); i++){
+                        for(int j = 0; j < castedParam.get().size(); j++){
+                            matrixInfo += ofToString(castedParam.get()[i][j]);
+                        }
+                    }
+                    xml.addValue(absParam.getName(), matrixInfo);
+                }
             }
             xml.setToParent();
         }
@@ -966,6 +980,21 @@ void parametersControl::loadPreset(string presetName, string bank){
                             ofStringReplace(noSpaces, " ", "_");
                             if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
                                 groupParam->getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam->getGroup(j).getInt(1));
+                        }
+                        else if(absParam.getName() == "ReindexGrid"){
+                            ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
+                            
+                            if(xml.exists(absParam.getName())){
+                                string matrixInfo = xml.getValue(absParam.getName());
+                                vector<vector<bool>> matrixCopy = castedParam.get();
+                                for(int i = 0; i < castedParam.get().size(); i++){
+                                    for(int j = 0; j < castedParam.get().size(); j++){
+                                        matrixCopy[i][j] = matrixInfo[(i*matrixCopy.size()) + j] == '1' ? true : false;
+                                    }
+                                }
+                                castedParam = matrixCopy;
+                            }
+                            
                         }
                     }
                     //Jump one label before in xml structure

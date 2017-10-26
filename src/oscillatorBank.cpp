@@ -74,7 +74,7 @@ vector<float> oscillatorBank::computeBank(float phasor){
     result = vector<float>(resultNoReindex.size(), 0);
     for(int i = 0; i < result.size(); i++){
         for(int j = 0; j < result.size(); j++){
-            if(reindexGrid[j][i]){
+            if(reindexGrid.get()[j][i]){
                 if(resultNoReindex[j] > result[i]) result[i] = resultNoReindex[j];
             }
         }

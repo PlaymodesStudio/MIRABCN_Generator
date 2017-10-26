@@ -675,6 +675,8 @@ void ofApp::exit(){
         xml.save(path);
     }
     delete preview;
+    
+    for(auto i : oscillatorBanks) delete i;
 }
 
 

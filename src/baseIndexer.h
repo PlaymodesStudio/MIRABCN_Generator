@@ -15,7 +15,7 @@ class baseIndexer{
 public:
     baseIndexer(int numIndexs);
     ~baseIndexer(){
-        delete parameters;
+//        delete parameters;
         if(reindexWindow != nullptr){
             reindexWindow->setWindowShouldClose();
         }
@@ -44,7 +44,7 @@ protected:
     vector<float>       indexs;
     virtual void        newIndexs(){};
     
-    vector<vector<bool>> reindexGrid;
+    ofParameter<vector<vector<bool>>> reindexGrid;
     
 private:
     void drawManualReindex(bool &b);

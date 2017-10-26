@@ -20,9 +20,10 @@ baseIndexer::baseIndexer(int numIndexs){
         indexRand[i] = i-((float)indexRand.size()/2.f);
     indexRand_Param_previous = 0;
     
-    reindexGrid.resize(indexCount, vector<bool>(indexCount, false));
+    vector<vector<bool>> reindexCopy;
+    reindexCopy.resize(indexCount, vector<bool>(indexCount, false));
     for(int i = 0; i < indexCount; i++){
-        reindexGrid[i][i] = true;
+        reindexCopy[i][i] = true;
     }
     
     parameters = new ofParameterGroup;
@@ -36,6 +37,7 @@ baseIndexer::baseIndexer(int numIndexs){
     parameters->add(combination_Param.set("Index Combination", 0, 0, 1));
     parameters->add(modulo_Param.set("Index Modulo", indexCount, 1, indexCount));
     parameters->add(manualReindex_Param.set("Manual Reindex", false));
+    parameters->add(reindexGrid.set("ReindexGrid", reindexCopy));
     
     numWaves_Param.addListener(this, &baseIndexer::parameterFloatListener);
     indexInvert_Param.addListener(this, &baseIndexer::parameterFloatListener);
@@ -145,7 +147,7 @@ void baseIndexer::draw(ofEventArgs &e){
             ofSetRectMode(OF_RECTMODE_CORNER);
             ofNoFill();
             ofDrawRectangle(i*x_step + x_margin + x_labelWidth, j*y_step + y_margin + y_labelHeight, x_step, y_step);
-            if(reindexGrid[i][j]){
+            if(reindexGrid.get()[i][j]){
                 ofDrawLine((i+0.25)*x_step + x_margin + x_labelWidth
                            , (j+0.25)*y_step + y_margin + y_labelHeight
                            , (i+0.75)*x_step + x_margin + x_labelWidth
@@ -177,7 +179,9 @@ void baseIndexer::mousePressed(ofMouseEventArgs &a){
             ofSetRectMode(OF_RECTMODE_CORNER);
             ofRectangle rect(i*x_step + x_margin + x_labelWidth, j*y_step + y_margin + y_labelHeight, x_step, y_step);
             if(rect.inside(a)){
-                reindexGrid[i][j] = !reindexGrid[i][j];
+                vector<vector<bool>> reindexCopy = reindexGrid.get();
+                reindexCopy[i][j] = !reindexGrid.get()[i][j];
+                reindexGrid = reindexCopy;
                 break;
             }
         }
