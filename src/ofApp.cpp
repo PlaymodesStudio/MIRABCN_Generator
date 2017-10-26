@@ -10,17 +10,12 @@ void ofApp::setup(){
     ofSetEscapeQuitsApp(false);
     configured = false;
     
-    ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
-    string path = *buffer.getLines().begin();
-    auto result = ofSystemLoadDialog("Select Generator File", false, path);
+    auto result = ofSystemLoadDialog("Select Generator File", false, ofToDataPath("../"));
     if(ofSplitString(result.getPath(), ".").back() != "generator"){
         ofExit();
     }
-    
-    ofBuffer buf;
-    buf.append(result.getPath());
-    ofBufferToFile("lastOpenedFile.txt", buf);
 
+    lastOpenedPath = result.getPath();
     
     ofBackground(0);
     logBuffer = make_shared<bufferLoggerChannel>();
@@ -138,6 +133,12 @@ void ofApp::setup(){
             paramsControl->setGlobalBPM(bpm);
             
             configured = true;
+            
+            preview->activateSeparateWindow(prevWinRect);
+            
+            ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
+            ofAddListener(paramsControl->destroyModule, this, &ofApp::deleteModuleListener);
+            ofAddListener(paramsControl->nextFrameEvent, this, &ofApp::nextFrameListener);
         }
     }
     
@@ -145,12 +146,6 @@ void ofApp::setup(){
     
     
     if(!configured) ofExit();
-    
-    preview->activateSeparateWindow(prevWinRect);
-    
-    ofAddListener(paramsControl->createNewModule, this, &ofApp::newModuleListener);
-    ofAddListener(paramsControl->destroyModule, this, &ofApp::deleteModuleListener);
-    ofAddListener(paramsControl->nextFrameEvent, this, &ofApp::nextFrameListener);
 }
 
 void ofApp::newModuleListener(pair<string, ofPoint> &info){
@@ -723,11 +718,9 @@ void ofApp::exit(){
             paramsControl->saveGuiArrangement();
         }
         
-        ofBuffer buffer = ofBufferFromFile("lastOpenedFile.txt");
-        string path = *buffer.getLines().begin();
         
         ofXml xml;
-        if(xml.load(path)){
+        if(xml.load(lastOpenedPath)){
             if(xml.exists("GeneratorConfig")){
                 xml.setTo("GeneratorConfig");
                 xml.setValue("MainWindowPos", ofToString(ofGetWindowPositionX()) + "_" + ofToString(ofGetWindowPositionX()));
@@ -736,11 +729,13 @@ void ofApp::exit(){
                 xml.setValue("PrevWindowSize", ofToString(preview->getWindow()->getWidth()) + "_" + ofToString(preview->getWindow()->getHeight()));
             }
         }
-        xml.save(path);
+        xml.save(lastOpenedPath);
+        
+        delete preview;
+        
+        for(auto i : oscillatorBanks) delete i;
     }
-    delete preview;
     
-    for(auto i : oscillatorBanks) delete i;
 }
 
 

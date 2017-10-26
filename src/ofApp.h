@@ -113,6 +113,8 @@ private:
     
     bool configured;
     
+    string lastOpenedPath;
+    
     
     //The log channel is a buffer where you post all notifications, it's used mainly in waveScope to print the debug info.
     shared_ptr<bufferLoggerChannel> logBuffer;
