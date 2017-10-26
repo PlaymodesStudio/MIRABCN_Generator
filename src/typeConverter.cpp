@@ -10,8 +10,20 @@
 
 template<>
 void typeConverter<vector<float>, vector<vector<float>>>::sourceListener(vector<float> &s){
-    vector<vector<float>> toSend = {s};
-    parameters->get("Dest").cast<vector<vector<float>>>() = toSend;
+    if(toQuad){
+        int sideDim = ceil(sqrt(s.size()));
+        vector<vector<float>> toSend(sideDim, vector<float>(sideDim, 0));
+        for(int i = 0; i < s.size(); i++){
+            int col = i%sideDim;
+            int row = i / sideDim;
+            toSend[col][row] = s[i];
+        }
+        parameters->get("Dest").cast<vector<vector<float>>>() = toSend;
+    }
+    else{
+        vector<vector<float>> toSend = {s};
+        parameters->get("Dest").cast<vector<vector<float>>>() = toSend;
+    }
 };
 
 template<>

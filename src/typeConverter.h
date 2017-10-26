@@ -22,7 +22,8 @@ enum converterTypes{
     CONVERT_FLOAT_TO_VECFLOAT = 1,
     CONVERT_VECFLOAT_TO_VECVECFLOAT = 2,
     CONVERT_VECFLOAT_TO_FLOAT = 3,
-    CONVERT_VECVECFLOAT_TO_VECFLOAT = 4
+    CONVERT_VECVECFLOAT_TO_VECFLOAT = 4,
+    CONVERT_VECFLOAT_TO_VECVECFLOAT_QUAD = 5
 };
 
 
@@ -35,9 +36,11 @@ public:
 template <typename Tsource,typename Tdest>
 class typeConverter : public genericTypeConverter{
 public:
-    typeConverter(int id, ofPoint pos = ofPoint(-1, -1)){
+    typeConverter(int id, ofPoint pos = ofPoint(-1, -1), bool _toQuad = false){
         parameters = new ofParameterGroup();
         parameters->setName("typeConverter " + ofToString(id));
+        
+        toQuad = _toQuad;
         
         sourceTypeName = "";
         if(typeid(Tsource).name() == typeid(float).name()){
@@ -69,9 +72,11 @@ public:
         
         int type = 0;
         if(sourceTypeName == "float" && destTypeName == "vector<float>") type = 1;
-        else if(sourceTypeName == "vector<float>" && destTypeName == "vector<vector<float>>") type = 2;
+        else if(sourceTypeName == "vector<float>" && destTypeName == "vector<vector<float>>" && !toQuad) type = 2;
         else if(sourceTypeName == "vector<float>" && destTypeName == "float") type = 3;
         else if(sourceTypeName == "vector<vector<float>>" && destTypeName == "vector<float>") type = 4;
+        else if(sourceTypeName == "vector<float>" && destTypeName == "vector<vector<float>>" && toQuad) type = 5;
+
         
         ofParameter<string> label;
         parameters->add(label.set(ofToString(type) + ". " + sourceTypeName + " to " + destTypeName + "_label", ""));
@@ -92,6 +97,7 @@ protected:
     ofParameter<Tsource>    source;
     ofParameter<Tdest>      dest;
     
+    bool toQuad;
     string sourceTypeName;
     string destTypeName;
 };
