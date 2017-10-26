@@ -13,8 +13,8 @@
 
 class subDimensionCombinator{
 public:
-    subDimensionCombinator();
-    ~subDimensionCombinator();
+    subDimensionCombinator(int _id, ofPoint pos = ofPoint(-1, -1));
+    ~subDimensionCombinator(){};
     
 private:
     void paramListener(vector<float> &vf);

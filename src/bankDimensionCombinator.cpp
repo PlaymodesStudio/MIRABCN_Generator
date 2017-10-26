@@ -9,9 +9,9 @@
 #include "bankDimensionCombinator.h"
 #include "parametersControl.h"
 
-bankDimensionCombinator::bankDimensionCombinator(){
+bankDimensionCombinator::bankDimensionCombinator(int _id, ofPoint pos){
     parameters = new ofParameterGroup();
-    parameters->setName("bankDimensionCombinator");
+    parameters->setName("bankDimensionCombinator " + ofToString(_id));
     
     parameters->add(x_input.set("Input X", {}));
     parameters->add(y_input.set("Input Y", {}));
@@ -20,7 +20,7 @@ bankDimensionCombinator::bankDimensionCombinator(){
     parameters->add(output.set("Output", {}));
     
     x_input.addListener(this, &bankDimensionCombinator::paramListener);
-    parametersControl::getInstance().createGuiFromParams(parameters);
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
 }
 
 void bankDimensionCombinator::paramListener(vector<float> &vf){

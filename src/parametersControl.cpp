@@ -243,7 +243,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer", "Smoother", "Vec Smoother", "Vector Operations"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer", "Smoother", "Vec Smoother", "Vector Operations", "subDimensionCombinator", "bankDimensionCombinator"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -912,7 +912,7 @@ void parametersControl::loadPreset(string presetName, string bank){
         }
         
         //if we have to destroy the module we do it
-        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup" && moduleName != "dataRecorder" && moduleName != "audioAnalyzer" && moduleName != "oscInput" && moduleName != "speakerPowerCalculator" && moduleName != "textureUnifier" && moduleName != "subDimensionCombinator" && moduleName != "bankDimensionCombinator"){
+        if(hasToBeDestroyed && moduleName != "senderManager" && moduleName != "waveScope" && moduleName != "audioControls" && moduleName != "colorApplier" && moduleName != "chartresTextureUnifier" && moduleName != "oscillatorGroup" && moduleName != "dataRecorder" && moduleName != "audioAnalyzer" && moduleName != "oscInput" && moduleName != "speakerPowerCalculator" && moduleName != "textureUnifier"){
             destroyModuleAndConnections(i);
         }
         else{
@@ -1331,7 +1331,7 @@ void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain", "valueSmoother", "vectorValueSmoother", "vectorOperator"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain", "valueSmoother", "vectorValueSmoother", "vectorOperator", "subDimensionCombinator", "bankDimensionCombinator"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();

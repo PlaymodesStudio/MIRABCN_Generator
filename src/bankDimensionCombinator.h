@@ -13,8 +13,8 @@
 
 class bankDimensionCombinator{
 public:
-    bankDimensionCombinator();
-    ~bankDimensionCombinator();
+    bankDimensionCombinator(int _id, ofPoint pos = ofPoint(-1, -1));
+    ~bankDimensionCombinator(){};
     
 private:
     void paramListener(vector<float> &vf);

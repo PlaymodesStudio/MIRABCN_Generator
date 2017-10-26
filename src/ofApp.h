@@ -30,6 +30,8 @@
 #include "valueSmoother.h"
 #include "vectorOperations.h"
 #include "textureUnifier.h"
+#include "bankDimensionCombinator.h"
+#include "SubDimensionCombinator.h"
 
 
 static const int WIDTH = 0;
@@ -96,6 +98,8 @@ private:
     vector<valueSmoother*>   smoothers;
     vector<vectorValueSmoother*> vecSmoothers;
     vector<vectorOperations*>   vecOperations;
+    vector<bankDimensionCombinator*>  dimCombinator;
+    vector<subDimensionCombinator*>  subDimCombinator;
 //    Wave2DControl   waveControl;
     audioEngineController*      audioControl;
     parametersControl*          paramsControl;

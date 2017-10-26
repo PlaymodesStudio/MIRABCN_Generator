@@ -9,9 +9,9 @@
 #include "SubDimensionCombinator.h"
 #include "parametersControl.h"
 
-subDimensionCombinator::subDimensionCombinator(){
+subDimensionCombinator::subDimensionCombinator(int _id, ofPoint pos){
     parameters = new ofParameterGroup();
-    parameters->setName("subDimensionCombinator");
+    parameters->setName("subDimensionCombinator " + ofToString(_id));
     
     parameters->add(original.set("Original", {}));
     parameters->add(subDimension.set("Sub Dimension", {}));
@@ -19,7 +19,7 @@ subDimensionCombinator::subDimensionCombinator(){
     parameters->add(output.set("Output", {}));
     
     original.addListener(this, &subDimensionCombinator::paramListener);
-    parametersControl::getInstance().createGuiFromParams(parameters);
+    parametersControl::getInstance().createGuiFromParams(parameters, ofColor::white, pos);
 }
 
 void subDimensionCombinator::paramListener(vector<float> &vf){

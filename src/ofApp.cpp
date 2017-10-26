@@ -2,8 +2,7 @@
 #include "chartresTextureUnifier.h"
 #include "dataRecorder.h"
 #include "speakerPowerCalculator.h"
-#include "bankDimensionCombinator.h"
-#include "SubDimensionCombinator.h"
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -118,6 +117,15 @@ void ofApp::setup(){
                 new dataRecorder();
             }
             
+//            if(xml.getBoolValue("bankDimensionCombinator")){
+//                new bankDimensionCombinator();
+//            }
+//            
+//            if(xml.getBoolValue("subDimensionCombinator")){
+//                new subDimensionCombinator();
+//            }
+            
+            
             int speakerPowerCalculatorSize = xml.getIntValue("SpeakerPowerCalculator");
             if(speakerPowerCalculatorSize > 0){
                 new speakerPowerCalculator(speakerPowerCalculatorSize);
@@ -133,8 +141,8 @@ void ofApp::setup(){
         }
     }
     
-    new bankDimensionCombinator();
-    new subDimensionCombinator();
+    
+    
     
     if(!configured) ofExit();
     
@@ -389,7 +397,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < converters.size() && !foundNullElementInVector) ; i++){
                 if(converters[i] == nullptr){
-                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float>"));
+                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float> \n 5. vector<vector<float>> to vector<float> QUAD"));
                     switch(static_cast<converterTypes>(type)){
                         case CONVERT_FLOAT_TO_VECFLOAT:
                             converters[i] = new typeConverter<float, vector<float>>(i+1, info.second);
@@ -400,9 +408,13 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                         case CONVERT_VECFLOAT_TO_VECVECFLOAT:
                             converters[i] = new typeConverter<vector<float>, vector<vector<float>>>(i+1, info.second);
                             break;
+                        case CONVERT_VECFLOAT_TO_VECVECFLOAT_QUAD:
+                            converters[i] = new typeConverter<vector<float>, vector<vector<float>>>(i+1, info.second, true);
+                            break;
                         case CONVERT_VECVECFLOAT_TO_VECFLOAT:
                             converters[i] = new typeConverter<vector<vector<float>>, vector<float>>(i+1, info.second);
                             break;
+                            
                         default:
                             break;
                             
@@ -411,7 +423,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 }
             }
             if(!foundNullElementInVector){
-                int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float>"));
+                int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float> \n 5. vector<vector<float>> to vector<float> QUAD"));
                 switch(static_cast<converterTypes>(type)){
                     case CONVERT_FLOAT_TO_VECFLOAT:
                         converters.push_back(new typeConverter<float, vector<float>>(converters.size()+1, info.second));
@@ -421,6 +433,9 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                         break;
                     case CONVERT_VECFLOAT_TO_VECVECFLOAT:
                         converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(converters.size()+1, info.second));
+                        break;
+                    case CONVERT_VECFLOAT_TO_VECVECFLOAT_QUAD:
+                        converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(converters.size()+1, info.second, true));
                         break;
                     case CONVERT_VECVECFLOAT_TO_VECFLOAT:
                         converters.push_back(new typeConverter<vector<vector<float>>, vector<float>>(converters.size()+1, info.second));
@@ -445,6 +460,9 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                     break;
                 case CONVERT_VECFLOAT_TO_VECVECFLOAT:
                     converters[id-1] = new typeConverter<vector<float>, vector<vector<float>>>(id, info.second);
+                    break;
+                case CONVERT_VECFLOAT_TO_VECVECFLOAT_QUAD:
+                    converters[id-1] = new typeConverter<vector<float>, vector<vector<float>>>(id, info.second, true);
                     break;
                 case CONVERT_VECVECFLOAT_TO_VECFLOAT:
                     converters[id-1] = new typeConverter<vector<vector<float>>, vector<float>>(id, info.second);
@@ -557,6 +575,44 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             vecOperations[id-1] = new vectorOperations(id, info.second);
         }
     }
+    else if(moduleTypeName == "bankDimensionCombinator"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < dimCombinator.size() && !foundNullElementInVector) ; i++){
+                if(dimCombinator[i] == nullptr){
+                    dimCombinator[i] = new bankDimensionCombinator(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                dimCombinator.push_back(new bankDimensionCombinator(dimCombinator.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(dimCombinator.size() <= id-1)
+                dimCombinator.push_back(nullptr);
+            dimCombinator[id-1] = new bankDimensionCombinator(id, info.second);
+        }
+    }
+    else if(moduleTypeName == "subDimensionCombinator"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < subDimCombinator.size() && !foundNullElementInVector) ; i++){
+                if(subDimCombinator[i] == nullptr){
+                    subDimCombinator[i] = new subDimensionCombinator(i+1, info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector)
+                subDimCombinator.push_back(new subDimensionCombinator(subDimCombinator.size()+1, info.second));
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(subDimCombinator.size() <= id-1)
+                subDimCombinator.push_back(nullptr);
+            subDimCombinator[id-1] = new subDimensionCombinator(id, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -635,6 +691,14 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "vectorOperator"){
         delete vecOperations[id-1];
         vecOperations[id-1] = nullptr;
+    }
+    else if(moduleName == "bankDimensionCombinator"){
+        delete dimCombinator[id-1];
+        dimCombinator[id-1] = nullptr;
+    }
+    else if(moduleName == "subDimensionCombinator"){
+        delete subDimCombinator[id-1];
+        subDimCombinator[id-1] = nullptr;
     }
 }
 
