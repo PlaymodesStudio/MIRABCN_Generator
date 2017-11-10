@@ -949,7 +949,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             ofParameter<bool> castedParam = absParam.cast<bool>();
                             string noSpaces = castedParam.getName();
                             ofStringReplace(noSpaces, " ", "_");
-                            if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
+                            if(xml.exists(noSpaces) && noSpaces != "Manual_Reindex" && !ofStringTimesInString(groupParam->getName(), "master"))
                                 castedParam = xml.getValue(noSpaces, castedParam.get());
                         }
                         else if(absParam.type() == typeid(ofParameter<string>).name()){

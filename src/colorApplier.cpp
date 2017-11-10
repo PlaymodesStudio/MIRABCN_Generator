@@ -65,8 +65,10 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
     int h = inputVec[0].size();
     if(bypass){
         if(tempColors.size() != w || tempColors[0].size() != h){
-            tempColors.resize(w, vector<ofColor>(h));
-            tempGradient.resize(w, vector<ofColor>(h));
+            tempColors.resize(0);
+            tempGradient.resize(0);
+            tempColors.resize(w, vector<ofColor>(h, ofColor::black));
+            tempGradient.resize(w, vector<ofColor>(h, ofColor::black));
         }
         if(isImageLoaded){
             if(imageTexture.getWidth() == h && imageTexture.getHeight() == w){

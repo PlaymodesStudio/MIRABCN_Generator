@@ -16,7 +16,7 @@ void typeConverter<vector<float>, vector<vector<float>>>::sourceListener(vector<
         for(int i = 0; i < s.size(); i++){
             int col = i%sideDim;
             int row = i / sideDim;
-            toSend[col][row] = s[i];
+            toSend[row][col] = s[i];
         }
         parameters->get("Dest").cast<vector<vector<float>>>() = toSend;
     }
