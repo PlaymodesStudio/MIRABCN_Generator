@@ -132,6 +132,21 @@ void baseIndexer::indexRandChanged(float &val){
 void baseIndexer::draw(ofEventArgs &e){
     ofBackground(127);
     ofSetColor(255);
+    
+    //Draw red lines when quqntize
+    vector<int> indexQuantize(indexCount, 1);
+    if(indexQuant_Param != indexCount){
+        int oldVal = -1;
+        for(int i = 0; i < indexCount; i++){
+            int newVal = floor(i/((float)indexCount/(float)indexQuant_Param));
+            if(newVal != oldVal)
+                indexQuantize[i] = 1;
+            else
+                indexQuantize[i] = 0;
+            oldVal = newVal;
+        }
+    }
+    
     int x_margin = 10;
     int y_margin = 10;
     int x_labelWidth = 20;
@@ -144,9 +159,18 @@ void baseIndexer::draw(ofEventArgs &e){
             if(i == 0){
                 ofDrawBitmapString(ofToString(j), 5, (j+0.5)*y_step + y_margin + y_labelHeight);
             }
+            ofPushStyle();
             ofSetRectMode(OF_RECTMODE_CORNER);
+         
+            if(indexQuantize[i] == 1){
+                ofFill();
+                ofSetColor(255, 0, 0, 127);
+                ofDrawRectangle(i*x_step + x_margin + x_labelWidth, j*y_step + y_margin + y_labelHeight, x_step, y_step);
+            }
             ofNoFill();
+            ofSetColor(255);
             ofDrawRectangle(i*x_step + x_margin + x_labelWidth, j*y_step + y_margin + y_labelHeight, x_step, y_step);
+            ofPopStyle();
             if(reindexGrid.get()[i][j]){
                 ofDrawLine((i+0.25)*x_step + x_margin + x_labelWidth
                            , (j+0.25)*y_step + y_margin + y_labelHeight
