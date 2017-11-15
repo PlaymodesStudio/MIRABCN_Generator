@@ -38,11 +38,19 @@ public:
     void mouseReleased(ofMouseEventArgs &a);
     void mouseDragged(ofMouseEventArgs &a);
     
+    bool areNewIndexs(){
+        return newIndexsFlag;
+        newIndexsFlag = false;
+    };
+    vector<float> getIndexs(){return indexs;};;
+    
 protected:
     ofParameterGroup*   parameters;
     
     vector<float>       indexs;
-    virtual void        newIndexs(){};
+    virtual void        newIndexs(){
+        newIndexsFlag = true;
+    };
     
     ofParameter<vector<vector<bool>>> reindexGrid;
     
@@ -62,6 +70,7 @@ private:
     
     vector<int>         indexRand;
     int                 indexRand_Param_previous;
+    bool newIndexsFlag;
 };
 
 #endif /* baseIndexer_h */

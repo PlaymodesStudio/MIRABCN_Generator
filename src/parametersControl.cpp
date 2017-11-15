@@ -243,7 +243,7 @@ void parametersControl::setup(){
 //    theme->color.textInput.text = randColor2;
 //    theme->color.icons = randColor2;
     popUpMenu->setTheme(mainGuiTheme);
-    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer", "Smoother", "Vec Smoother", "Vector Operations", "subDimensionCombinator", "bankDimensionCombinator"})->expand();
+    popUpMenu->addDropdown("Choose module", {"Phasor", "Oscillator", "Oscillator Bank", "Oscillator Bank Group", "Envelope Generator", "Midi Gate In", "Delta", "Expression Operator", "Mapper", "Vector Mapper", "Manual Osc Bank", "Type Converter", "Vector Getter", "Vector Chainer", "Smoother", "Vec Smoother", "Vector Operations", "subDimensionCombinator", "bankDimensionCombinator", "bidimensionalOscillatorBank"})->expand();
     
     popUpMenu->onDropdownEvent(this, &parametersControl::newModuleListener);
 }
@@ -727,6 +727,10 @@ void parametersControl::savePreset(string presetName, string bank){
             modulePosition.z = 0;
             while(datGuis[i]->getLabel("Input "+ofToString((int)modulePosition.z))->getName() != "X")
                 modulePosition.z += 1;
+        }else if(moduleName == "bidimensionalOscillatorBank"){
+            int xSize = parameterGroups[i]->getInt("Index Modulo X").getMax();
+            int ySize = parameterGroups[i]->getInt("Index Modulo Y").getMax();
+            modulePosition.z = (float)xSize + ((float)ySize / 1000.0);
         }
         tempXml.addValue("pos", ofToString(modulePosition.x) + "_" + ofToString(modulePosition.y) + "_" + ofToString(modulePosition.z));
         modulesToCreate++;
@@ -858,7 +862,7 @@ void parametersControl::loadPreset(string presetName, string bank){
             pair<string, ofPoint> newModule;
             newModule.first = xml.getValue("name");
             vector<string> strPoint = ofSplitString(xml.getValue("pos"), "_");
-            newModule.second = ofPoint(ofToInt(strPoint[0]), ofToInt(strPoint[1]), ofToInt(strPoint[2]));
+            newModule.second = ofPoint(ofToFloat(strPoint[0]), ofToFloat(strPoint[1]), ofToFloat(strPoint[2]));
             modulesToCreate.push_back(newModule);
             i++;
             xml.setToParent();
@@ -1331,7 +1335,7 @@ void parametersControl::onGuiParagraphEvent(ofxDatGuiParagraphEvent e){
 }
 
 void parametersControl::newModuleListener(ofxDatGuiDropdownEvent e){
-    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain", "valueSmoother", "vectorValueSmoother", "vectorOperator", "subDimensionCombinator", "bankDimensionCombinator"};
+    vector<string> moduleNames = {"phasor", "oscillator", "oscillatorBank", "oscillatorGroup", "envelopeGenerator", "midiGateIn", "delta", "expressionOperator", "mapper", "vectorMapper", "manualOscillatorBank", "typeConverter", "vectorGetter", "vectorChain", "valueSmoother", "vectorValueSmoother", "vectorOperator", "subDimensionCombinator", "bankDimensionCombinator", "bidimensionalOscillatorBank"};
     pair<string, ofPoint> pairToSend;
     pairToSend.first = moduleNames[e.child];
     ofVec4f transformedPos = popUpMenu->getPosition();

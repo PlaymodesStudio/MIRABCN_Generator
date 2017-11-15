@@ -132,6 +132,9 @@ void ofApp::setup(){
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
             
+//            new bidimensionalOscillatorBank(0, 4, 4);
+
+            
             configured = true;
             
             preview->activateSeparateWindow(prevWinRect);
@@ -141,8 +144,6 @@ void ofApp::setup(){
             ofAddListener(paramsControl->nextFrameEvent, this, &ofApp::nextFrameListener);
         }
     }
-    
-    
     
     
     if(!configured) ofExit();
@@ -197,13 +198,15 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             for (int i = 0; (i < oscillatorBanks.size() && !foundNullElementInVector) ; i++){
                 if(oscillatorBanks[i] == nullptr){
                     int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
-                    oscillatorBanks[i] = new oscillatorBank(nOscillators, true, i+1, info.second);
+                    if(nOscillators > 0)
+                        oscillatorBanks[i] = new oscillatorBank(nOscillators, true, i+1, info.second);
                     foundNullElementInVector = true;
                 }
             }
             if(!foundNullElementInVector){
                 int nOscillators = ofToInt(ofSystemTextBoxDialog("How many Oscillators?"));
-                oscillatorBanks.push_back(new oscillatorBank(nOscillators, true, oscillatorBanks.size()+1, info.second));
+                if(nOscillators > 0)
+                    oscillatorBanks.push_back(new oscillatorBank(nOscillators, true, oscillatorBanks.size()+1, info.second));
             }
         }
         else{
@@ -212,7 +215,8 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 oscillatorBanks.push_back(nullptr);
             int nOscillators = info.second.z;
             info.second.z = 0;
-            oscillatorBanks[id-1] = new oscillatorBank(nOscillators, true, id, info.second);
+            if(nOscillators > 0)
+                oscillatorBanks[id-1] = new oscillatorBank(nOscillators, true, id, info.second);
         }
     }
     
@@ -608,6 +612,36 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             subDimCombinator[id-1] = new subDimensionCombinator(id, info.second);
         }
     }
+    else if(moduleTypeName == "bidimensionalOscillatorBank"){
+        if(moduleName.size() < 2){
+            bool foundNullElementInVector = false;
+            for (int i = 0; (i < bidimOscillatorBanks.size() && !foundNullElementInVector) ; i++){
+                if(bidimOscillatorBanks[i] == nullptr){
+                    vector<string> nOscillators = ofSplitString(ofSystemTextBoxDialog("How many Oscillators? as x,y"), ",");
+                    if(nOscillators.size() == 2)
+                        bidimOscillatorBanks[i] = new bidimensionalOscillatorBank(i+1, ofToInt(nOscillators[0]), ofToInt(nOscillators[1]), info.second);
+                    foundNullElementInVector = true;
+                }
+            }
+            if(!foundNullElementInVector){
+                
+                vector<string> nOscillators = ofSplitString(ofSystemTextBoxDialog("How many Oscillators? as x,y"), ",");
+                if(nOscillators.size() == 2)
+                    bidimOscillatorBanks.push_back(new bidimensionalOscillatorBank(bidimOscillatorBanks.size()+1, ofToInt(nOscillators[0]), ofToInt(nOscillators[1]), info.second));
+            }
+        }
+        else{
+            int id = ofToInt(moduleName[1]);
+            while(bidimOscillatorBanks.size() <= id-1)
+                bidimOscillatorBanks.push_back(nullptr);
+            float nOscillators = info.second.z;
+            int xSize = floor(nOscillators);
+            int ySize = (nOscillators-xSize) * 1000;
+            info.second.z = 0;
+            if(xSize != 0 && ySize != 0)
+                bidimOscillatorBanks[id-1] = new bidimensionalOscillatorBank(id, xSize, ySize, info.second);
+        }
+    }
 }
 
 void ofApp::deleteModuleListener(string &moduleName){
@@ -694,6 +728,10 @@ void ofApp::deleteModuleListener(string &moduleName){
     else if(moduleName == "subDimensionCombinator"){
         delete subDimCombinator[id-1];
         subDimCombinator[id-1] = nullptr;
+    }
+    else if(moduleName == "bidimensionalOscillatorBank"){
+        delete bidimOscillatorBanks[id-1];
+        bidimOscillatorBanks[id-1] = nullptr;
     }
 }
 

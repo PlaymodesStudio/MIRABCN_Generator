@@ -32,6 +32,8 @@
 #include "textureUnifier.h"
 #include "bankDimensionCombinator.h"
 #include "SubDimensionCombinator.h"
+#include "bidimensionalOscillatorBank.h"
+
 
 
 static const int WIDTH = 0;
@@ -100,6 +102,7 @@ private:
     vector<vectorOperations*>   vecOperations;
     vector<bankDimensionCombinator*>  dimCombinator;
     vector<subDimensionCombinator*>  subDimCombinator;
+    vector<bidimensionalOscillatorBank*>    bidimOscillatorBanks;
 //    Wave2DControl   waveControl;
     audioEngineController*      audioControl;
     parametersControl*          paramsControl;

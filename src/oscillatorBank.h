@@ -24,7 +24,7 @@ public:
 
     
     ofParameter<float>    phasorIn;
-    ofParameter<float>      pow_Param; //Pow of the funcion, working on sin, cos....
+    ofParameter<float>    pow_Param; //Pow of the funcion, working on sin, cos....
     ofParameter<float>    pulseWidth_Param;
     ofParameter<float>    holdTime_Param; //The duration of the hold in percentage (0.5) --> 50% of the cycle is the phase in initPhase
     ofParameter<float>    phaseOffset_Param;
@@ -42,7 +42,7 @@ public:
 
     vector<float>   computeBank(float phasor);
     
-private:
+protected:
     virtual void newIndexs();
     void newPhasorIn(float &f);
     void newPowParam(float &f);
