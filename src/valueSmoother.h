@@ -20,6 +20,7 @@ public:
         
         parameters->add(input.set("Input", 0, 0, 1));
         parameters->add(smoothing.set("Smoothing", 0.5, 0, 1));
+        parameters->add(tension.set("Tension", 0, -1, 1));
         parameters->add(output.set("Output", 0, 0, 1));
         
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green, pos);
@@ -31,7 +32,13 @@ public:
 private:
     void inputListener(float &f){
         if(previousValue == -1) previousValue = f;
-        float smoothedValue = (smoothing * previousValue) + ((1 - smoothing) * f);
+        float newSmoothing = smoothing;
+        if(tension > 0)
+            newSmoothing = ofClamp(smoothing * (1 - (abs(previousValue - f) * tension)), 0, 1);
+        else if(tension < 0)
+            newSmoothing = ofClamp(smoothing * (1 - ((1 - abs(previousValue - f)) * abs(tension))), 0, 1);
+        
+        float smoothedValue = (newSmoothing * previousValue) + ((1 - newSmoothing) * f);
         parameters->getFloat("Output") = smoothedValue;
         previousValue = smoothedValue;
     }
@@ -39,6 +46,7 @@ private:
     ofParameterGroup *parameters;
     ofParameter<float>  input;
     ofParameter<float>  smoothing;
+    ofParameter<float>  tension;
     ofParameter<float>  output;
     float previousValue;
 };
@@ -62,8 +70,15 @@ private:
     void inputListener(vector<float> &vf){
         if(previousValue.size() != vf.size()) previousValue = vf;
         vector<float> vecCopy = vf;
+        
         for(int i = 0; i < vecCopy.size(); i++){
-            vecCopy[i] = (smoothing * previousValue[i]) + ((1 - smoothing) * vf[i]);
+            float newSmoothing = smoothing;
+            if(tension > 0)
+                newSmoothing = ofClamp(smoothing * (1 - (abs(previousValue[i] - vf[i]) * tension)), 0, 1);
+            else if(tension < 0)
+                newSmoothing = ofClamp(smoothing * (1 - ((1 - abs(previousValue[i] - vf[i])) * abs(tension))), 0, 1);
+            
+            vecCopy[i] = (newSmoothing * previousValue[i]) + ((1 - newSmoothing) * vf[i]);
         }
         parameters->get("Output").cast<vector<float>>() = vecCopy;
         previousValue = vecCopy;
@@ -72,6 +87,7 @@ private:
     ofParameterGroup *parameters;
     ofParameter<vector<float>>  input;
     ofParameter<float>  smoothing;
+    ofParameter<float>  tension;
     ofParameter<vector<float>>  output;
     vector<float> previousValue;
 };
