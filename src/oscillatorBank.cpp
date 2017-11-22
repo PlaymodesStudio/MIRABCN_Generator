@@ -70,12 +70,15 @@ vector<float> oscillatorBank::computeBank(float phasor){
         }
     }
     //Reindex
-    vector<float>   resultNoReindex = result;
-    result = vector<float>(resultNoReindex.size(), 0);
-    for(int i = 0; i < result.size(); i++){
-        for(int j = 0; j < result.size(); j++){
-            if(reindexGrid.get()[j][i]){
-                if(resultNoReindex[j] > result[i]) result[i] = resultNoReindex[j];
+    if(!isReindexIdentity){
+        ofLog() << "ComputingReindex" << ofGetTimestampString();
+        vector<float>   resultNoReindex = result;
+        result = vector<float>(resultNoReindex.size(), 0);
+        for(int i = 0; i < result.size(); i++){
+            for(int j = 0; j < result.size(); j++){
+                if(reindexGrid.get()[j][i]){
+                    if(resultNoReindex[j] > result[i]) result[i] = resultNoReindex[j];
+                }
             }
         }
     }

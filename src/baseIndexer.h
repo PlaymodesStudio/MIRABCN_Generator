@@ -53,11 +53,14 @@ protected:
     };
     
     ofParameter<vector<vector<bool>>> reindexGrid;
+    bool    isReindexIdentity;
     
 private:
     void drawManualReindex(bool &b);
     shared_ptr<ofAppBaseWindow> reindexWindow;
     ofRectangle                 reindexWindowRect;
+    
+    void reindexChanged(vector<vector<bool>> &vb);
     
     void parameterBoolListener(bool &b){recomputeIndexs();};
     void parameterFloatListener(float &f){recomputeIndexs();};
@@ -69,6 +72,7 @@ private:
     int                 indexCount; //The max number you will get from index
     
     vector<int>         indexRand;
+    vector<vector<bool>>    indentityReindexMatrix;
     int                 indexRand_Param_previous;
     bool newIndexsFlag;
 };

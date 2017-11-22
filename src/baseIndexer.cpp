@@ -20,11 +20,11 @@ baseIndexer::baseIndexer(int numIndexs){
         indexRand[i] = i-((float)indexRand.size()/2.f);
     indexRand_Param_previous = 0;
     
-    vector<vector<bool>> reindexCopy;
-    reindexCopy.resize(indexCount, vector<bool>(indexCount, false));
+    indentityReindexMatrix.resize(indexCount, vector<bool>(indexCount, false));
     for(int i = 0; i < indexCount; i++){
-        reindexCopy[i][i] = true;
+        indentityReindexMatrix[i][i] = true;
     }
+    isReindexIdentity = true;
     
     parameters = new ofParameterGroup;
     parameters->setName("Indexer");
@@ -36,8 +36,10 @@ baseIndexer::baseIndexer(int numIndexs){
     parameters->add(indexQuant_Param.set("Index Quantization", indexCount, 1, indexCount));
     parameters->add(combination_Param.set("Index Combination", 0, 0, 1));
     parameters->add(modulo_Param.set("Index Modulo", indexCount, 1, indexCount));
-    parameters->add(manualReindex_Param.set("Manual Reindex", false));
-    parameters->add(reindexGrid.set("ReindexGrid", reindexCopy));
+    if(numIndexs < 100){
+        parameters->add(manualReindex_Param.set("Manual Reindex", false));
+        parameters->add(reindexGrid.set("ReindexGrid", indentityReindexMatrix));
+    }
     
     numWaves_Param.addListener(this, &baseIndexer::parameterFloatListener);
     indexInvert_Param.addListener(this, &baseIndexer::parameterFloatListener);
@@ -51,6 +53,8 @@ baseIndexer::baseIndexer(int numIndexs){
     indexRand_Param.addListener(this, &baseIndexer::indexRandChanged);
     
     manualReindex_Param.addListener(this, &baseIndexer::drawManualReindex);
+    
+    reindexGrid.addListener(this, &baseIndexer::reindexChanged);
 
     reindexWindowRect.setPosition(-1, -1);
     
@@ -253,5 +257,15 @@ void baseIndexer::drawManualReindex(bool &b){
         reindexWindowRect.setSize(reindexWindow->getWidth(), reindexWindow->getHeight());
         reindexWindow->setWindowShouldClose();
         reindexWindow = nullptr;
+    }
+}
+
+
+void baseIndexer::reindexChanged(vector<vector<bool> > &vb){
+    if(vb != indentityReindexMatrix){
+        isReindexIdentity = false;
+    }
+    else{
+        isReindexIdentity = true;
     }
 }

@@ -54,6 +54,7 @@
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
 		9F0EB9001F9770D0009E0847 /* bankDimensionCombinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */; };
 		9F135F4B1F6142AE007E3736 /* audioAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */; };
+		9F27872A1FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F2787281FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp */; };
 		9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */; };
 		9F30E3821F60270D00F2ABAC /* vectorChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E3801F60270D00F2ABAC /* vectorChain.cpp */; };
 		9F30E3851F60499500F2ABAC /* oscInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F30E3831F60499500F2ABAC /* oscInput.cpp */; };
@@ -222,6 +223,8 @@
 		9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioAnalyzer.cpp; sourceTree = "<group>"; };
 		9F135F4A1F6142AE007E3736 /* audioAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioAnalyzer.h; sourceTree = "<group>"; };
 		9F18BC301F7046BA0018CD78 /* valueSmoother.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = valueSmoother.h; sourceTree = "<group>"; };
+		9F2787281FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bidimensionalOscillatorBank.cpp; sourceTree = "<group>"; };
+		9F2787291FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bidimensionalOscillatorBank.h; sourceTree = "<group>"; };
 		9F30E37D1F60210F00F2ABAC /* vectorGetter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorGetter.cpp; sourceTree = "<group>"; };
 		9F30E37E1F60210F00F2ABAC /* vectorGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectorGetter.h; sourceTree = "<group>"; };
 		9F30E3801F60270D00F2ABAC /* vectorChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vectorChain.cpp; sourceTree = "<group>"; };
@@ -794,6 +797,8 @@
 				9F0EB8FF1F9770D0009E0847 /* bankDimensionCombinator.h */,
 				9FC5A4281FA0F56200E8F902 /* SubDimensionCombinator.cpp */,
 				9FC5A4291FA0F56200E8F902 /* SubDimensionCombinator.h */,
+				9F2787281FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp */,
+				9F2787291FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1036,6 +1041,7 @@
 				0546D1A38E13BD319CC9755B /* OscReceivedElements.cpp in Sources */,
 				879A251454401BC0B6E4F238 /* OscTypes.cpp in Sources */,
 				E8DB35E07D68B21B39114B9E /* openFrameworks_wrap.cpp in Sources */,
+				9F27872A1FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp in Sources */,
 				D7E6C194BDBE6C0950FED198 /* openFrameworks_extra_wrap.cpp in Sources */,
 				3F89109986058DB93D8ABF82 /* ofxPython.cpp in Sources */,
 				7B182901E12EF9C89017E436 /* ofxPythonCallBack.cpp in Sources */,
