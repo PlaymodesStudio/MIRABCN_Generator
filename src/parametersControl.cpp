@@ -276,6 +276,22 @@ void parametersControl::update(ofEventArgs &args){
                     presets[ofToInt(ofSplitString(dir.getName(i), "|")[0])] = ofSplitString(dir.getName(i), ".")[0];
                 
                 loadPreset(presets[m.getArgAsInt(1)], bankName);
+            }else if(splitAddress[1] == "presetLoadBank"){
+                if(splitAddress.size() == 3){
+                    string bankName = splitAddress[2];
+                    
+                    ofDirectory dir;
+                    map<int, string> presets;
+                    dir.open("Presets/" + bankName);
+                    if(!dir.exists())
+                        dir.createDirectory("Presets/" + bankName);
+                    dir.sort();
+                    int numPresets = dir.listDir();
+                    for ( int i = 0 ; i < numPresets; i++)
+                        presets[ofToInt(ofSplitString(dir.getName(i), "|")[0])] = ofSplitString(dir.getName(i), ".")[0];
+                    
+                    loadPreset(presets[m.getArgAsInt(1)], bankName);
+                }
             }else if(splitAddress[1] == "presetSave"){
                 savePreset(m.getArgAsString(0), m.getArgAsString(1));
             }else if(splitAddress[1] == "phaseReset"){
@@ -288,21 +304,26 @@ void parametersControl::update(ofEventArgs &args){
             }else if(splitAddress[1] == "nextFrame"){
                 ofNotifyEvent(nextFrameEvent, this);
             }else{
-                for(auto groupParam : parameterGroups){
-                    if(groupParam->getName() == splitAddress[1]){
-                        ofAbstractParameter &absParam = groupParam->get(splitAddress[2]);
-                        if(absParam.type() == typeid(ofParameter<float>).name()){
-                            ofParameter<float> castedParam = absParam.cast<float>();
-                            castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                        }else if(absParam.type() == typeid(ofParameter<int>).name()){
-                            ofParameter<int> castedParam = absParam.cast<int>();
-                            castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
-                        }else if(absParam.type() == typeid(ofParameter<bool>).name())
-                            groupParam->getBool(splitAddress[2]) = m.getArgAsBool(0);
-                        else if(absParam.type() == typeid(ofParameter<string>).name())
-                            groupParam->getString(splitAddress[2]) = m.getArgAsString(0);
-                        else
-                            groupParam->getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
+                if(splitAddress.size() == 3){
+                    for(auto groupParam : parameterGroups){
+                        if(groupParam->getName() == splitAddress[1]){
+                            ofAbstractParameter &absParam = groupParam->get(splitAddress[2]);
+                            if(absParam.getName() == splitAddress[2]){
+                                if(absParam.type() == typeid(ofParameter<float>).name()){
+                                    ofParameter<float> castedParam = absParam.cast<float>();
+                                    castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                                }else if(absParam.type() == typeid(ofParameter<int>).name()){
+                                    ofParameter<int> castedParam = absParam.cast<int>();
+                                    castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                                }else if(absParam.type() == typeid(ofParameter<bool>).name()){
+                                    groupParam->getBool(splitAddress[2]) = m.getArgAsBool(0);
+                                }else if(absParam.type() == typeid(ofParameter<string>).name()){
+                                    groupParam->getString(splitAddress[2]) = m.getArgAsString(0);
+                                }else{
+                                    groupParam->getGroup(splitAddress[2]).getInt(1) = m.getArgAsInt(0); //DropDown
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -838,7 +859,7 @@ void parametersControl::savePreset(string presetName, string bank){
         
         vector<string> groupNames = connections[i]->getSourceParameter()->getGroupHierarchyNames();
         tempXml.addValue("source", groupNames[0] + "-|-" + groupNames[1]);
-        
+        sours
         groupNames = connections[i]->getSinkParameter()->getGroupHierarchyNames();
         tempXml.addValue("sink", groupNames[0] + "-|-" + groupNames[1]);
         
