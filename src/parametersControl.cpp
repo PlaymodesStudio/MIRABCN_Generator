@@ -318,7 +318,7 @@ void parametersControl::update(ofEventArgs &args){
     
     //MIDI - Process the midi deque
     for(auto m : midiMessagesFiller)
-        midiMessages.push_front(m);
+        midiMessages.push_back(m);
     midiMessagesFiller.clear();
     
     while(midiMessages.size() > 0){
@@ -326,7 +326,7 @@ void parametersControl::update(ofEventArgs &args){
         int parameterNum = midiMessages[0].status == MIDI_NOTE_ON ? midiMessages[0].pitch : midiMessages[0].control;
         int parameterVal = midiMessages[0].status == MIDI_NOTE_ON ? midiMessages[0].velocity : midiMessages[0].value;
         string parameterPort = midiMessages[0].portName;
-        
+                
         for (auto &connection : midiIntConnections){
             if(connection.isListening())
                 connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
@@ -407,6 +407,24 @@ void parametersControl::draw(ofEventArgs &args){
         ofSetColor(ofColor::black);
         ofDrawBitmapStringHighlight("MIDI LEARN", ofPoint(ofGetWidth() - 100, ofGetHeight() - 10));
         ofPopStyle();
+        
+        for(int i = 0; i < midiFloatConnections.size(); i++){
+            if(!midiFloatConnections[i].isListening()){
+                for(int j = 0; j < datGuis.size(); j++){
+                    if(datGuis[j]->getHeader()->getName() == midiFloatConnections[i].getParameter()->getFirstParent().getName()){
+                        ofxDatGuiSlider* slider = datGuis[j]->getSlider(midiFloatConnections[i].getParameter()->getName());
+                        ofPushStyle();
+                        ofPushMatrix();
+                        ofMultMatrix(transformMatrix);
+                        ofSetColor(ofColor::red,50);
+                        ofDrawRectangle(slider->getX()-20, slider->getY(), slider->getWidth()+40, slider->getHeight());
+                        ofPopStyle();
+                        ofPopMatrix();
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1224,7 +1242,7 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                         bool erasedConnection = false;
                         if(ofGetKeyPressed(OF_KEY_SHIFT)){
                             for(int j = 0 ; j < midiFloatConnections.size(); j++){
-                                if(midiFloatConnections[i].getParameter() == &parameter){
+                                if(midiFloatConnections[j].getParameter() == &parameter){
                                     erasedConnection = true;
                                     midiFloatConnections.erase(midiFloatConnections.begin()+j);
                                     return;
@@ -1237,8 +1255,7 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     else if(parameter.type() == typeid(ofParameter<int>).name()){
                         bool erasedConnection = false;
                         if(ofGetKeyPressed(OF_KEY_SHIFT)){
-                            for(int j = 0 ; j < midiIntConnections.size(
-                                ); j++){
+                            for(int j = 0 ; j < midiIntConnections.size(); j++){
                                 if(midiIntConnections[j].getParameter() == &parameter){
                                     erasedConnection = true;
                                     midiIntConnections.erase(midiIntConnections.begin()+j);
@@ -1642,7 +1659,7 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
 
 void parametersControl::newMidiMessage(ofxMidiMessage &eventArgs){
     //Save all midi messages into a que;
-    midiMessages.push_front(eventArgs);
+    midiMessagesFiller.push_back(eventArgs);
 }
 
 void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){

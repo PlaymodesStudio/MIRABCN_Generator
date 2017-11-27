@@ -71,7 +71,6 @@ vector<float> oscillatorBank::computeBank(float phasor){
     }
     //Reindex
     if(!isReindexIdentity){
-        ofLog() << "ComputingReindex" << ofGetTimestampString();
         vector<float>   resultNoReindex = result;
         result = vector<float>(resultNoReindex.size(), 0);
         for(int i = 0; i < result.size(); i++){
