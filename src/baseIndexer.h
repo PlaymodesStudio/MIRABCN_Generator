@@ -38,6 +38,8 @@ public:
     void mouseReleased(ofMouseEventArgs &a);
     void mouseDragged(ofMouseEventArgs &a);
     
+    void putParametersInParametersGroup();
+    
     bool areNewIndexs(){
         return newIndexsFlag;
         newIndexsFlag = false;

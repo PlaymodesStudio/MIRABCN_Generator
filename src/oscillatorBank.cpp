@@ -9,6 +9,7 @@
 #include "oscillatorBank.h"
 
 oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint pos) : baseIndexer(nOscillators){
+    putParametersInParametersGroup();
     bankId = _bankId;
     for(int i=0 ; i < nOscillators ; i++){
         oscillators.push_back(new baseOscillator(i));

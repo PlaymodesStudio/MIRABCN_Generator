@@ -26,20 +26,19 @@ baseIndexer::baseIndexer(int numIndexs){
     }
     isReindexIdentity = true;
     
-    parameters = new ofParameterGroup;
-    parameters->setName("Indexer");
-    parameters->add(numWaves_Param.set("Num Waves", 1, 0, indexCount));
-    parameters->add(indexInvert_Param.set("Index Invert", 0, 0, 1));
-    parameters->add(symmetry_Param.set("Symmetry", 0, 0, 10));
-    parameters->add(indexRand_Param.set("Index Random", 0, 0, 1));
-    parameters->add(indexOffset_Param.set("Index Offset", 0, -indexCount/2, indexCount/2));
-    parameters->add(indexQuant_Param.set("Index Quantization", indexCount, 1, indexCount));
-    parameters->add(combination_Param.set("Index Combination", 0, 0, 1));
-    parameters->add(modulo_Param.set("Index Modulo", indexCount, 1, indexCount));
-    if(numIndexs < 100){
-        parameters->add(manualReindex_Param.set("Manual Reindex", false));
-        parameters->add(reindexGrid.set("ReindexGrid", indentityReindexMatrix));
+    numWaves_Param.set("Num Waves", 1, 0, indexCount);
+    indexInvert_Param.set("Index Invert", 0, 0, 1);
+    symmetry_Param.set("Symmetry", 0, 0, 10);
+    indexRand_Param.set("Index Random", 0, 0, 1);
+    indexOffset_Param.set("Index Offset", 0, -indexCount/2, indexCount/2);
+    indexQuant_Param.set("Index Quantization", indexCount, 1, indexCount);
+    combination_Param.set("Index Combination", 0, 0, 1);
+    modulo_Param.set("Index Modulo", indexCount, 1, indexCount);
+    if(indexCount < 100){
+        manualReindex_Param.set("Manual Reindex", false);
+        reindexGrid.set("ReindexGrid", indentityReindexMatrix);
     }
+
     
     numWaves_Param.addListener(this, &baseIndexer::parameterFloatListener);
     indexInvert_Param.addListener(this, &baseIndexer::parameterFloatListener);
@@ -59,6 +58,23 @@ baseIndexer::baseIndexer(int numIndexs){
     reindexWindowRect.setPosition(-1, -1);
     
     recomputeIndexs();
+}
+
+void baseIndexer::putParametersInParametersGroup(){
+    parameters = new ofParameterGroup;
+    parameters->setName("Indexer");
+    parameters->add(numWaves_Param);
+    parameters->add(indexInvert_Param);
+    parameters->add(symmetry_Param);
+    parameters->add(indexRand_Param);
+    parameters->add(indexOffset_Param);
+    parameters->add(indexQuant_Param);
+    parameters->add(combination_Param);
+    parameters->add(modulo_Param);
+    if(indexCount < 100){
+        parameters->add(manualReindex_Param);
+        parameters->add(reindexGrid);
+    }
 }
 
 void baseIndexer::recomputeIndexs(){

@@ -10,6 +10,7 @@
 #include "parametersControl.h"
 
 manualOscillatorBank::manualOscillatorBank(int nOscillators, int _bankId, ofPoint pos) : baseIndexer(nOscillators){
+    putParametersInParametersGroup();
     
     parameters->setName("manualOscillatorBank " + ofToString(_bankId));
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
