@@ -33,6 +33,8 @@ public:
     
     void draw(ofEventArgs &e);
     
+    void keyPressed(ofKeyEventArgs &a);
+//    void keyReleased(ofKeyEventArgs &a);
     void mouseMoved(ofMouseEventArgs &a);
     void mousePressed(ofMouseEventArgs &a);
     void mouseReleased(ofMouseEventArgs &a);
@@ -74,7 +76,8 @@ private:
     int                 indexCount; //The max number you will get from index
     
     vector<int>         indexRand;
-    vector<vector<bool>>    indentityReindexMatrix;
+    vector<vector<bool>>    identityReindexMatrix;
+    deque<vector<vector<bool>>>   identityStore;
     int                 indexRand_Param_previous;
     bool newIndexsFlag;
 };

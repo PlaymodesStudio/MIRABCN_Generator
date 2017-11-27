@@ -859,7 +859,7 @@ void parametersControl::savePreset(string presetName, string bank){
         
         vector<string> groupNames = connections[i]->getSourceParameter()->getGroupHierarchyNames();
         tempXml.addValue("source", groupNames[0] + "-|-" + groupNames[1]);
-        sours
+        
         groupNames = connections[i]->getSinkParameter()->getGroupHierarchyNames();
         tempXml.addValue("sink", groupNames[0] + "-|-" + groupNames[1]);
         

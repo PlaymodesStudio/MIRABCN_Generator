@@ -8,6 +8,8 @@
 
 #include "baseIndexer.h"
 
+#define REINDEX_UNDO_SIZE 20
+
 void window_no_close_indexer(GLFWwindow* window){
     glfwSetWindowShouldClose(window, GL_FALSE);
 };
@@ -20,9 +22,9 @@ baseIndexer::baseIndexer(int numIndexs){
         indexRand[i] = i-((float)indexRand.size()/2.f);
     indexRand_Param_previous = 0;
     
-    indentityReindexMatrix.resize(indexCount, vector<bool>(indexCount, false));
+    identityReindexMatrix.resize(indexCount, vector<bool>(indexCount, false));
     for(int i = 0; i < indexCount; i++){
-        indentityReindexMatrix[i][i] = true;
+        identityReindexMatrix[i][i] = true;
     }
     isReindexIdentity = true;
     
@@ -36,7 +38,7 @@ baseIndexer::baseIndexer(int numIndexs){
     modulo_Param.set("Index Modulo", indexCount, 1, indexCount);
     if(indexCount < 100){
         manualReindex_Param.set("Manual Reindex", false);
-        reindexGrid.set("ReindexGrid", indentityReindexMatrix);
+        reindexGrid.set("ReindexGrid", identityReindexMatrix);
     }
 
     
@@ -58,6 +60,8 @@ baseIndexer::baseIndexer(int numIndexs){
     reindexWindowRect.setPosition(-1, -1);
     
     recomputeIndexs();
+    
+    identityStore.push_front(identityReindexMatrix);
 }
 
 void baseIndexer::putParametersInParametersGroup(){
@@ -260,6 +264,7 @@ void baseIndexer::drawManualReindex(bool &b){
         reindexWindow = ofCreateWindow(prevSettings);
         reindexWindow->setWindowTitle(parameters->getName());
         ofAddListener(reindexWindow->events().draw, this, &baseIndexer::draw);
+        ofAddListener(reindexWindow->events().keyPressed, this, &baseIndexer::keyPressed);
         ofAddListener(reindexWindow->events().mouseMoved, this, &baseIndexer::mouseMoved);
         ofAddListener(reindexWindow->events().mousePressed, this, &baseIndexer::mousePressed);
         ofAddListener(reindexWindow->events().mouseReleased, this, &baseIndexer::mouseReleased);
@@ -276,9 +281,28 @@ void baseIndexer::drawManualReindex(bool &b){
     }
 }
 
+void baseIndexer::keyPressed(ofKeyEventArgs &a){
+    if(a.key == 'c'){
+        vector<vector<bool>> clearMatrix;
+        clearMatrix.resize(indexCount, vector<bool>(indexCount, false));
+        reindexGrid = clearMatrix;
+    }else if(a.key == 'r'){
+        reindexGrid = identityReindexMatrix;
+    }else if(a.key == 'z' &&  ofGetKeyPressed(OF_KEY_COMMAND)){
+        if(identityStore.size() > 1){
+            reindexGrid.setWithoutEventNotifications(identityStore[1]);
+            identityStore.pop_front();
+        }
+    }
+}
+
 
 void baseIndexer::reindexChanged(vector<vector<bool> > &vb){
-    if(vb != indentityReindexMatrix){
+    identityStore.push_front(vb);
+    if(identityStore.size() > REINDEX_UNDO_SIZE){
+        identityStore.pop_back();
+    }
+    if(vb != identityReindexMatrix){
         isReindexIdentity = false;
     }
     else{
