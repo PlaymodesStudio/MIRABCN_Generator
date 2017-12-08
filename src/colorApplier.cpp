@@ -58,6 +58,8 @@ colorApplier::colorApplier(int _id){
     isImageLoaded = false;
     
     colorIsChanging = false;
+    
+    oldColorDisplacement = colorDisplacement;
 }
 
 void colorApplier::applyColor(vector<vector<float>> &inputVec){
@@ -137,9 +139,12 @@ void colorApplier::applyColor(vector<vector<float>> &inputVec){
 }
 
 void colorApplier::colorDisplacementChanged(float &f){
-    for(auto &randDisplacement : colorDisplacementVector){
-        randDisplacement = {ofRandom(-f, f), ofRandom(-f, f), ofRandom(-f, f)};
+    if(oldColorDisplacement != f){
+        for(auto &randDisplacement : colorDisplacementVector){
+            randDisplacement = {ofRandom(-f, f), ofRandom(-f, f), ofRandom(-f, f)};
+        }
     }
+    oldColorDisplacement = f;
 }
 
 void colorApplier::colorListener(ofColor &c){

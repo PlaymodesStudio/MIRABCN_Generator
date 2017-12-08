@@ -60,6 +60,7 @@ private:
     bool colorIsChanging;
     ofImage imageTexture;
     bool isImageLoaded;
+    float oldColorDisplacement;
 };
 
 #endif /* colorApplier_h */
