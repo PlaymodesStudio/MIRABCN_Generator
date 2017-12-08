@@ -1439,7 +1439,13 @@ void parametersControl::keyPressed(ofKeyEventArgs &e){
         if(ofGetMousePressed()) dragCanvasInitialPoint = ofPoint(ofGetMouseX(), ofGetMouseY());
         canvasDragging = true;
     }
-        
+    else if(e.key == 'p'){
+        for(auto groupParam : parameterGroups){
+            if(ofStringTimesInString(groupParam->getName(), "phasor") != 0)
+                groupParam->getBool("Reset Phase") = 0;
+        }
+    }
+    
 }
 
 void parametersControl::keyReleased(ofKeyEventArgs &e){
