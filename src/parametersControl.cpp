@@ -307,8 +307,8 @@ void parametersControl::update(ofEventArgs &args){
                 if(splitAddress.size() == 3){
                     for(auto groupParam : parameterGroups){
                         if(groupParam->getName() == splitAddress[1]){
-                            ofAbstractParameter &absParam = groupParam->get(splitAddress[2]);
-                            if(absParam.getName() == splitAddress[2]){
+                            if(groupParam->contains(splitAddress[2])){
+                                ofAbstractParameter &absParam = groupParam->get(splitAddress[2]);
                                 if(absParam.type() == typeid(ofParameter<float>).name()){
                                     ofParameter<float> castedParam = absParam.cast<float>();
                                     castedParam = ofMap(m.getArgAsFloat(0), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
