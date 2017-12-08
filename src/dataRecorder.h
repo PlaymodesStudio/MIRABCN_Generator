@@ -31,6 +31,7 @@ private:
     
     float oldPhasor;
     int frameCounter;
+    string initRecordingTimestamp;
 };
 
 #endif /* dataRecorder_h */

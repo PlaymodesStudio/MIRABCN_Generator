@@ -67,7 +67,7 @@ void dataRecorder::inputListener(vector<vector<ofColor> > &info){
             img.setFromPixels(data, w, h, OF_IMAGE_COLOR);
             delete [] data;
         }
-        img.save("recordings/" + filename.get() + "/" + filename.get() + "_" + ofToString(frameCounter, 4, '0') + ".png");
+        img.save("recordings/" + filename.get() +  "_" + initRecordingTimestamp + "/" + filename.get() + "_" + ofToString(frameCounter, 4, '0') + ".png");
         frameCounter++;
     }
     
@@ -75,6 +75,7 @@ void dataRecorder::inputListener(vector<vector<ofColor> > &info){
 
 void dataRecorder::recordListener(bool &b){
     if(b){
+        initRecordingTimestamp = ofGetTimestampString();
         frameCounter = 0;
     }else{
         parameters->getBool("Auto Rec Loop") = false;
