@@ -396,7 +396,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
             bool foundNullElementInVector = false;
             for (int i = 0; (i < converters.size() && !foundNullElementInVector) ; i++){
                 if(converters[i] == nullptr){
-                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float> \n 5. vector<vector<float>> to vector<float> QUAD"));
+                    int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float> \n 5. vector<float> to vector<vector<float>> QUAD"));
                     switch(static_cast<converterTypes>(type)){
                         case CONVERT_FLOAT_TO_VECFLOAT:
                             converters[i] = new typeConverter<float, vector<float>>(i+1, info.second);
@@ -422,7 +422,7 @@ void ofApp::newModuleListener(pair<string, ofPoint> &info){
                 }
             }
             if(!foundNullElementInVector){
-                int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float> \n 5. vector<vector<float>> to vector<float> QUAD"));
+                int type = ofToInt(ofSystemTextBoxDialog("Choose TypeConverter Type: \n 1. float to vector<float> \n 2. vector<float> to vector<vector<float>> \n 3. vector<float> to float \n 4. vector<vector<float>> to vector<float> \n 5. vector<float> to vector<vector<float>> QUAD"));
                 switch(static_cast<converterTypes>(type)){
                     case CONVERT_FLOAT_TO_VECFLOAT:
                         converters.push_back(new typeConverter<float, vector<float>>(converters.size()+1, info.second));

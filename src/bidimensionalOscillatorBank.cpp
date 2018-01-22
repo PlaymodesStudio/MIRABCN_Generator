@@ -12,6 +12,9 @@
 bidimensionalOscillatorBank::bidimensionalOscillatorBank(int bankId, int xSize, int ySize, ofPoint pos){
     parameters = new ofParameterGroup();
     
+    width = xSize;
+    height = ySize;
+    
     parameters->setName("bidimensionalOscillatorBank " + ofToString(bankId));
     
     indexers.push_back(new baseIndexer(xSize));
@@ -24,7 +27,7 @@ bidimensionalOscillatorBank::bidimensionalOscillatorBank(int bankId, int xSize, 
 //        oscillators[i]->setIndexNormalized(indexs[i]);
     }
     computeBidirectionalIndexs();
-    result.resize(nOscillators, 0);
+    result.resize(width, vector<float>(height));
     
     for(int i = 0; i < indexers.size(); i++){
         string dimensionStr = " ";
@@ -69,7 +72,7 @@ bidimensionalOscillatorBank::bidimensionalOscillatorBank(int bankId, int xSize, 
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
     
-    parameters->add(oscillatorOut.set("Oscillator Out", {0}));
+    parameters->add(oscillatorOut.set("Oscillator Out", {{0}}));
     
     
     phasorIn.addListener(this, &bidimensionalOscillatorBank::newPhasorIn);
@@ -96,16 +99,17 @@ void bidimensionalOscillatorBank::parameterChanged(ofAbstractParameter &p){
     
 }
 
-vector<float> bidimensionalOscillatorBank::computeBank(float phasor){
+vector<vector<float>> bidimensionalOscillatorBank::computeBank(float phasor){
+    int i_x = 0, i_y = 0;
     for(int i = 0; i < oscillators.size(); i++){
-        result[i] = oscillators[i]->computeFunc(phasor);
+        i_y = floor(i/width);
+        i_x = i - (i_y * width);
+        result[i_x][i_y] = oscillators[i]->computeFunc(phasor);
     }
     return result;
 }
 
 void bidimensionalOscillatorBank::computeBidirectionalIndexs(){
-    int width = indexers[0]->getIndexs().size();
-    int height = indexers[1]->getIndexs().size();
     int lin_size = width * height;
     vector<float> tempOut(lin_size);
     if(width != 0 && height != 0){
@@ -136,7 +140,7 @@ void bidimensionalOscillatorBank::newPhasorIn(float &f){
         computeBidirectionalIndexs();
     }
     computeBank(f);
-    parameters->get("Oscillator Out").cast<vector<float>>() = result;
+    parameters->get("Oscillator Out").cast<vector<vector<float>>>() = result;
 }
 
 void bidimensionalOscillatorBank::newPowParam(float &f){

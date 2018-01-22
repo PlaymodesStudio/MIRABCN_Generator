@@ -17,7 +17,7 @@ public:
     bidimensionalOscillatorBank(int bankId, int xSize, int ySize, ofPoint pos = ofPoint(-1, -1));
     ~bidimensionalOscillatorBank(){};
     
-    vector<float>   computeBank(float phasor);
+    vector<vector<float>>   computeBank(float phasor);
     void computeBidirectionalIndexs();
 private:
     void parameterChanged(ofAbstractParameter &p);
@@ -59,9 +59,11 @@ private:
     ofParameter<float>    invert_Param;
     ofParameter<float>    skew_Param;
     
-    ofParameter<vector<float>>      oscillatorOut;
+    ofParameter<vector<vector<float>>>      oscillatorOut;
     
-    vector<float> result;
+    int width, height;
+    
+    vector<vector<float>> result;
     vector<int> resultFilledChecker;
 };
 

@@ -35,7 +35,10 @@ void typeConverter<float, vector<float>>::sourceListener(float &s){
 
 template<>
 void typeConverter<vector<vector<float>>, vector<float>>::sourceListener(vector<vector<float>> &s){
-    vector<float> toSend = s[0];
+    vector<float> toSend;
+    for(vector<float> tempVec : s){
+        toSend.insert(toSend.end(), tempVec.begin(), tempVec.end());
+    }
     parameters->get("Dest").cast<vector<float>>() = toSend;
 };
 
