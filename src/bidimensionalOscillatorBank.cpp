@@ -117,20 +117,7 @@ void bidimensionalOscillatorBank::computeBidirectionalIndexs(){
         for(int i = 0; i < lin_size; i++){
             height_i = floor(i/width);
             width_i = i - (height_i * width);
-            switch(3){
-                case 0:
-                    oscillators[i]->setIndexNormalized(ofClamp(indexers[0]->getIndexs()[width_i] + indexers[1]->getIndexs()[height_i],0,1));
-                    break;
-                case 1:
-                    oscillators[i]->setIndexNormalized(ofClamp(indexers[0]->getIndexs()[width_i] * indexers[1]->getIndexs()[height_i],0,1));
-                    break;
-                case 2:
-                    oscillators[i]->setIndexNormalized(ofClamp(indexers[0]->getIndexs()[width_i] - indexers[1]->getIndexs()[height_i],0,1));
-                    break;
-                case 3:
-                    oscillators[i]->setIndexNormalized(ofClamp(indexers[0]->getIndexs()[width_i]*.5 + indexers[1]->getIndexs()[height_i]*.5, 0, 1));
-                    break;
-            }
+            oscillators[i]->setIndexNormalized(indexers[0]->getIndexs()[width_i]+ indexers[1]->getIndexs()[height_i]);
         }
     }
 }
