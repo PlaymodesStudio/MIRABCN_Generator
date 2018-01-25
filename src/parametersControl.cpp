@@ -1717,6 +1717,12 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
         ofParameter<int> castedParam = nestedGroup.getInt(1);
         castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
     }
+    else if(e->type() == typeid(ofParameter<vector<int>>).name()){
+        e->cast<vector<int>>() = vector<int>(1, v);
+    }
+    else if(e->type() == typeid(ofParameter<vector<float>>).name()){
+        e->cast<vector<float>>() = vector<float>(1, v);
+    }
 }
 
 void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connection){

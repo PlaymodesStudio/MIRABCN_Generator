@@ -53,8 +53,8 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     
-    parameters->add(xPhaseOffsetIn.set("Phase Offset X", {0}, {0}, {1}));
-    parameters->add(yPhaseOffsetIn.set("Phase Offset Y", {0}, {0}, {1}));
+    parameters->add(xPhaseOffset.set("Phase Offset X", {0}, {0}, {1}));
+    parameters->add(yPhaseOffset.set("Phase Offset Y", {0}, {0}, {1}));
     
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
     parameters->add(scale_Param.set("Scale", 1, 0, 2));
@@ -95,12 +95,12 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     //Phase offset
     xPhaseOffsetBuffer.allocate();
     xPhaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
-    xPhaseOffsetBuffer.setData(vector<float>(width, xPhaseOffsetIn.get()[0]), GL_STREAM_DRAW);
+    xPhaseOffsetBuffer.setData(vector<float>(width, xPhaseOffset.get()[0]), GL_STREAM_DRAW);
     xPhaseOffsetTexture.allocateAsBufferTexture(xPhaseOffsetBuffer, GL_R32F);
     
     yPhaseOffsetBuffer.allocate();
     yPhaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
-    yPhaseOffsetBuffer.setData(vector<float>(height, yPhaseOffsetIn.get()[0]), GL_STREAM_DRAW);
+    yPhaseOffsetBuffer.setData(vector<float>(height, yPhaseOffset.get()[0]), GL_STREAM_DRAW);
     yPhaseOffsetTexture.allocateAsBufferTexture(yPhaseOffsetBuffer, GL_R32F);
     
     
@@ -115,8 +115,8 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     phasorIn.addListener(this, &oscillatorTexture::newPhasorIn);
     
-    xPhaseOffsetIn.addListener(this, &oscillatorTexture::xPhaseOffsetListener);
-    yPhaseOffsetIn.addListener(this, &oscillatorTexture::yPhaseOffsetListener);
+    xPhaseOffset.addListener(this, &oscillatorTexture::xPhaseOffsetListener);
+    yPhaseOffset.addListener(this, &oscillatorTexture::yPhaseOffsetListener);
 
     randomAdd_Param.addListener(this, &oscillatorTexture::newRandomAddParam);
     scale_Param.addListener(this, &oscillatorTexture::newScaleParam);
