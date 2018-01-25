@@ -20,30 +20,12 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     
     parameters->setName("oscillatorTexture " + ofToString(bankId));
+    parameters->add(reloadShaderParam.set("Reload Shader", false));
+    reloadShaderParam.addListener(this, &oscillatorTexture::reloadShader);
     
     indexers.push_back(new baseIndexer(xSize));
     indexers.push_back(new baseIndexer(ySize));
     
-    //TBOs
-    //xIndex
-    xIndexBuffer.allocate();
-    xIndexBuffer.bind(GL_TEXTURE_BUFFER);
-    xIndexBuffer.setData(indexers[0]->getIndexs(), GL_STREAM_DRAW);
-    xIndexTexture.allocateAsBufferTexture(xIndexBuffer, GL_R32F);
-    
-    
-    //yIndex
-    yIndexBuffer.allocate();
-    yIndexBuffer.bind(GL_TEXTURE_BUFFER);
-    yIndexBuffer.setData(indexers[1]->getIndexs(), GL_STREAM_DRAW);
-    yIndexTexture.allocateAsBufferTexture(xIndexBuffer, GL_R32F);
-    
-    
-    shader.load("noise.vert", "noise.frag");
-    shader.begin();
-    shader.setUniformTexture("xIndexs", xIndexTexture, 0);
-    shader.setUniformTexture("yIndexs", yIndexTexture, 1);
-    shader.end();
     
     for(int i = 0; i < indexers.size(); i++){
         string dimensionStr = " ";
@@ -70,7 +52,11 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     }
     
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
+    
     parameters->add(phaseOffset_Param.set("Phase Offset", 0, 0, 1));
+    parameters->add(xPhaseOffsetIn.set("Phase Offset X", {0}));
+    parameters->add(yPhaseOffsetIn.set("Phase Offset Y", {0}));
+    
     parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
     parameters->add(scale_Param.set("Scale", 1, 0, 2));
     parameters->add(offset_Param.set("Offset", 0, -1, 1));
@@ -91,8 +77,49 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     parameters->add(oscillatorOut.set("Oscillator Out", nullptr));
     
     
+    
+    
+    //TBOs
+    //xIndex
+    xIndexBuffer.allocate();
+    xIndexBuffer.bind(GL_TEXTURE_BUFFER);
+    xIndexBuffer.setData(indexers[0]->getIndexs(), GL_STREAM_DRAW);
+    xIndexTexture.allocateAsBufferTexture(xIndexBuffer, GL_R32F);
+    
+    
+    //yIndex
+    yIndexBuffer.allocate();
+    yIndexBuffer.bind(GL_TEXTURE_BUFFER);
+    yIndexBuffer.setData(indexers[1]->getIndexs(), GL_STREAM_DRAW);
+    yIndexTexture.allocateAsBufferTexture(yIndexBuffer, GL_R32F);
+    
+    //Phase offset
+    xPhaseOffsetBuffer.allocate();
+    xPhaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
+    xPhaseOffsetBuffer.setData(vector<float>(width, phaseOffset_Param), GL_STREAM_DRAW);
+    xPhaseOffsetTexture.allocateAsBufferTexture(xPhaseOffsetBuffer, GL_R32F);
+    
+    yPhaseOffsetBuffer.allocate();
+    yPhaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
+    yPhaseOffsetBuffer.setData(vector<float>(height, phaseOffset_Param), GL_STREAM_DRAW);
+    yPhaseOffsetTexture.allocateAsBufferTexture(yPhaseOffsetBuffer, GL_R32F);
+    
+    
+    //LoadShader
+    bool b = true;
+    reloadShader(b);
+
+    
+    
+    
+    
+    
     phasorIn.addListener(this, &oscillatorTexture::newPhasorIn);
+    
     phaseOffset_Param.addListener(this, &oscillatorTexture::newPhaseOffsetParam);
+    xPhaseOffsetIn.addListener(this, &oscillatorTexture::xPhaseOffsetListener);
+    yPhaseOffsetIn.addListener(this, &oscillatorTexture::yPhaseOffsetListener);
+
     randomAdd_Param.addListener(this, &oscillatorTexture::newRandomAddParam);
     scale_Param.addListener(this, &oscillatorTexture::newScaleParam);
     offset_Param.addListener(this, &oscillatorTexture::newOffsetParam);
@@ -113,6 +140,16 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
 
 void oscillatorTexture::parameterChanged(ofAbstractParameter &p){
     
+}
+
+void oscillatorTexture::reloadShader(bool &b){
+    shader.load("noise.vert", "noise.frag");
+    shader.begin();
+    shader.setUniformTexture("xIndexs", xIndexTexture, 0);
+    shader.setUniformTexture("yIndexs", yIndexTexture, 1);
+    shader.setUniformTexture("xPhaseOffset", xPhaseOffsetTexture, 2);
+    shader.setUniformTexture("yPhaseOffset", yPhaseOffsetTexture, 3);
+    shader.end();
 }
 
 ofTexture& oscillatorTexture::computeBank(float phasor){
@@ -159,100 +196,71 @@ void oscillatorTexture::computeBidirectionalIndexs(){
 void oscillatorTexture::newPhasorIn(float &f){
     if(indexers[0]->areNewIndexs()){
         xIndexBuffer.updateData(0, indexers[0]->getIndexs());
-        
-        shader.begin();
-        shader.setUniformTexture("xIndexs", xIndexTexture, 0);
-        shader.end();
     }
     if(indexers[1]->areNewIndexs()){
-        shader.begin();
-        shader.setUniform1fv("yIndexs", indexers[1]->getIndexs().data());
-        shader.end();
+        yIndexBuffer.updateData(0, indexers[1]->getIndexs());
     }
     parameters->get("Oscillator Out").cast<ofTexture*>() = &computeBank(f);
 }
 
+#pragma mark PHASE OFFSET
+void oscillatorTexture::newPhaseOffsetParam(float &f){
+    xPhaseOffsetBuffer.updateData(0, vector<float>(width, f));
+    yPhaseOffsetBuffer.updateData(0, vector<float>(height, f));
+}
+
+void oscillatorTexture::xPhaseOffsetListener(vector<float> &vf){
+    xPhaseOffsetBuffer.updateData(0, vf);
+}
+
+void oscillatorTexture::yPhaseOffsetListener(vector<float> &vf){
+    yPhaseOffsetBuffer.updateData(0, vf);
+}
+
 void oscillatorTexture::newPowParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->pow_Param = f;
-    }
-    shader.load("noise.vert", "noise.frag");
-    shader.begin();
-    shader.setUniformTexture("xIndexs", xIndexTexture, 0);
-    shader.setUniformTexture("yIndexs", yIndexTexture, 1);
-    shader.setUniform1fv("xIndexs", indexers[0]->getIndexs().data());
-    shader.setUniform1fv("yIndexs", indexers[1]->getIndexs().data());
-    shader.end();
+   
 }
 
 void oscillatorTexture::newpulseWidthParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->pulseWidth_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newHoldTimeParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->holdTime_Param = f;
-    }
-}
 
-void oscillatorTexture::newPhaseOffsetParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->phaseOffset_Param = f;
-    }
 }
 
 void oscillatorTexture::newQuantParam(int &i){
-    for(auto &oscillator : oscillators){
-        oscillator->quant_Param = i;
-    }
+
 }
 
 void oscillatorTexture::newScaleParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->scale_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newOffsetParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->offset_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newRandomAddParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->randomAdd_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newWaveSelectParam(int &i){
-    for(auto &oscillator : oscillators){
-        oscillator->waveSelect_Param = i;
-    }
+
 }
 
 void oscillatorTexture::newAmplitudeParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->amplitude_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newInvertParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->invert_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newSkewParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->skew_Param = f;
-    }
+
 }
 
 void oscillatorTexture::newBiPowParam(float &f){
-    for(auto &oscillator : oscillators){
-        oscillator->biPow_Param = f;
-    }
+
 }

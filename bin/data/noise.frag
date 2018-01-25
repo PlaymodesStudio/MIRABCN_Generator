@@ -4,9 +4,14 @@
 //uniform vec2 size;
 uniform float phase;
 uniform float time;
+
+//Indexs
 uniform samplerBuffer xIndexs;
-//uniform float yIndexs[720];
-uniform float phaseOffset_Param = 0;
+uniform samplerBuffer yIndexs;
+
+//Phase Offset
+uniform samplerBuffer xPhaseOffset;
+uniform samplerBuffer yPhaseOffset;
 
 out vec4 out_color;
 
@@ -74,10 +79,15 @@ void main(){
 	int xVal = int(gl_FragCoord.x);
 	int yVal = int(gl_FragCoord.y);
     
+    //Compute parameters of current coord;
+    float index = texelFetch(xIndexs, xVal).r + texelFetch(yIndexs, yVal).r;
+    float phaseOffset = texelFetch(xPhaseOffset, xVal).r + texelFetch(yPhaseOffset, yVal).r;
+    
+    
     float val = 0;
     
     //sin
-    val = (sin(2 * 3.14 * phase) + 1 ) / 2;
+    //val = (sin(2 * 3.14 * phase) + 1 ) / 2;
     
     //cos
 //    val = (cos(2 * M_PI * phase) + 1 ) / 2;
@@ -98,18 +108,17 @@ void main(){
     
     //val = random(vec2(xVal+time+phase, yVal+time/2 +  phase/2));
     
-    float indexNormalized = 0;
-    indexNormalized = texelFetch(xIndexs, xVal).r;//yIndexs[yVal];// + yIndexs[yVal];
+    
     
     //get phasor to be w (radial freq)
     float w = (phase * 2 * M_PI);
     
-    float k = (indexNormalized + phaseOffset_Param) * 2 * M_PI;
+    float k = (index + phaseOffset) * 2 * M_PI;
     //
 //    //    //invert it?
 //    //    k *=  freq_Param * ((float)indexCount_Param/(float)indexQuant_Param); //Index Modifiers
 //    
-        w += k;
+    w = w + k;
 //    w = fmod(w, 2*PI);
 //    
 //    w = ofMap(w, (1-pulseWidth_Param)*2*PI, 2*PI, 0, 2*PI, true);
@@ -144,7 +153,7 @@ void main(){
 //        }
 //        case cosOsc:
 //        {
-//            val = (cos(2 * M_PI * phase) + 1 ) / 2;
+            //val = (cos(w) + 1 ) / 2;
 //            break;
 //        }
 //        case triOsc:
