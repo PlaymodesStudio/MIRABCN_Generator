@@ -39,11 +39,11 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes
     //        parameters->add(colorTexture.set("Color Tex", {{ofColor::black}}));
     //    }
     for(int i = 0; i < bankScopes ; i++)
-        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {}));
+        parameters->add(oscillatorBankIns[i].set("Osc Bank "+ ofToString(i), {0}, {0},{1}));
     parameters->add(drawOnSeparateWindow.set("Separate Window", false));
     
     if(gridScope) {
-        parameters->add(gridIn.set("Grid In", {}));
+        parameters->add(gridIn.set("Grid In", {0}));
     }
     
     ofAddListener(parameters->parameterChangedE(), this, &waveScope::inputListener);

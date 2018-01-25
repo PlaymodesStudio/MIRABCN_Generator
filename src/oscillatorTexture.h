@@ -54,7 +54,6 @@ private:
     ofParameter<float>    pow_Param; //Pow of the funcion, working on sin, cos....
     ofParameter<float>    pulseWidth_Param;
     ofParameter<float>    holdTime_Param; //The duration of the hold in percentage (0.5) --> 50% of the cycle is the phase in initPhase
-    ofParameter<float>    phaseOffset_Param;
     ofParameter<vector<float>>   xPhaseOffsetIn;
     ofParameter<vector<float>>   yPhaseOffsetIn;
     ofParameter<int>      quant_Param;

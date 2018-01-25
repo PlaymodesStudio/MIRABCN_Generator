@@ -38,7 +38,7 @@ oscillatorBank::oscillatorBank(int nOscillators, bool gui, int _bankId, ofPoint 
     waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
     parameters->add(waveDropDown);
     
-    parameters->add(oscillatorOut.set("Oscillator Out", {0}));
+    parameters->add(oscillatorOut.set("Oscillator Out", {0}, {0}, {1}));
     
     if(gui)
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::red, pos);

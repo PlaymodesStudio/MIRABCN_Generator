@@ -80,8 +80,8 @@ public:
         
         ofParameter<string> label;
         parameters->add(label.set(ofToString(type) + ". " + sourceTypeName + " to " + destTypeName + "_label", ""));
-        parameters->add(source.set("Source", Tsource()));
-        parameters->add(dest.set("Dest", Tdest()));
+        parameters->add(source.set("Source", Tsource(0), Tsource(0), Tsource(0)));
+        parameters->add(dest.set("Dest", Tdest(0), Tdest(0), Tdest(0)));
         
         source.addListener(this, &typeConverter::sourceListener);
         

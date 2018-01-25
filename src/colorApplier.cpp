@@ -31,7 +31,7 @@ colorApplier::colorApplier(int _id){
     
     parameters->add(imageTextureFile.set("Img Tex File", ""));
     
-    parameters->add(indexIn.set("Indexs", {0}));
+    parameters->add(indexIn.set("Indexs", {0}, {0}, {1}));
     parameters->add(grayScaleIn.set("Input", {{0}}));
     parameters->add(gradientPreview.set("Gradient Preview", {{}}));
     parameters->add(colorizedValues.set("Output", {{ofColor::white}}));

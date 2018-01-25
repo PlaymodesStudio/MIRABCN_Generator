@@ -80,8 +80,12 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
             tempDatGui->addDropdown(paramGroup->getGroup(i).getName(), ofSplitString(paramGroup->getGroup(i).getString(0), "-|-"))->select(paramGroup->getGroup(i).getInt(1));
         }
         else if(absParam.type() == typeid(ofParameter<vector<vector<bool>>>).name()){
-            
-        }else{
+            //do nothihg
+        }
+        else if(absParam.type() == typeid(ofParameter<vector<float>>).name()){
+            tempDatGui->addMultiSlider(absParam.cast<vector<float>>())->setPrecision(1000);
+        }
+        else{
             if(absParam.getName() != "ReindexGrid")
                 tempDatGui->addLabel(absParam.getName());
         }

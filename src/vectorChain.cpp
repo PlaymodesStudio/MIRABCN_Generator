@@ -16,10 +16,10 @@ vectorChain::vectorChain(int nInputs, int id, ofPoint pos){
     
     inputs.resize(nInputs);
     for(int i = 0; i < inputs.size() ; i++){
-        parameters->add(inputs[i].set("Input " + ofToString(i), {}));
+        parameters->add(inputs[i].set("Input " + ofToString(i), {0}, {0}, {1}));
     }
     parameters->add(offset.set("Offset", 0, -1, 1));
-    parameters->add(output.set("Output", {}));
+    parameters->add(output.set("Output", {0}, {0}, {1}));
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green, pos);
     
