@@ -41,7 +41,7 @@ private:
     
     ofParameterGroup* parameters;
     vector<ofParameter<vector<float>>>          oscillatorBankIns;
-    vector<ofParameter<vector<vector<float>>>>  groupBankIn;
+    vector<ofParameter<ofTexture*>>  groupBankIn;
     vector<ofParameter<vector<vector<ofColor>>>>    colorGroupIn;
     ofParameter<vector<float>>  gridIn;
     

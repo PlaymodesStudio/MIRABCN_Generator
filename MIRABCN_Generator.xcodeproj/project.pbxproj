@@ -62,6 +62,7 @@
 		9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */; };
 		9F89C70E1F191D8A008EB023 /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F89C70D1F191D8A008EB023 /* aubio.framework */; };
 		9F89C7121F1924A0008EB023 /* delta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F89C7101F1924A0008EB023 /* delta.cpp */; };
+		9F908E1F2018E19700CA55B4 /* oscillatorTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F908E1D2018E19700CA55B4 /* oscillatorTexture.cpp */; };
 		9F9ABA3B1F7C0771007F22EB /* speakerPowerCalculator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */; };
 		9FBCE1851F2F88B900E7E5B1 /* mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */; };
 		9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9FBCE1861F2F923B00E7E5B1 /* vectorMapper.cpp */; };
@@ -240,6 +241,10 @@
 		9F89C70D1F191D8A008EB023 /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = aubio.framework; sourceTree = "<group>"; };
 		9F89C7101F1924A0008EB023 /* delta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = delta.cpp; sourceTree = "<group>"; };
 		9F89C7111F1924A0008EB023 /* delta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delta.h; sourceTree = "<group>"; };
+		9F908E1D2018E19700CA55B4 /* oscillatorTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscillatorTexture.cpp; sourceTree = "<group>"; };
+		9F908E1E2018E19700CA55B4 /* oscillatorTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscillatorTexture.h; sourceTree = "<group>"; };
+		9F908E252018EB0E00CA55B4 /* noise.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = noise.frag; path = bin/data/noise.frag; sourceTree = "<group>"; };
+		9F908E262018EB0E00CA55B4 /* noise.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = noise.vert; path = bin/data/noise.vert; sourceTree = "<group>"; };
 		9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = speakerPowerCalculator.cpp; sourceTree = "<group>"; };
 		9F9ABA3A1F7C0771007F22EB /* speakerPowerCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speakerPowerCalculator.h; sourceTree = "<group>"; };
 		9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mapper.cpp; sourceTree = "<group>"; };
@@ -713,6 +718,8 @@
 			children = (
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
+				9F908E252018EB0E00CA55B4 /* noise.frag */,
+				9F908E262018EB0E00CA55B4 /* noise.vert */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
@@ -799,6 +806,8 @@
 				9FC5A4291FA0F56200E8F902 /* SubDimensionCombinator.h */,
 				9F2787281FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp */,
 				9F2787291FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.h */,
+				9F908E1D2018E19700CA55B4 /* oscillatorTexture.cpp */,
+				9F908E1E2018E19700CA55B4 /* oscillatorTexture.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1027,6 +1036,7 @@
 				9FBCE1881F2F923B00E7E5B1 /* vectorMapper.cpp in Sources */,
 				9F5D44991F28BA8000D1D841 /* audioEngineController.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,
+				9F908E1F2018E19700CA55B4 /* oscillatorTexture.cpp in Sources */,
 				5864AD82E20F15536D054EA3 /* ofxOscMessage.cpp in Sources */,
 				9FD8862D1F5588310025EC69 /* chartresTextureUnifier.cpp in Sources */,
 				4ADB88E2FB52E76A471065DE /* ofxOscParameterSync.cpp in Sources */,

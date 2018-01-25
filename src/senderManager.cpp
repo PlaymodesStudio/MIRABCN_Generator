@@ -23,7 +23,7 @@ senderManager::senderManager(int _id, bool _invert, string _grayscaleName, strin
     parameters->add(masterFader.set("Master Fader", 1, 0, 1));
     
     parameters->add(grayScaleIn.set("Grayscale In", {{0}}));
-    parameters->add(colorIn.set("Color In", {{ofColor::white}}));
+    parameters->add(colorIn.set("Color In", nullptr));
     
     grayScaleIn.addListener(this, &senderManager::sendGrayScale);
     colorIn.addListener(this, &senderManager::sendColor);
@@ -87,49 +87,49 @@ void senderManager::sendGrayScale(vector<vector<float>> &info){
     }
 }
 
-void senderManager::sendColor(vector<vector<ofColor>> &info){
-    int w = info.size();
-    int h = info[0].size();
-    if(enableOsc){
-        ofxOscMessage* messageColor = new ofxOscMessage();
-        messageColor->setAddress("info/color");
-        
-        for(int i = 0 ; i < w ; i++){
-            for (int j = 0 ; j < h ; j++){
-                messageColor->addFloatArg((float)info[i][j].r*masterFader);
-                messageColor->addFloatArg((float)info[i][j].g*masterFader);
-                messageColor->addFloatArg((float)info[i][j].b*masterFader);
-            }
-        }
-        oscSender->sendMessage(*messageColor);
-        delete messageColor;
-    }
+void senderManager::sendColor(ofTexture *&info){
+//    int w = info.size();
+//    int h = info[0].size();
+//    if(enableOsc){
+//        ofxOscMessage* messageColor = new ofxOscMessage();
+//        messageColor->setAddress("info/color");
+//        
+//        for(int i = 0 ; i < w ; i++){
+//            for (int j = 0 ; j < h ; j++){
+//                messageColor->addFloatArg((float)info[i][j].r*masterFader);
+//                messageColor->addFloatArg((float)info[i][j].g*masterFader);
+//                messageColor->addFloatArg((float)info[i][j].b*masterFader);
+//            }
+//        }
+//        oscSender->sendMessage(*messageColor);
+//        delete messageColor;
+//    }
     if(colorSyphonServer != NULL && enableSyphon){
-        ofTexture tex;
-        if(invert){
-            unsigned char *data = new unsigned char[w * h*3];
-            for(int i = 0 ; i < h ; i++){
-                for ( int j = 0; j < w ; j++){
-                    data[(i*3)+h*3*j] = info[j][i].r*masterFader;
-                    data[(i*3)+(h*3*j)+1] = info[j][i].g*masterFader;
-                    data[(i*3)+(h*3*j)+2] = info[j][i].b*masterFader;
-                }
-            }
-            tex.loadData(data, h, w, GL_RGB);
-            delete [] data;
-        }else{
-            unsigned char *data = new unsigned char[w * h*3];
-            for(int i = 0 ; i < w ; i++){
-                for ( int j = 0; j < h ; j++){
-                    data[(i*3)+w*3*j] = info[i][j].r*masterFader;
-                    data[(i*3)+(w*3*j)+1] = info[i][j].g*masterFader;
-                    data[(i*3)+(w*3*j)+2] = info[i][j].b*masterFader;
-                }
-            }
-            tex.loadData(data, w, h, GL_RGB);
-            delete [] data;
-        }
-        colorSyphonServer->publishTexture(&tex);
+//        ofTexture tex;
+//        if(invert){
+//            unsigned char *data = new unsigned char[w * h*3];
+//            for(int i = 0 ; i < h ; i++){
+//                for ( int j = 0; j < w ; j++){
+//                    data[(i*3)+h*3*j] = info[j][i].r*masterFader;
+//                    data[(i*3)+(h*3*j)+1] = info[j][i].g*masterFader;
+//                    data[(i*3)+(h*3*j)+2] = info[j][i].b*masterFader;
+//                }
+//            }
+//            tex.loadData(data, h, w, GL_RGB);
+//            delete [] data;
+//        }else{
+//            unsigned char *data = new unsigned char[w * h*3];
+//            for(int i = 0 ; i < w ; i++){
+//                for ( int j = 0; j < h ; j++){
+//                    data[(i*3)+w*3*j] = info[i][j].r*masterFader;
+//                    data[(i*3)+(w*3*j)+1] = info[i][j].g*masterFader;
+//                    data[(i*3)+(w*3*j)+2] = info[i][j].b*masterFader;
+//                }
+//            }
+//            tex.loadData(data, w, h, GL_RGB);
+//            delete [] data;
+//        }
+        colorSyphonServer->publishTexture(info);
     }
 }
 

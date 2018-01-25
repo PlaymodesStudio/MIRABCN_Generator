@@ -38,7 +38,7 @@ public:
     
 private:
     void sendGrayScale(vector<vector<float>> &info);
-    void sendColor(vector<vector<ofColor>> &info);
+    void sendColor(ofTexture *&info);
     
     ofxSyphonServer*    grayscaleSyphonServer;
     ofxSyphonServer*    colorSyphonServer;
@@ -58,7 +58,7 @@ private:
     ofParameter<float>  masterFader;
     
     ofParameter<vector<vector<float>>>  grayScaleIn;
-    ofParameter<vector<vector<ofColor>>>    colorIn;
+    ofParameter<ofTexture*>    colorIn;
     
     bool invert;
     

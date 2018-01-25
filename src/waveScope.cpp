@@ -28,7 +28,7 @@ waveScope::waveScope(shared_ptr<bufferLoggerChannel> logBuffer_, int groupScopes
     parameters = new ofParameterGroup();
     parameters->setName("waveScope");
     for(int i = 0; i < groupScopes; i++){
-        parameters->add(groupBankIn[i].set("Group In " + ofToString(i), {{}}));
+        parameters->add(groupBankIn[i].set("Group In " + ofToString(i), nullptr));
     }
     for(int i = 0; i < colorScopes; i++){
         parameters->add(colorGroupIn[i].set("Color Group In " + ofToString(i), {{}}));
@@ -99,22 +99,22 @@ void waveScope::draw(){
         
         //Draw the groups
         for(int i = 0; i < groupBankIn.size(); i++){
-            if(activeGroupInCounter[i] > 0){
-                int w = groupBankIn[i].get().size();
-                int h = groupBankIn[i].get()[0].size();
-                
-                ofTexture tex;
-                tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-                unsigned char *data = new unsigned char[w * h];
-                for(int ii = 0 ; ii < w ; ii++){
-                    for ( int jj = 0; jj < h ; jj++)
-                        data[ii+w*jj] = groupBankIn[i].get()[ii][jj]*255;
-                }
-                tex.loadData(data, w, h, GL_LUMINANCE);
-                delete[] data;
-                
+            if(activeGroupInCounter[i] > 0 && groupBankIn[i] != nullptr){
+//                int w = groupBankIn[i].get().size();
+//                int h = groupBankIn[i].get()[0].size();
+//                
+//                ofTexture tex;
+//                tex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+//                unsigned char *data = new unsigned char[w * h];
+//                for(int ii = 0 ; ii < w ; ii++){
+//                    for ( int jj = 0; jj < h ; jj++)
+//                        data[ii+w*jj] = groupBankIn[i].get()[ii][jj]*255;
+//                }
+//                tex.loadData(data, w, h, GL_LUMINANCE);
+//                delete[] data;
+//                
                 int topPosition = (elementHeight * oscDrawIndex);
-                tex.draw(0,topPosition, contentWidth, elementHeight);
+                groupBankIn[i].get()->draw(0,topPosition, contentWidth, elementHeight);
                 ofPushStyle();
                 ofSetColor(ofColor::indianRed);
                 ofNoFill();
@@ -226,7 +226,7 @@ void waveScope::draw(){
     
     while(logBuffer->getSize()*lineHeigh > debugRectangle.getHeight()) logBuffer->eraseLastLine();
     
-    for (int i = 0; i < logBuffer->getSize(); i++){
+    for (int i = 0; i < logBuffer->getSize(); i=i+10){
         string line = logBuffer->getLine(i);
         ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (lineHeigh*(i+1)));
     }
@@ -301,7 +301,7 @@ void waveScope::activateSeparateWindow(ofRectangle winRect){
 
 void waveScope::changeDrawLocation(bool &b){
     if(b){
-        ofAppBaseWindow* mainWindow = ofGetWindowPtr();
+        shared_ptr<ofAppBaseWindow> mainWindow = shared_ptr<ofAppBaseWindow>(ofGetWindowPtr());
         
         ofGLFWWindowSettings prevSettings;
         if(prevWindowRect.getPosition() == ofPoint(-1, -1)){
@@ -316,6 +316,8 @@ void waveScope::changeDrawLocation(bool &b){
         }
         prevSettings.windowMode = OF_WINDOW;
         prevSettings.resizable = true;
+        prevSettings.setGLVersion(4,1);
+        prevSettings.shareContextWith = mainWindow;
         prevWindow = ofCreateWindow(prevSettings);
         ofAddListener(prevWindow->events().draw, this, &waveScope::drawEvent);
         ofAddListener(prevWindow->events().mouseMoved, this, &waveScope::mouseMoved);
@@ -324,7 +326,7 @@ void waveScope::changeDrawLocation(bool &b){
         ofAddListener(prevWindow->events().mouseDragged, this, &waveScope::mouseDragged);
         ofAppGLFWWindow * ofWindow = (ofAppGLFWWindow*)prevWindow.get();
         GLFWwindow * glfwWindow = ofWindow->getGLFWWindow();
-        glfwSetWindowCloseCallback(glfwWindow, window_no_close_scope);
+        //glfwSetWindowCloseCallback(glfwWindow, window_no_close_scope);
     }
     else{
         prevWindowRect.setPosition(prevWindow->getWindowPosition());

@@ -3,6 +3,8 @@
 #include "dataRecorder.h"
 #include "speakerPowerCalculator.h"
 
+#include "oscillatorTexture.h"
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -125,6 +127,8 @@ void ofApp::setup(){
             if(speakerPowerCalculatorSize > 0){
                 new speakerPowerCalculator(speakerPowerCalculatorSize);
             }
+            
+            new oscillatorTexture(1,1920,1080);
             
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize, previewGrid);
 //            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));

@@ -1756,6 +1756,9 @@ void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connecti
                 }
                 sink->cast<vector<vector<ofColor>>>() = tempVec;
             }
+            else if(source->type() == typeid(ofParameter<ofTexture*>).name()){
+                sink->cast<ofTexture*>() = source->cast<ofTexture*>().get();
+            }
         }else{
             for(auto &connection : connections){
                 if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
