@@ -4,14 +4,20 @@
 //uniform vec2 size;
 uniform float phase;
 uniform float time;
+uniform int width;
 
 //Indexs
 uniform samplerBuffer xIndexs;
 uniform samplerBuffer yIndexs;
 
 //Phase Offset
-uniform samplerBuffer xPhaseOffset;
-uniform samplerBuffer yPhaseOffset;
+uniform samplerBuffer phaseOffset;
+uniform samplerBuffer randomAddition;
+
+//uniform samplerBuffer xPhaseOffset;
+//uniform samplerBuffer yPhaseOffset;
+
+
 
 out vec4 out_color;
 
@@ -19,13 +25,22 @@ out vec4 out_color;
 //varying sampler2D oldValue;
 
 
-//float computeMultiplyMod(float value){
-//    
-//    
-//    //random Add
-//    if(randomAdd_Param)
-//        value += randomAdd_Param*ofRandom(1);
-//    
+float random (in vec2 _st) {
+    return fract(sin(dot(_st.xy,
+                         vec2(12.9898,78.233)))*
+                 43758.5453123);
+}
+
+float computeMultiplyMod(float value, int xVal, int yVal){
+    
+    float randomAdditionParam = texelFetch(randomAddition, xVal).r + texelFetch(randomAddition, yVal + width).r;
+
+    
+    //random Add
+    if(randomAdditionParam != 0){
+        value = value + randomAdditionParam*random(vec2(xVal+time+phase, yVal+time/2 +  phase/2));
+    }
+    
 //    value = ofClamp(value, 0, 1);
 //    
 //    //SCALE
@@ -65,13 +80,7 @@ out vec4 out_color;
 //    float nonInvertedValue = value;
 //    value = (invert_Param) * invertedValue + (1-invert_Param) * nonInvertedValue;
 //    
-//    return value;
-//}
-
-float random (in vec2 _st) {
-    return fract(sin(dot(_st.xy,
-                         vec2(12.9898,78.233)))*
-                 43758.5453123);
+    return value;
 }
 
 void main(){
@@ -81,7 +90,7 @@ void main(){
     
     //Compute parameters of current coord;
     float index = texelFetch(xIndexs, xVal).r + texelFetch(yIndexs, yVal).r;
-    float phaseOffset = texelFetch(xPhaseOffset, xVal).r + texelFetch(yPhaseOffset, yVal).r;
+    float phaseOffset = texelFetch(phaseOffset, xVal).r + texelFetch(phaseOffset, yVal + width).r;
     
     
     float val = 0;
@@ -147,7 +156,7 @@ void main(){
 //    switch (static_cast<oscTypes>(waveSelect_Param.get()+1)){
 //        case sinOsc:
 //        {
-              val = (sin(w) + 1 ) / 2;
+               val = (sin(w) + 1 ) / 2;
 //            break;
 //
 //        }
@@ -208,8 +217,8 @@ void main(){
 //    
 //        oldValue[xVal][yVal] = val;
 //
-//    //val = computeMultiplyMod(val);
-//    
+    val = computeMultiplyMod(val, xVal, yVal);
+//
         // oldPhasor[xVal][yVal] = linPhase;
 //
     

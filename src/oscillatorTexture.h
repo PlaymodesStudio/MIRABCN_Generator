@@ -18,16 +18,14 @@ public:
     ~oscillatorTexture(){};
     
     ofTexture&  computeBank(float phasor);
-    void computeBidirectionalIndexs();
 private:
     void parameterChanged(ofAbstractParameter &p);
     void reloadShader(bool &b);
     
     void newPhasorIn(float &f);
     
-    void newPhaseOffsetParam(float &f);
-    void xPhaseOffsetListener(vector<float> &vf);
-    void yPhaseOffsetListener(vector<float> &vf);
+    void phaseOffsetListener(vector<float> &vf);
+    void randomAdditionListener(vector<float> &vf);
     
     void newPowParam(float &f);
     void newpulseWidthParam(float &f);
@@ -45,35 +43,37 @@ private:
     
     vector<baseIndexer*> indexers;
     
-    vector<baseOscillator*> oscillators;
-    
     ofParameterGroup* parameters;
+    
+//    ofParameter<float>  numWaves_Param; //Desphase Quantity
+//    ofParameter<float>   indexInvert_Param;
+//    ofParameter<int>    symmetry_Param;
+//    ofParameter<float>  indexRand_Param;
+//    ofParameter<float>    indexOffset_Param;
+//    ofParameter<int>    indexQuant_Param;
+//    ofParameter<float>  combination_Param;
+//    ofParameter<int>    modulo_Param;
+//    ofParameter<bool>   manualReindex_Param;
+    
     
     ofParameter<bool>       reloadShaderParam;
     ofParameter<float>    phasorIn;
     ofParameter<float>    pow_Param; //Pow of the funcion, working on sin, cos....
     ofParameter<float>    pulseWidth_Param;
     ofParameter<float>    holdTime_Param; //The duration of the hold in percentage (0.5) --> 50% of the cycle is the phase in initPhase
-    ofParameter<vector<float>>   xPhaseOffset;
-    ofParameter<vector<float>>   yPhaseOffset;
-    ofParameter<vector<float>>   xRandomAddition;
-    ofParameter<vector<float>>   yRandomAddition;
-    ofParameter<vector<float>>   xScale;
-    ofParameter<vector<float>>   yScale;
-    ofParameter<vector<float>>   xOffset;
-    ofParameter<vector<float>>   yOffset;
-    ofParameter<vector<float>>   xBipow;
-    ofParameter<vector<float>>   yBipow;
-    ofParameter<vector<int>>   xQuantization;
-    ofParameter<vector<int>>   yQuantization;
-    ofParameter<vector<float>>   xPulseWidth;
-    ofParameter<vector<float>>   yPulseWidth;
-    ofParameter<vector<float>>   xSkew;
-    ofParameter<vector<float>>   ySkew;
-    ofParameter<vector<float>>   xFader;
-    ofParameter<vector<float>>   yFader;
-    ofParameter<vector<float>>   xInvert;
-    ofParameter<vector<float>>   yInvert;
+    ofParameter<vector<float>>   phaseOffset[2];
+    ofParameter<vector<float>>   randomAddition[2];
+    ofParameter<vector<float>>   scale[2];
+    ofParameter<vector<float>>   offset[2];
+    ofParameter<vector<float>>   pow[2];
+    ofParameter<vector<float>>   bipow[2];
+    ofParameter<vector<int>>   quantization[2];
+    ofParameter<vector<float>>   pulseWidth[2];
+    ofParameter<vector<float>>   skew[2];
+    ofParameter<vector<float>>   fader[2];
+    ofParameter<vector<float>>   invert[2];
+    ofParameter<vector<float>>  waveform[2];
+    ofParameter<int>            waveformDropdown[2];
     
     
     ofParameter<int>      quant_Param;
@@ -91,9 +91,6 @@ private:
     
     int width, height;
     
-    vector<int> resultFilledChecker;
-    
-    
     ofShader shader;
     ofFbo   fbo;
     
@@ -107,12 +104,12 @@ private:
     ofBufferObject          yIndexBuffer;
     
     //Phase Offset
-    ofTexture               xPhaseOffsetTexture;
-    ofBufferObject          xPhaseOffsetBuffer;
+    ofTexture               phaseOffsetTexture;
+    ofBufferObject          phaseOffsetBuffer;
     
-    ofTexture               yPhaseOffsetTexture;
-    ofBufferObject          yPhaseOffsetBuffer;
-    
+    //Random Addition
+    ofTexture               randomAdditionTexture;
+    ofBufferObject          randomAdditionBuffer;
     
 };
 

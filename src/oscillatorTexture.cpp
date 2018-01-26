@@ -53,25 +53,48 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
     
-    parameters->add(xPhaseOffset.set("Phase Offset X", {0}, {0}, {1}));
-    parameters->add(yPhaseOffset.set("Phase Offset Y", {0}, {0}, {1}));
+//    parameters->add(phaseOffset[0].set("Phase Offset X", {0}, {0}, {1}));
+//    parameters->add(phaseOffset[1].set("Phase Offset Y", {0}, {0}, {1}));
     
-    parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
-    parameters->add(scale_Param.set("Scale", 1, 0, 2));
-    parameters->add(offset_Param.set("Offset", 0, -1, 1));
-    parameters->add(pow_Param.set("Pow", 0, -40, 40));
-    parameters->add(biPow_Param.set("Bi Pow", 0, -40, 40));
-    parameters->add(quant_Param.set("Quantization", 255, 1, 255));
-    parameters->add(pulseWidth_Param.set("Pulse Width", 1, 0, 1));
-    parameters->add(skew_Param.set("Skew", 0, -1, 1));
-    parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
-    parameters->add(invert_Param.set("Invert", 0, 0, 1));
-    ofParameterGroup waveDropDown;
-    waveDropDown.setName("Wave Select");
-    ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
-    waveDropDown.add(tempStrParam);
-    waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
-    parameters->add(waveDropDown);
+    auto setAndBindXYParamsVecFloat = [this](ofParameter<vector<float>> *p, string name, float val, float min, float max) -> void{
+        parameters->add(p[0].set(name + " X", vector<float>(1, val), vector<float>(1, min), vector<float>(1, max)));
+        parameters->add(p[1].set(name + " Y", vector<float>(1, val), vector<float>(1, min), vector<float>(1, max)));
+    };
+    
+    auto setAndBindXYParamsVecInt = [this](ofParameter<vector<int>> *p, string name, int val, int min, int max) -> void{
+        parameters->add(p[0].set(name + " X", vector<int>(1, val), vector<int>(1, min), vector<int>(1, max)));
+        parameters->add(p[1].set(name + " Y", vector<int>(1, val), vector<int>(1, min), vector<int>(1, max)));
+    };
+    
+    setAndBindXYParamsVecFloat(phaseOffset, "Phase Offset", 0, 0, 1);
+    setAndBindXYParamsVecFloat(randomAddition, "Rnd Add", 0, -.5, .5);
+    setAndBindXYParamsVecFloat(scale, "Scale", 1, 0, 2);
+    setAndBindXYParamsVecFloat(offset, "Offset", 0, -1, 1);
+    setAndBindXYParamsVecFloat(pow, "Pow", 0, -40, 40);
+    setAndBindXYParamsVecFloat(bipow, "Bi Pow", 0, -40, 40);
+    setAndBindXYParamsVecInt(quantization, "Quantize", 255, 1, 255);
+    setAndBindXYParamsVecFloat(pulseWidth, "Pulse Width", 1, 0, 1);
+    setAndBindXYParamsVecFloat(skew, "Skew", 0, -1, 1);
+    setAndBindXYParamsVecFloat(fader, "Fader", 1, 0, 1);
+    setAndBindXYParamsVecFloat(invert, "Invert", 0, 0, 1);
+    setAndBindXYParamsVecFloat(waveform, "WaveForm", 0, 0, 7);
+    
+//    parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
+//    parameters->add(scale_Param.set("Scale", 1, 0, 2));
+//    parameters->add(offset_Param.set("Offset", 0, -1, 1));
+//    parameters->add(pow_Param.set("Pow", 0, -40, 40));
+//    parameters->add(biPow_Param.set("Bi Pow", 0, -40, 40));
+//    parameters->add(quant_Param.set("Quantization", 255, 1, 255));
+//    parameters->add(pulseWidth_Param.set("Pulse Width", 1, 0, 1));
+//    parameters->add(skew_Param.set("Skew", 0, -1, 1));
+//    parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
+//    parameters->add(invert_Param.set("Invert", 0, 0, 1));
+//    ofParameterGroup waveDropDown;
+//    waveDropDown.setName("Wave Select");
+//    ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
+//    waveDropDown.add(tempStrParam);
+//    waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
+//    parameters->add(waveDropDown);
     
     parameters->add(oscillatorOut.set("Oscillator Out", nullptr));
     
@@ -85,38 +108,37 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     xIndexBuffer.setData(indexers[0]->getIndexs(), GL_STREAM_DRAW);
     xIndexTexture.allocateAsBufferTexture(xIndexBuffer, GL_R32F);
     
-    
     //yIndex
     yIndexBuffer.allocate();
     yIndexBuffer.bind(GL_TEXTURE_BUFFER);
     yIndexBuffer.setData(indexers[1]->getIndexs(), GL_STREAM_DRAW);
     yIndexTexture.allocateAsBufferTexture(yIndexBuffer, GL_R32F);
     
-    //Phase offset
-    xPhaseOffsetBuffer.allocate();
-    xPhaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
-    xPhaseOffsetBuffer.setData(vector<float>(width, xPhaseOffset.get()[0]), GL_STREAM_DRAW);
-    xPhaseOffsetTexture.allocateAsBufferTexture(xPhaseOffsetBuffer, GL_R32F);
     
-    yPhaseOffsetBuffer.allocate();
-    yPhaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
-    yPhaseOffsetBuffer.setData(vector<float>(height, yPhaseOffset.get()[0]), GL_STREAM_DRAW);
-    yPhaseOffsetTexture.allocateAsBufferTexture(yPhaseOffsetBuffer, GL_R32F);
+    //Phase offset
+    phaseOffsetBuffer.allocate();
+    phaseOffsetBuffer.bind(GL_TEXTURE_BUFFER);
+    phaseOffsetBuffer.setData(vector<float>(width + height, phaseOffset[0].get()[0]), GL_STREAM_DRAW);
+    phaseOffsetTexture.allocateAsBufferTexture(phaseOffsetBuffer, GL_R32F);
+
+    //Random Addition
+    randomAdditionBuffer.allocate();
+    randomAdditionBuffer.bind(GL_TEXTURE_BUFFER);
+    randomAdditionBuffer.setData(vector<float>(width + height, randomAddition[0].get()[0]), GL_STREAM_DRAW);
+    randomAdditionTexture.allocateAsBufferTexture(randomAdditionBuffer, GL_R32F);
     
     
     //LoadShader
     bool b = true;
     reloadShader(b);
-
-    
-    
-    
-    
     
     phasorIn.addListener(this, &oscillatorTexture::newPhasorIn);
     
-    xPhaseOffset.addListener(this, &oscillatorTexture::xPhaseOffsetListener);
-    yPhaseOffset.addListener(this, &oscillatorTexture::yPhaseOffsetListener);
+    phaseOffset[0].addListener(this, &oscillatorTexture::phaseOffsetListener);
+    phaseOffset[1].addListener(this, &oscillatorTexture::phaseOffsetListener);
+    randomAddition[0].addListener(this, &oscillatorTexture::randomAdditionListener);
+    randomAddition[1].addListener(this, &oscillatorTexture::randomAdditionListener);
+
 
     randomAdd_Param.addListener(this, &oscillatorTexture::newRandomAddParam);
     scale_Param.addListener(this, &oscillatorTexture::newScaleParam);
@@ -143,21 +165,16 @@ void oscillatorTexture::parameterChanged(ofAbstractParameter &p){
 void oscillatorTexture::reloadShader(bool &b){
     shader.load("noise.vert", "noise.frag");
     shader.begin();
+    shader.setUniform1i("width", width);
     shader.setUniformTexture("xIndexs", xIndexTexture, 0);
     shader.setUniformTexture("yIndexs", yIndexTexture, 1);
-    shader.setUniformTexture("xPhaseOffset", xPhaseOffsetTexture, 2);
-    shader.setUniformTexture("yPhaseOffset", yPhaseOffsetTexture, 3);
+    shader.setUniformTexture("phaseOffset", phaseOffsetTexture, 2);
+    shader.setUniformTexture("randomAddition", randomAdditionTexture, 3);
     shader.end();
 }
 
 ofTexture& oscillatorTexture::computeBank(float phasor){
-//    int i_x = 0, i_y = 0;
-//    for(int i = 0; i < oscillators.size(); i++){
-//        i_y = floor(i/width);
-//        i_x = i - (i_y * width);
-//        result[i_x][i_y] = oscillators[i]->computeFunc(phasor);
-//    }
-//
+
     fbo.begin();
     shader.begin();
     shader.setUniform1f("phase", phasor);
@@ -165,30 +182,9 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     ofDrawRectangle(0, 0, width, height);
     shader.end();
     fbo.end();
-    
-    ofPixels pixels;
-    //pixels.allocate(width, height, GL_RGB);
-    //fbo.getTexture().readToPixels(pixels);
-//    for(int i = 0; i < width; i++){
-//        for (int j = 0; j < height; j++){
-//            result[i][j] = (float)pixels.getLine(j).getPixel(i).getColor().r / 255.0;
-//        }
-//    }
+
     
     return fbo.getTexture();
-}
-
-void oscillatorTexture::computeBidirectionalIndexs(){
-    int lin_size = width * height;
-    vector<float> tempOut(lin_size);
-    if(width != 0 && height != 0){
-        int width_i = 0, height_i = 0;
-        for(int i = 0; i < lin_size; i++){
-            height_i = floor(i/width);
-            width_i = i - (height_i * width);
-            oscillators[i]->setIndexNormalized(indexers[0]->getIndexs()[width_i]+ indexers[1]->getIndexs()[height_i]);
-        }
-    }
 }
 
 void oscillatorTexture::newPhasorIn(float &f){
@@ -203,19 +199,37 @@ void oscillatorTexture::newPhasorIn(float &f){
 
 #pragma mark PHASE OFFSET
 
-void oscillatorTexture::xPhaseOffsetListener(vector<float> &vf){
-    if(vf.size() == 1){
-        xPhaseOffsetBuffer.updateData(0, vector<float>(width, vf[0]));
-    }else if(vf.size() == width){
-        xPhaseOffsetBuffer.updateData(0, vf);
+void oscillatorTexture::phaseOffsetListener(vector<float> &vf){
+    if(&vf == &phaseOffset[0].get()){
+        if(vf.size() == 1){
+            phaseOffsetBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            phaseOffsetBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &phaseOffset[1].get()){
+        if(vf.size() == 1){
+            phaseOffsetBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            phaseOffsetBuffer.updateData(width*4, vf);
+        }
     }
 }
 
-void oscillatorTexture::yPhaseOffsetListener(vector<float> &vf){
-    if(vf.size() == 1){
-        yPhaseOffsetBuffer.updateData(0, vector<float>(height, vf[0]));
-    }else if(vf.size() == height){
-        yPhaseOffsetBuffer.updateData(0, vf);
+void oscillatorTexture::randomAdditionListener(vector<float> &vf){
+    if(&vf == &randomAddition[0].get()){
+        if(vf.size() == 1){
+            randomAdditionBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            randomAdditionBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &randomAddition[1].get()){
+        if(vf.size() == 1){
+            randomAdditionBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            randomAdditionBuffer.updateData(width*4, vf);
+        }
     }
 }
 
