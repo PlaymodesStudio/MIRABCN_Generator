@@ -32,8 +32,8 @@ public:
     nodeConnection(){};
     nodeConnection(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p){
         closedLine = false;
-        min.set("Min", 0, 0, 1);
-        max.set("Max", 1, 0, 1);
+//        min.set("Min", min_, min_, max_);
+//        max.set("Max", 1, 0, 1);
         points.resize(2);
         points[0].x = c->getX() + c->getWidth();
         points[0].y = c->getY() + c->getHeight()/2;
@@ -63,7 +63,9 @@ public:
 //        path.bezierTo(points[0]+ofPoint(distance/3,controlPointShift*10), points[1]-ofPoint(distance/3,controlPointShift*10), points[1]);
     }
     
-    void connectTo(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p){
+    void connectTo(ofxDatGuiComponent* c, shared_ptr<ofxDatGui> g, ofAbstractParameter* p, float min_ = 0, float max_ = 1){
+        min.set("Min", min_, min_, max_);
+        max.set("Max", max_, min_, max_);
         gui = new ofxDatGui(0, 0);
         gui->setVisible(false);
         gui->addLabel(bindedParameters[0]->getName() + " ==> " + p->getName());
@@ -160,6 +162,9 @@ public:
         }
     }
     
+    bool minMaxModified(){
+        return (min != min.getMin() || max != max.getMax());
+    }
     
     ofAbstractParameter* getSourceParameter(){return bindedParameters[0];};
     ofAbstractParameter* getSinkParameter(){return bindedParameters[1];};

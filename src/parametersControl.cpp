@@ -411,7 +411,7 @@ void parametersControl::draw(ofEventArgs &args){
             if(connection->getParentGuis(1)->getHeader()->getName() == "waveScope"){
                 path.setColor(ofColor(50,50,50));
             }
-            if(connection->getMin() != 0 || connection->getMax() != 1)
+            if(connection->minMaxModified())
                 path.setColor(ofColor::navajoWhite);
         }
         path.draw();
@@ -1345,7 +1345,30 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
             if(datGuis[i]->getComponent(e.target->getType(), e.target->getName()) == e.target
                && !connections.back()->closedLine
                && connections.back()->getSourceParameter() != &parameterGroups[i]->get(e.target->getName())){
-                connections.back()->connectTo(e.target, datGuis[i], &parameterGroups[i]->get(e.target->getName()));
+                ofAbstractParameter &p = parameterGroups[i]->get(e.target->getName());
+                if(p.type() == typeid(ofParameter<vector<float>>).name()){
+                    float min = p.cast<vector<float>>().getMin()[0];
+                    float max = p.cast<vector<float>>().getMax()[0];
+                    connections.back()->connectTo(e.target, datGuis[i], &p, min, max);
+                }
+                else if(p.type() == typeid(ofParameter<vector<int>>).name()){
+                    float min = p.cast<vector<int>>().getMin()[0];
+                    float max = p.cast<vector<int>>().getMax()[0];
+                    connections.back()->connectTo(e.target, datGuis[i], &p, min, max);
+                }
+                else if(p.type() == typeid(ofParameter<float>).name()){
+                    float min = p.cast<float>().getMin();
+                    float max = p.cast<float>().getMax();
+                    connections.back()->connectTo(e.target, datGuis[i], &p, min, max);
+                }
+                else if(p.type() == typeid(ofParameter<int>).name()){
+                    float min = p.cast<int>().getMin();
+                    float max = p.cast<int>().getMax();
+                    connections.back()->connectTo(e.target, datGuis[i], &p, min, max);
+                }
+                else{
+                    connections.back()->connectTo(e.target, datGuis[i], &p);
+                }
                 for(int i = 0; i<connections.size()-1 ; i++){
                     if(connections.back()->getSinkParameter() == connections[i]->getSourceParameter() ||
                        connections.back()->getSinkParameter() == connections[i]->getSinkParameter() ||
