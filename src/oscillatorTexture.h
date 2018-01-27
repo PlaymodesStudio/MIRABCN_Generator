@@ -26,20 +26,16 @@ private:
     
     void phaseOffsetListener(vector<float> &vf);
     void randomAdditionListener(vector<float> &vf);
-    
-    void newPowParam(float &f);
-    void newpulseWidthParam(float &f);
-    void newHoldTimeParam(float &f);
-    
-    void newQuantParam(int &i);
-    void newScaleParam(float &f);
-    void newOffsetParam(float &f);
-    void newRandomAddParam(float &f);
-    void newWaveSelectParam(int &i);
-    void newAmplitudeParam(float &f);
-    void newInvertParam(float &f);
-    void newSkewParam(float &f);
-    void newBiPowParam(float &f);
+    void scaleListener(vector<float> &vf);
+    void offsetListener(vector<float> &vf);
+    void powListener(vector<float> &vf);
+    void bipowListener(vector<float> &vf);
+    void quantizationListener(vector<int> &vf);
+    void pulseWidthListener(vector<float> &vf);
+    void skewListener(vector<float> &vf);
+    void faderListener(vector<float> &vf);
+    void invertListener(vector<float> &vf);
+    void waveformListener(vector<float> &vf);
     
     vector<baseIndexer*> indexers;
     
@@ -58,9 +54,6 @@ private:
     
     ofParameter<bool>       reloadShaderParam;
     ofParameter<float>    phasorIn;
-    ofParameter<float>    pow_Param; //Pow of the funcion, working on sin, cos....
-    ofParameter<float>    pulseWidth_Param;
-    ofParameter<float>    holdTime_Param; //The duration of the hold in percentage (0.5) --> 50% of the cycle is the phase in initPhase
     ofParameter<vector<float>>   phaseOffset[2];
     ofParameter<vector<float>>   randomAddition[2];
     ofParameter<vector<float>>   scale[2];
@@ -75,16 +68,8 @@ private:
     ofParameter<vector<float>>  waveform[2];
     ofParameter<int>            waveformDropdown[2];
     
-    
-    ofParameter<int>      quant_Param;
-    ofParameter<float>    scale_Param;
-    ofParameter<float>    offset_Param;
-    ofParameter<float>    randomAdd_Param;
-    ofParameter<float>    biPow_Param;
     ofParameter<int>      waveSelect_Param;
-    ofParameter<float>    amplitude_Param;
-    ofParameter<float>    invert_Param;
-    ofParameter<float>    skew_Param;
+
     
     ofParameter<ofTexture*>      oscillatorOut;
 
@@ -110,6 +95,47 @@ private:
     //Random Addition
     ofTexture               randomAdditionTexture;
     ofBufferObject          randomAdditionBuffer;
+    
+    //Scale
+    ofTexture               scaleTexture;
+    ofBufferObject          scaleBuffer;
+    
+    //Offset
+    ofTexture               offsetTexture;
+    ofBufferObject          offsetBuffer;
+    
+    //Pow
+    ofTexture               powTexture;
+    ofBufferObject          powBuffer;
+    
+    //Bipow
+    ofTexture               bipowTexture;
+    ofBufferObject          bipowBuffer;
+    
+    //Quantization
+    ofTexture               quantizationTexture;
+    ofBufferObject          quantizationBuffer;
+    
+    //Pulse Width
+    ofTexture               pulseWidthTexture;
+    ofBufferObject          pulseWidthBuffer;
+    
+    //Skew
+    ofTexture               skewTexture;
+    ofBufferObject          skewBuffer;
+    
+    //Fader
+    ofTexture               faderTexture;
+    ofBufferObject          faderBuffer;
+    
+    //Invert
+    ofTexture               invertTexture;
+    ofBufferObject          invertBuffer;
+    
+    //Waveform
+    ofTexture               waveformTexture;
+    ofBufferObject          waveformBuffer;
+    
     
 };
 

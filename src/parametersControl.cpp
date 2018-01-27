@@ -85,6 +85,9 @@ void parametersControl::createGuiFromParams(ofParameterGroup *paramGroup, ofColo
         else if(absParam.type() == typeid(ofParameter<vector<float>>).name()){
             tempDatGui->addMultiSlider(absParam.cast<vector<float>>())->setPrecision(1000);
         }
+        else if(absParam.type() == typeid(ofParameter<vector<int>>).name()){
+            tempDatGui->addMultiSlider(absParam.cast<vector<int>>())->setPrecision(1000);
+        }
         else{
             if(absParam.getName() != "ReindexGrid")
                 tempDatGui->addLabel(absParam.getName());
@@ -1793,10 +1796,19 @@ void parametersControl::setFromSameTypeValue(shared_ptr<nodeConnection> connecti
                 sink->cast<ofTexture*>() = source->cast<ofTexture*>().get();
             }
         }else{
-            for(auto &connection : connections){
-                if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
-                    connections.erase(remove(connections.begin(), connections.end(), connection));
-                    break;
+            if(source->type() == typeid(ofParameter<vector<float>>).name() && sink->type() == typeid(ofParameter<vector<int>>).name()){
+                vector<float> tempVec = source->cast<vector<float>>();
+                vector<int> outVec = vector<int>(tempVec.size(), 0);
+                for (int i = 0; i < tempVec.size(); i++){
+                    outVec[i] = ofMap(tempVec[i], 0, 1, connection->getMin(), connection->getMax());
+                }
+                sink->cast<vector<int>>() = outVec;
+            }else{
+                for(auto &connection : connections){
+                    if(connection->getSourceParameter() == source && connection->getSinkParameter() == sink){
+                        connections.erase(remove(connections.begin(), connections.end(), connection));
+                        break;
+                    }
                 }
             }
         }

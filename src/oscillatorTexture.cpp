@@ -127,6 +127,67 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     randomAdditionBuffer.setData(vector<float>(width + height, randomAddition[0].get()[0]), GL_STREAM_DRAW);
     randomAdditionTexture.allocateAsBufferTexture(randomAdditionBuffer, GL_R32F);
     
+    //Scale
+    scaleBuffer.allocate();
+    scaleBuffer.bind(GL_TEXTURE_BUFFER);
+    scaleBuffer.setData(vector<float>(width + height, scale[0].get()[0]), GL_STREAM_DRAW);
+    scaleTexture.allocateAsBufferTexture(scaleBuffer, GL_R32F);
+    
+    //Offset
+    offsetBuffer.allocate();
+    offsetBuffer.bind(GL_TEXTURE_BUFFER);
+    offsetBuffer.setData(vector<float>(width + height, offset[0].get()[0]), GL_STREAM_DRAW);
+    offsetTexture.allocateAsBufferTexture(offsetBuffer, GL_R32F);
+    
+    //Pow
+    powBuffer.allocate();
+    powBuffer.bind(GL_TEXTURE_BUFFER);
+    powBuffer.setData(vector<float>(width + height, pow[0].get()[0]), GL_STREAM_DRAW);
+    powTexture.allocateAsBufferTexture(powBuffer, GL_R32F);
+    
+    //Bipow
+    bipowBuffer.allocate();
+    bipowBuffer.bind(GL_TEXTURE_BUFFER);
+    bipowBuffer.setData(vector<float>(width + height, bipow[0].get()[0]), GL_STREAM_DRAW);
+    bipowTexture.allocateAsBufferTexture(bipowBuffer, GL_R32F);
+    
+    //Quantization
+    quantizationBuffer.allocate();
+    quantizationBuffer.bind(GL_TEXTURE_BUFFER);
+    quantizationBuffer.setData(vector<float>(width + height, quantization[0].get()[0]), GL_STREAM_DRAW);
+    quantizationTexture.allocateAsBufferTexture(quantizationBuffer, GL_R32UI);
+    
+    //Pulse Width
+    pulseWidthBuffer.allocate();
+    pulseWidthBuffer.bind(GL_TEXTURE_BUFFER);
+    pulseWidthBuffer.setData(vector<float>(width + height, pulseWidth[0].get()[0]), GL_STREAM_DRAW);
+    pulseWidthTexture.allocateAsBufferTexture(pulseWidthBuffer, GL_R32F);
+    
+    //Skew
+    skewBuffer.allocate();
+    skewBuffer.bind(GL_TEXTURE_BUFFER);
+    skewBuffer.setData(vector<float>(width + height, skew[0].get()[0]), GL_STREAM_DRAW);
+    skewTexture.allocateAsBufferTexture(skewBuffer, GL_R32F);
+    
+    //Fader
+    faderBuffer.allocate();
+    faderBuffer.bind(GL_TEXTURE_BUFFER);
+    faderBuffer.setData(vector<float>(width + height, fader[0].get()[0]), GL_STREAM_DRAW);
+    faderTexture.allocateAsBufferTexture(faderBuffer, GL_R32F);
+    
+    //Invert
+    invertBuffer.allocate();
+    invertBuffer.bind(GL_TEXTURE_BUFFER);
+    invertBuffer.setData(vector<float>(width + height, invert[0].get()[0]), GL_STREAM_DRAW);
+    invertTexture.allocateAsBufferTexture(invertBuffer, GL_R32F);
+    
+    
+    //Waveform
+    waveformBuffer.allocate();
+    waveformBuffer.bind(GL_TEXTURE_BUFFER);
+    waveformBuffer.setData(vector<float>(width + height, waveform[0].get()[0]), GL_STREAM_DRAW);
+    waveformTexture.allocateAsBufferTexture(waveformBuffer, GL_R32F);
+    
     
     //LoadShader
     bool b = true;
@@ -138,20 +199,27 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     phaseOffset[1].addListener(this, &oscillatorTexture::phaseOffsetListener);
     randomAddition[0].addListener(this, &oscillatorTexture::randomAdditionListener);
     randomAddition[1].addListener(this, &oscillatorTexture::randomAdditionListener);
-
-
-    randomAdd_Param.addListener(this, &oscillatorTexture::newRandomAddParam);
-    scale_Param.addListener(this, &oscillatorTexture::newScaleParam);
-    offset_Param.addListener(this, &oscillatorTexture::newOffsetParam);
-    pow_Param.addListener(this, &oscillatorTexture::newPowParam);
-    quant_Param.addListener(this, &oscillatorTexture::newQuantParam);
-    amplitude_Param.addListener(this, &oscillatorTexture::newAmplitudeParam);
-    invert_Param.addListener(this, &oscillatorTexture::newInvertParam);
-    biPow_Param.addListener(this, &oscillatorTexture::newBiPowParam);
-    waveSelect_Param.addListener(this, &oscillatorTexture::newWaveSelectParam);
-    pulseWidth_Param.addListener(this, &oscillatorTexture::newpulseWidthParam);
-    skew_Param.addListener(this, &oscillatorTexture::newSkewParam);
+    scale[0].addListener(this, &oscillatorTexture::scaleListener);
+    scale[1].addListener(this, &oscillatorTexture::scaleListener);
+    offset[0].addListener(this, &oscillatorTexture::offsetListener);
+    offset[1].addListener(this, &oscillatorTexture::offsetListener);
+    pow[0].addListener(this, &oscillatorTexture::powListener);
+    pow[1].addListener(this, &oscillatorTexture::powListener);
+    bipow[0].addListener(this, &oscillatorTexture::bipowListener);
+    bipow[1].addListener(this, &oscillatorTexture::bipowListener);
+    quantization[0].addListener(this, &oscillatorTexture::quantizationListener);
+    quantization[1].addListener(this, &oscillatorTexture::quantizationListener);
+    pulseWidth[0].addListener(this, &oscillatorTexture::pulseWidthListener);
+    pulseWidth[1].addListener(this, &oscillatorTexture::pulseWidthListener);
+    skew[0].addListener(this, &oscillatorTexture::skewListener);
+    skew[1].addListener(this, &oscillatorTexture::skewListener);
+    fader[0].addListener(this, &oscillatorTexture::faderListener);
+    fader[1].addListener(this, &oscillatorTexture::faderListener);
+    invert[0].addListener(this, &oscillatorTexture::invertListener);
+    invert[1].addListener(this, &oscillatorTexture::invertListener);
     
+    waveform[0].addListener(this, &oscillatorTexture::waveformListener);
+    waveform[1].addListener(this, &oscillatorTexture::waveformListener);
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::red, pos);
     
@@ -170,6 +238,16 @@ void oscillatorTexture::reloadShader(bool &b){
     shader.setUniformTexture("yIndexs", yIndexTexture, 1);
     shader.setUniformTexture("phaseOffset", phaseOffsetTexture, 2);
     shader.setUniformTexture("randomAddition", randomAdditionTexture, 3);
+    shader.setUniformTexture("scale", scaleTexture, 4);
+    shader.setUniformTexture("offset", offsetTexture, 5);
+    shader.setUniformTexture("pow_", powTexture, 6);
+    shader.setUniformTexture("bipow", bipowTexture, 7);
+    shader.setUniformTexture("quantization", quantizationTexture, 8);
+    shader.setUniformTexture("pulseWidth", pulseWidthTexture, 9);
+    shader.setUniformTexture("skew", skewTexture, 10);
+    shader.setUniformTexture("fader", faderTexture, 11);
+    shader.setUniformTexture("invert_", invertTexture, 12);
+    shader.setUniformTexture("waveform", waveformTexture, 13);
     shader.end();
 }
 
@@ -233,50 +311,175 @@ void oscillatorTexture::randomAdditionListener(vector<float> &vf){
     }
 }
 
-void oscillatorTexture::newPowParam(float &f){
-   
+
+void oscillatorTexture::scaleListener(vector<float> &vf){
+    if(&vf == &scale[0].get()){
+        if(vf.size() == 1){
+            scaleBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            scaleBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &scale[1].get()){
+        if(vf.size() == 1){
+            scaleBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            scaleBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newpulseWidthParam(float &f){
-
+void oscillatorTexture::offsetListener(vector<float> &vf){
+    if(&vf == &offset[0].get()){
+        if(vf.size() == 1){
+            offsetBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            offsetBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &offset[1].get()){
+        if(vf.size() == 1){
+            offsetBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            offsetBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newHoldTimeParam(float &f){
-
+void oscillatorTexture::powListener(vector<float> &vf){
+    if(&vf == &pow[0].get()){
+        if(vf.size() == 1){
+            powBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            powBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &pow[1].get()){
+        if(vf.size() == 1){
+            powBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            powBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newQuantParam(int &i){
-
+void oscillatorTexture::bipowListener(vector<float> &vf){
+    if(&vf == &bipow[0].get()){
+        if(vf.size() == 1){
+            bipowBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            bipowBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &bipow[1].get()){
+        if(vf.size() == 1){
+            bipowBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            bipowBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newScaleParam(float &f){
-
+void oscillatorTexture::quantizationListener(vector<int> &vf){
+    if(&vf == &quantization[0].get()){
+        if(vf.size() == 1){
+            quantizationBuffer.updateData(0, vector<int>(width, vf[0]));
+        }else if(vf.size() == width){
+            quantizationBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &quantization[1].get()){
+        if(vf.size() == 1){
+            quantizationBuffer.updateData(width*4, vector<int>(height, vf[0]));
+        }else if(vf.size() == height){
+            quantizationBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newOffsetParam(float &f){
-
+void oscillatorTexture::pulseWidthListener(vector<float> &vf){
+    if(&vf == &pulseWidth[0].get()){
+        if(vf.size() == 1){
+            pulseWidthBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            pulseWidthBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &pulseWidth[1].get()){
+        if(vf.size() == 1){
+            pulseWidthBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            pulseWidthBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newRandomAddParam(float &f){
-
+void oscillatorTexture::skewListener(vector<float> &vf){
+    if(&vf == &skew[0].get()){
+        if(vf.size() == 1){
+            skewBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            skewBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &skew[1].get()){
+        if(vf.size() == 1){
+            skewBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            skewBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newWaveSelectParam(int &i){
-
+void oscillatorTexture::faderListener(vector<float> &vf){
+    if(&vf == &fader[0].get()){
+        if(vf.size() == 1){
+            faderBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            faderBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &fader[1].get()){
+        if(vf.size() == 1){
+            faderBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            faderBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newAmplitudeParam(float &f){
-
+void oscillatorTexture::invertListener(vector<float> &vf){
+    if(&vf == &invert[0].get()){
+        if(vf.size() == 1){
+            invertBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            invertBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &invert[1].get()){
+        if(vf.size() == 1){
+            invertBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            invertBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newInvertParam(float &f){
-
+void oscillatorTexture::waveformListener(vector<float> &vf){
+    if(&vf == &waveform[0].get()){
+        if(vf.size() == 1){
+            waveformBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            waveformBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &waveform[1].get()){
+        if(vf.size() == 1){
+            waveformBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            waveformBuffer.updateData(width*4, vf);
+        }
+    }
 }
 
-void oscillatorTexture::newSkewParam(float &f){
 
-}
-
-void oscillatorTexture::newBiPowParam(float &f){
-
-}
