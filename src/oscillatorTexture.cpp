@@ -89,12 +89,12 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
 //    parameters->add(skew_Param.set("Skew", 0, -1, 1));
 //    parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
 //    parameters->add(invert_Param.set("Invert", 0, 0, 1));
-//    ofParameterGroup waveDropDown;
-//    waveDropDown.setName("Wave Select");
-//    ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
-//    waveDropDown.add(tempStrParam);
-//    waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
-//    parameters->add(waveDropDown);
+    ofParameterGroup waveDropDown;
+    waveDropDown.setName("Wave Select");
+    ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
+    waveDropDown.add(tempStrParam);
+    waveDropDown.add(waveSelect_Param.set("Wave Select", 0, 0, 7));
+    parameters->add(waveDropDown);
     
     parameters->add(oscillatorOut.set("Oscillator Out", nullptr));
     
@@ -217,9 +217,10 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     fader[1].addListener(this, &oscillatorTexture::faderListener);
     invert[0].addListener(this, &oscillatorTexture::invertListener);
     invert[1].addListener(this, &oscillatorTexture::invertListener);
-    
     waveform[0].addListener(this, &oscillatorTexture::waveformListener);
     waveform[1].addListener(this, &oscillatorTexture::waveformListener);
+    waveSelect_Param.addListener(this, &oscillatorTexture::newWaveSelectParam);
+
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::red, pos);
     
@@ -480,6 +481,10 @@ void oscillatorTexture::waveformListener(vector<float> &vf){
             waveformBuffer.updateData(width*4, vf);
         }
     }
+}
+
+void oscillatorTexture::newWaveSelectParam(int &i){
+    waveform[0] = vector<float>(1, i);
 }
 
 

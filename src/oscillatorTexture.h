@@ -36,6 +36,7 @@ private:
     void faderListener(vector<float> &vf);
     void invertListener(vector<float> &vf);
     void waveformListener(vector<float> &vf);
+    void newWaveSelectParam(int &i);
     
     vector<baseIndexer*> indexers;
     
