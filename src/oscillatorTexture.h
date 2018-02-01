@@ -77,10 +77,13 @@ private:
     
     int width, height;
     
-    ofShader shader;
+    ofShader shaderOscillator;
+    ofShader shaderScaling;
     ofFbo   fbo;
+    ofFbo   fboBuffer;
+    ofTexture randomInfoTexture;
     
-    //TBOS
+    //TBOs
     //xIndex
     ofTexture               xIndexTexture;
     ofBufferObject          xIndexBuffer;

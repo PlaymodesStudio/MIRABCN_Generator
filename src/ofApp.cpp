@@ -8,6 +8,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofDisableArbTex();
+    
     //Turn off quit app on ESC press.
     ofSetEscapeQuitsApp(false);
     configured = false;
@@ -21,7 +23,7 @@ void ofApp::setup(){
     
     ofBackground(0);
     logBuffer = make_shared<bufferLoggerChannel>();
-    ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
+    //ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
     
     //Set the FrameRate to be 40, that is the frame rate of artnet
     ofSetFrameRate(60);

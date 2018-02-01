@@ -243,8 +243,6 @@
 		9F89C7111F1924A0008EB023 /* delta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delta.h; sourceTree = "<group>"; };
 		9F908E1D2018E19700CA55B4 /* oscillatorTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = oscillatorTexture.cpp; sourceTree = "<group>"; };
 		9F908E1E2018E19700CA55B4 /* oscillatorTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oscillatorTexture.h; sourceTree = "<group>"; };
-		9F908E252018EB0E00CA55B4 /* noise.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = noise.frag; path = bin/data/noise.frag; sourceTree = "<group>"; };
-		9F908E262018EB0E00CA55B4 /* noise.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = noise.vert; path = bin/data/noise.vert; sourceTree = "<group>"; };
 		9F9ABA391F7C0771007F22EB /* speakerPowerCalculator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = speakerPowerCalculator.cpp; sourceTree = "<group>"; };
 		9F9ABA3A1F7C0771007F22EB /* speakerPowerCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = speakerPowerCalculator.h; sourceTree = "<group>"; };
 		9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mapper.cpp; sourceTree = "<group>"; };
@@ -259,6 +257,9 @@
 		9FDF674F1F56A94400AD1A04 /* manualOscillatorBank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manualOscillatorBank.h; sourceTree = "<group>"; };
 		9FDF676B1F5873CB00AD1A04 /* dataRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dataRecorder.cpp; sourceTree = "<group>"; };
 		9FDF676C1F5873CB00AD1A04 /* dataRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dataRecorder.h; sourceTree = "<group>"; };
+		9FEB984420231A2400A83C7A /* scaling.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = scaling.frag; path = bin/data/Shaders/scaling.frag; sourceTree = "<group>"; };
+		9FEB984620231A2500A83C7A /* oscillator.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = oscillator.frag; path = bin/data/Shaders/oscillator.frag; sourceTree = "<group>"; };
+		9FEB984920232EA100A83C7A /* scaling.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = scaling.vert; path = bin/data/Shaders/scaling.vert; sourceTree = "<group>"; };
 		A081004F20B3CFAB927EEEED /* bpmControl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = bpmControl.cpp; path = src/bpmControl.cpp; sourceTree = SOURCE_ROOT; };
 		A13853A1B21F20177F44EE37 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui_PM/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
 		A2AAA8CA403479E6FCDF920E /* OscHostEndianness.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscHostEndianness.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscHostEndianness.h; sourceTree = SOURCE_ROOT; };
@@ -718,8 +719,9 @@
 			children = (
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
-				9F908E252018EB0E00CA55B4 /* noise.frag */,
-				9F908E262018EB0E00CA55B4 /* noise.vert */,
+				9FEB984620231A2500A83C7A /* oscillator.frag */,
+				9FEB984420231A2400A83C7A /* scaling.frag */,
+				9FEB984920232EA100A83C7A /* scaling.vert */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,

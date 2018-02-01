@@ -16,7 +16,12 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     height = ySize;
     
     fbo.allocate(width, height, GL_RGB);
+    fboBuffer.allocate(width, height, GL_RGBA);
+    fboBuffer.begin();
+    ofDrawRectangle(0, 0, width, height);
+    fboBuffer.end();
     
+    randomInfoTexture.allocate(width, height, GL_RGBA);
     
     
     parameters->setName("oscillatorTexture " + ofToString(bankId));
@@ -102,6 +107,7 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     
     //TBOs
+    
     //xIndex
     xIndexBuffer.allocate();
     xIndexBuffer.bind(GL_TEXTURE_BUFFER);
@@ -232,35 +238,57 @@ void oscillatorTexture::parameterChanged(ofAbstractParameter &p){
 }
 
 void oscillatorTexture::reloadShader(bool &b){
-    shader.load("noise.vert", "noise.frag");
-    shader.begin();
-    shader.setUniform1i("width", width);
-    shader.setUniformTexture("xIndexs", xIndexTexture, 0);
-    shader.setUniformTexture("yIndexs", yIndexTexture, 1);
-    shader.setUniformTexture("phaseOffset", phaseOffsetTexture, 2);
-    shader.setUniformTexture("randomAddition", randomAdditionTexture, 3);
-    shader.setUniformTexture("scale", scaleTexture, 4);
-    shader.setUniformTexture("offset", offsetTexture, 5);
-    shader.setUniformTexture("pow_", powTexture, 6);
-    shader.setUniformTexture("bipow", bipowTexture, 7);
-    shader.setUniformTexture("quantization", quantizationTexture, 8);
-    shader.setUniformTexture("pulseWidth", pulseWidthTexture, 9);
-    shader.setUniformTexture("skew", skewTexture, 10);
-    shader.setUniformTexture("fader", faderTexture, 11);
-    shader.setUniformTexture("invert_", invertTexture, 12);
-    shader.setUniformTexture("waveform", waveformTexture, 13);
-    shader.end();
+    shaderOscillator.load("Shaders/oscillator.vert", "Shaders/oscillator.frag");
+    shaderOscillator.begin();
+    shaderOscillator.setUniform1i("width", width);
+    shaderOscillator.setUniformTexture("xIndexs", xIndexTexture, 0);
+    shaderOscillator.setUniformTexture("yIndexs", yIndexTexture, 1);
+    shaderOscillator.setUniformTexture("phaseOffset", phaseOffsetTexture, 2);
+    shaderOscillator.setUniformTexture("pulseWidth", pulseWidthTexture, 3);
+    shaderOscillator.setUniformTexture("skew", skewTexture, 4);
+    shaderOscillator.setUniformTexture("waveform", waveformTexture, 5);
+    shaderOscillator.end();
+    
+    shaderScaling.load("Shaders/scaling.vert", "Shaders/scaling.frag");
+    shaderScaling.begin();
+    shaderScaling.setUniform1f("width", width);
+    shaderScaling.setUniformTexture("randomAddition", randomAdditionTexture, 6);
+    shaderScaling.setUniformTexture("scale", scaleTexture, 7);
+    shaderScaling.setUniformTexture("offset", offsetTexture, 8);
+    shaderScaling.setUniformTexture("pow_", powTexture, 9);
+    shaderScaling.setUniformTexture("bipow", bipowTexture, 10);
+    shaderScaling.setUniformTexture("quantization", quantizationTexture, 11);
+    shaderScaling.setUniformTexture("fader", faderTexture, 12);
+    shaderScaling.setUniformTexture("invert_", invertTexture, 13);
+    shaderScaling.end();
 }
 
 ofTexture& oscillatorTexture::computeBank(float phasor){
 
-    fbo.begin();
-    shader.begin();
-    shader.setUniform1f("phase", phasor);
-    shader.setUniform1f("time", ofGetElapsedTimef());
+    ofPushStyle();
+    ofSetColor(255);
+    fboBuffer.begin();
+    shaderOscillator.begin();
+    shaderOscillator.setUniform1f("phase", phasor);
+    shaderOscillator.setUniform1f("time", ofGetElapsedTimef());
+    shaderOscillator.setUniformTexture("randomInfo", randomInfoTexture, 14);
     ofDrawRectangle(0, 0, width, height);
-    shader.end();
+    shaderOscillator.end();
+    fboBuffer.end();
+    
+    randomInfoTexture = fboBuffer.getTexture();
+    
+    fbo.begin();
+    shaderScaling.begin();
+    shaderScaling.setUniform1f("phase", phasor);
+    shaderScaling.setUniform1f("time", ofGetElapsedTimef());
+    shaderScaling.setUniformTexture("randomInfo", randomInfoTexture, 15);
+//    ofSetColor(ofColor::brown);
+    ofDrawRectangle(0, 0, width, height);
+//    fboBuffer.draw(0,0, width, height);
+    shaderScaling.end();
     fbo.end();
+    ofPopStyle();
 
     
     return fbo.getTexture();
