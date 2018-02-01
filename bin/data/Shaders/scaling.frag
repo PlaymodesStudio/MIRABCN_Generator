@@ -114,8 +114,8 @@ void main(){
     int xVal = int(gl_FragCoord.x);
     int yVal = int(gl_FragCoord.y);
     
-    float xTex = float(xVal) / float(textureSize(randomInfo, 0).x);
-    float yTex = float(yVal) / float(textureSize(randomInfo, 0).y);
+    float xTex = (float(xVal)+0.5) / float(textureSize(randomInfo, 0).x);
+    float yTex = (float(yVal)+0.5) / float(textureSize(randomInfo, 0).y);
     
     float value = texture(randomInfo, vec2(xTex, yTex)).r;
     

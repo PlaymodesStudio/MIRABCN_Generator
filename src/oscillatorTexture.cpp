@@ -15,13 +15,13 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     width = xSize;
     height = ySize;
     
-    fbo.allocate(width, height, GL_RGB);
-    fboBuffer.allocate(width, height, GL_RGBA);
+    fbo.allocate(width, height, GL_RGBA);
+    fboBuffer.allocate(width, height, GL_RGBA16);
     fboBuffer.begin();
     ofDrawRectangle(0, 0, width, height);
     fboBuffer.end();
     
-    randomInfoTexture.allocate(width, height, GL_RGBA);
+    randomInfoTexture.allocate(width, height, GL_RGBA32F);
     
     
     parameters->setName("oscillatorTexture " + ofToString(bankId));

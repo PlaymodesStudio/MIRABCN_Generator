@@ -106,15 +106,22 @@ float map(float value, float istart, float istop, float ostart, float ostop) {
     return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
 
+highp float rrrand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+
 void main(){
 	//we grab the x and y and store them in an int
 	int xVal = int(gl_FragCoord.x);
 	int yVal = int(gl_FragCoord.y);
     
-    float xTex = float(xVal) / float(textureSize(randomInfo, 0).x);
-    float yTex = float(yVal) / float(textureSize(randomInfo, 0).y);
     
-//    float value = texture(randomInfo, vec2(xTex, yTex)).r;
     
     //Compute parameters of current coord;
     float index = texelFetch(xIndexs, xVal).r + texelFetch(yIndexs, yVal).r;
@@ -124,6 +131,17 @@ void main(){
     
     //How to blend waveform Parameter???
     float waveformParam = max(texelFetch(waveform, xVal).r, texelFetch(waveform, yVal + width).r);
+    
+    
+    //randon Info
+    float xTex = (float(xVal)+0.5) / float(textureSize(randomInfo, 0).x);
+    float yTex = (float(yVal)+0.5) / float(textureSize(randomInfo, 0).y);
+
+    vec4 r_info = texture(randomInfo, vec2(xTex, yTex));
+    float oldValue = r_info.r;
+    float oldPhasor = r_info.g;
+    float pastRandom = r_info.b;
+    float newRandom = r_info.a;
     
     
     
@@ -185,24 +203,23 @@ void main(){
         val2 = linPhase;
     }
     if(waveformParam > 5 && waveformParam < 7){ //Random
-        //if(linPhase < oldPhasor[xVal][yVal])
-            val1 = snoise(vec2((xVal*1920) + phase, (yVal*1080) + phase));
-        
-        //else
-            //val1 = oldValue[xVal][yVal];
+        if(linPhase < oldPhasor){
+            val1 = rrrand(vec2((xVal) + time, (yVal) + time));
+        }
+        else{
+            val1 = oldValue;
+        }
     }
-//        case rand2Osc:
-//        {
-//            if(linPhase < oldPhasor){
-//                pastRandom = newRandom;
-//                newRandom = ofRandom(1);
-//                val = pastRandom;
-//            }
-//            else
-//                val = pastRandom*(1-linPhase) + newRandom*linPhase;
-//
-//            break;
-//        }
+    if(waveformParam > 6 && waveformParam <= 7){
+        if(linPhase < oldPhasor){
+            pastRandom = newRandom;
+            newRandom = snoise(vec2((xVal) + time, (yVal) + time));
+            val2 = pastRandom;
+        }
+        else{
+            val2 = pastRandom*(1-linPhase) + newRandom*linPhase;
+        }
+    }
     
     float val = 0;
     float waveInterp = waveformParam - int(waveformParam);
@@ -218,5 +235,5 @@ void main(){
 //
         // oldPhasor[xVal][yVal] = linPhase;
 //
-    out_color = vec4(val,val,val, 1.0);
+    out_color = vec4(val, linPhase, pastRandom, newRandom);
 }
