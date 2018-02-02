@@ -87,7 +87,12 @@ public:
     }
     
     void disconnect(){
-        ofNotifyEvent(destroyEvent, *bindedParameters[1], this);
+        if(bindedComponents[1]->getType() == ofxDatGuiType::SLIDER){
+            bindedComponentsParent[1]->getSlider(bindedComponents[1]->getName())->setDefaultValue();
+        }
+        else if(bindedComponents[1]->getType() == ofxDatGuiType::MULTI_SLIDER){
+            bindedComponentsParent[1]->getMultiSlider(bindedComponents[1]->getName())->setDefaultValue();
+        }
         closedLine = false;
         bindedParameters[1] = nullptr;
         bindedComponents[1] = nullptr;
@@ -178,9 +183,6 @@ public:
     shared_ptr<ofxDatGui> getParentGuis(int i){return bindedComponentsParent[i];};
     
     bool closedLine = false;
-    
-    ofEvent<ofAbstractParameter> destroyEvent;
-    
 private:
     ofxDatGui*  gui;
     vector<ofPoint> points;
@@ -263,9 +265,7 @@ public:
     void loadBank();
     
     void setGlobalBPM(float bpm);
-    
-    void destroyedConnection(ofAbstractParameter &disconnectedParameter);
-    
+
     ofEvent<pair<string, ofPoint>>      createNewModule;
     ofEvent<string>                     destroyModule;
     ofEvent<void>                       nextFrameEvent;

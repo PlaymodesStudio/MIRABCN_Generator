@@ -1092,7 +1092,6 @@ void parametersControl::loadPreset(string presetName, string bank){
             for(int j = 0; j < parameterGroups.size(); j++){
                 if(parameterGroups[j]->getName() == sourceInfo[0]){
                     connections.push_back(make_shared<nodeConnection>(datGuis[j]->getComponent(sourceInfo[1]), datGuis[j], &parameterGroups[j]->get(sourceInfo[1])));
-                    ofAddListener(connections.back()->destroyEvent, this, &parametersControl::destroyedConnection);
                     break;
                 }
             }
@@ -1338,7 +1337,6 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                     }
                     if(!foundParameter){
                         connections.push_back(make_shared<nodeConnection>(e.target, datGuis[i], &parameter));
-                        ofAddListener(connections.back()->destroyEvent, this, &parametersControl::destroyedConnection);
                     }
                 }
             }
@@ -1722,11 +1720,11 @@ void parametersControl::newMidiMessage(ofxMidiMessage &eventArgs){
 void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
     if(e->type() == typeid(ofParameter<float>).name()){
         ofParameter<float> castedParam = e->cast<float>();
-        castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
+        castedParam.set(v);
     }
     else if(e->type() == typeid(ofParameter<int>).name()){
         ofParameter<int> castedParam = e->cast<int>();
-        castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
+        castedParam.set(v);
     }
     else if(e->type() == typeid(ofParameter<bool>).name()){
         ofParameter<bool> castedParam = e->cast<bool>();
@@ -1741,7 +1739,7 @@ void parametersControl::setFromNormalizedValue(ofAbstractParameter* e, float v){
         adoptiveGroup.add(*e);
         ofParameterGroup nestedGroup = adoptiveGroup.getGroup(0);
         ofParameter<int> castedParam = nestedGroup.getInt(1);
-        castedParam.set(ofMap(v, 0, 1, castedParam.getMin(), castedParam.getMax()));
+        castedParam.set(v);
     }
     else if(e->type() == typeid(ofParameter<vector<int>>).name()){
         e->cast<vector<int>>() = vector<int>(1, v);
@@ -1829,26 +1827,4 @@ void parametersControl::destroyModuleAndConnections(int index){
     ofRemoveListener(parameterGroups[index]->parameterChangedE(), this, &parametersControl::listenerFunction);
     ofNotifyEvent(destroyModule, moduleName, this);
     parameterGroups.erase(parameterGroups.begin()+index);
-}
-
-void parametersControl::destroyedConnection(ofAbstractParameter &disconnectedParameter){
-    for(auto paramGroup : parameterGroups){
-        if(paramGroup->contains(disconnectedParameter.getName())){
-            if(&paramGroup->get(disconnectedParameter.getName()) == &disconnectedParameter){
-                if(ofStringTimesInString(disconnectedParameter.getName(), "Vector")){
-                    string paramNameWithoutVector = disconnectedParameter.getName();
-                    paramNameWithoutVector.erase(paramNameWithoutVector.end() - 7, paramNameWithoutVector.end());
-                    if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<float>).name())
-                        paramGroup->getFloat(paramNameWithoutVector) = paramGroup->getFloat(paramNameWithoutVector);
-                    else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<int>).name())
-                        paramGroup->getInt(paramNameWithoutVector) = paramGroup->getInt(paramNameWithoutVector);
-                    else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameter<bool>).name())
-                        paramGroup->getBool(paramNameWithoutVector) = paramGroup->getBool(paramNameWithoutVector);
-                    else if(paramGroup->get(paramNameWithoutVector).type() == typeid(ofParameterGroup).name())
-                        paramGroup->getGroup(paramGroup->get(paramNameWithoutVector).getName()).getInt(1) = paramGroup->getGroup(paramGroup->get(paramNameWithoutVector).getName()).getInt(1);
-                }
-                break;
-            }
-        }
-    }
 }
