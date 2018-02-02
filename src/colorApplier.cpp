@@ -31,10 +31,11 @@ colorApplier::colorApplier(int _id){
     
     parameters->add(imageTextureFile.set("Img Tex File", ""));
     
-    parameters->add(indexIn.set("Indexs", {0}, {0}, {1}));
-    parameters->add(grayScaleIn.set("Input", {{0}}));
-    parameters->add(gradientPreview.set("Gradient Preview", {{}}));
-    parameters->add(colorizedValues.set("Output", {{ofColor::white}}));
+    parameters->add(indexInX.set("Indexs", {0}, {0}, {1}));
+    parameters->add(indexInY.set("Indexs Y", {0}, {0}, {1}));
+    parameters->add(grayScaleIn.set("Input", nullptr));
+    parameters->add(gradientPreview.set("Gradient Preview", nullptr));
+    parameters->add(colorizedValues.set("Output", nullptr));
     
     parametersControl::getInstance().createGuiFromParams(parameters);
     
@@ -51,7 +52,7 @@ colorApplier::colorApplier(int _id){
     colorHParam[0].addListener(this, &colorApplier::colorHueListener);
     colorHParam[1].addListener(this, &colorApplier::colorHueListener);
     
-    colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
+    //colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
     grayScaleIn.addListener(this, &colorApplier::applyColor);
     
     imageTextureFile.addListener(this, &colorApplier::imageFileChangedListener);
@@ -62,89 +63,156 @@ colorApplier::colorApplier(int _id){
     oldColorDisplacement = colorDisplacement;
 }
 
-void colorApplier::applyColor(vector<vector<float>> &inputVec){
-    int w = inputVec.size();
-    int h = inputVec[0].size();
+void colorApplier::applyColor(ofTexture* &inputTex){
+    int w = inputTex->getWidth();
+    int h = inputTex->getHeight();
+    if(outputFbo.getWidth() != w || outputFbo.getHeight() != h || !outputFbo.isAllocated()){
+        outputFbo.allocate(w, h, GL_RGB);
+        gradientFbo.allocate(w, h, GL_RGB);
+    }
     if(bypass){
-        if(tempColors.size() != w || tempColors[0].size() != h){
-            tempColors.resize(0);
-            tempGradient.resize(0);
-            tempColors.resize(w, vector<ofColor>(h, ofColor::black));
-            tempGradient.resize(w, vector<ofColor>(h, ofColor::black));
+//        if(isImageLoaded){
+//            if(imageTexture.getWidth() == h && imageTexture.getHeight() == w){
+//                imageTexture.rotate90(1);
+//            }
+//            if(imageTexture.getWidth() == w && imageTexture.getHeight() == h){
+////                for(int i = 0 ; i < w ; i++){
+////                    for (int j = 0 ; j < h ; j++){
+////                        tempColors[i][j] =  imageTexture.getColor(i, j) * inputVec[i][j];
+////                        tempGradient[i][j] = imageTexture.getColor(i, j);
+////                    }
+////                }
+////                ofPixels imagePix = imageTexture.getPixels();
+////                ofPixels inputPix;
+////                inputPix.allocate(imageTexture.getWidth(), imageTexture.getHeight(), 3);
+////                inputTex->readToPixels(inputPix);
+////                for(int i = 0; i < imgePix.size(); i++){
+////                    tempColors = imageTexture.getTexture() * *inputTex;
+////                }
+//                //gradientFbo = imageTexture.getTexture();
+//            }else{
+//                isImageLoaded = false;
+//            }
+//        }
+//        else
+        {
+            outputFbo.begin();
+            ofClear(255,255,255,0);
+            ofSetColor(colorPickerParam[0].get());
+            inputTex->draw(0,0);
+            outputFbo.end();
+            
+            gradientFbo.begin();
+            ofClear(255,255,255,0);
+            ofSetColor(colorPickerParam[0].get());
+            ofDrawRectangle(0, 0, w, h);
+            gradientFbo.end();
         }
-        if(isImageLoaded){
-            if(imageTexture.getWidth() == h && imageTexture.getHeight() == w){
-                imageTexture.rotate90(1);
-            }
-            if(imageTexture.getWidth() == w && imageTexture.getHeight() == h){
-                for(int i = 0 ; i < w ; i++){
-                    for (int j = 0 ; j < h ; j++){
-                        tempColors[i][j] =  imageTexture.getColor(i, j) * inputVec[i][j];
-                        tempGradient[i][j] = imageTexture.getColor(i, j);
-                    }
-                }
-            }else{
-                isImageLoaded = false;
-            }
-        }
-        else{
-            for(int i = 0 ; i < w ; i++){
-                for (int j = 0 ; j < h ; j++){
-                    tempColors[i][j] =  colorPickerParam[0].get() * inputVec[i][j];
-                    tempGradient[i][j] = colorPickerParam[0].get();
-                }
-            }
-        }
-        parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
-        parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
-    }else{
-        if(tempColors.size() != w){
-            tempColors.resize(w, vector<ofColor>(h));
-            tempGradient.resize(w, vector<ofColor>(h));
-        }
+        parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
+        parameters->get("Gradient Preview").cast<ofTexture*>() = &gradientFbo.getTexture();
+    }
+    else{
+//        if(colorDisplacementTexture.getWidth() != w || colorDisplacementTexture.getHeight() != h || !colorDisplacementTexture.isAllocated()){
+//            colorDisplacementTexture.allocate(w, h, GL_R);
+//            computeNewColorDisplacement(colorDisplacement);
+//        }
+//
+//        ofPixels colorDisplacementPixels;
+//        colorDisplacementPixels.allocate(w, h, 1);
+//        colorDisplacementTexture.readToPixels(colorDisplacementPixels);
         
-        if(colorDisplacementVector.size() != indexIn.get().size()){
-            colorDisplacementVector.resize(indexIn.get().size(), {ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement), ofRandom(-colorDisplacement, colorDisplacement)});
-        }
         
-        if(indexIn.get().size() == w){
-            for(int i = 0 ; i < w ; i++){
-                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[i])+(colorPickerParam[1].get()*(1-indexIn.get()[i]));
-                newColor.r += (colorDisplacementVector[i][0]);
-                newColor.g += (colorDisplacementVector[i][1]);
-                newColor.b += (colorDisplacementVector[i][2]);
-                for (int j = 0 ; j < h ; j++){
-                    tempColors[i][j] =  newColor * inputVec[i][j];
-                    tempGradient[i][j] = newColor;
+        bool validXIndex = false;
+        bool validYIndex = false;
+        if(indexInX.get().size() == w) validXIndex = true;
+        if(indexInY.get().size() == h) validYIndex = true;
+            
+        ofPixels inputPixels;
+        inputPixels.allocate(w, h, 3);
+        inputTex->readToPixels(inputPixels);
+        outputFbo.begin();
+        for(int i = 0; i < w; i++){
+            for(int j = 0; j < h; j++){
+                float indexMix = 0;
+                if(validXIndex && validYIndex){
+                    indexMix = (indexInX.get()[i] + indexInY.get()[j]) / 2;
+                }else if(validYIndex){
+                    indexMix = indexInY.get()[j];
+                }else if(validXIndex){
+                    indexMix = indexInX.get()[i];
                 }
+                ofFloatColor newColor = (colorPickerParam[0].get()*indexMix)+(colorPickerParam[1].get()*(1-indexMix));
+//                newColor.r += (colorDisplacementPixels[(i*w)+j]);
+//                newColor.g += (colorDisplacementPixels[(i*w)+j+1]);
+//                newColor.b += (colorDisplacementPixels[(i*w)+j+2]);
+                
+                newColor.r *= (float)inputPixels[(j*h*3)+(i*3)]/255.0;
+                newColor.g *= (float)inputPixels[(j*h*3)+(i*3)+1]/255.0;
+                newColor.b *= (float)inputPixels[(j*h*3)+(i*3)+2]/255.0;
+                
+                ofSetColor(newColor);
+                ofDrawRectangle(i, j, 1, 1);
+                
+                //                    pix[(i*w*3)+(j*3)] = newColor.r + (colorDisplacementPixels[(i*w*3)+(j*3)]);
+                //                    pix[(i*w*3)+(j*3)+1] = newColor.g + (colorDisplacementPixels[(i*w*3)+(j*3)+1]);
+                //                    pix[(i*w*3)+(j*3)+2] = newColor.b + (colorDisplacementPixels[(i*w*3)+(j*3)+2]);
             }
-            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
-            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
         }
-        else if(indexIn.get().size() == h){
-            for(int j = 0 ; j < h ; j++){
-                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
-                newColor.r += (colorDisplacementVector[j][0]);
-                newColor.g += (colorDisplacementVector[j][1]);
-                newColor.b += (colorDisplacementVector[j][2]);
-                for (int i = 0 ; i < w ; i++){
-                    tempColors[i][j] =  newColor * inputVec[i][j];
-                    tempGradient[i][j] = newColor;
-                }
-            }
-            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
-            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
-        }
+        outputFbo.end();
+        
+        
+        
+        parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
+        //            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
+        
+        
+//        if(indexIn.get().size() == w){
+//            for(int i = 0 ; i < w ; i++){
+//                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[i])+(colorPickerParam[1].get()*(1-indexIn.get()[i]));
+//                newColor.r += (colorDisplacementVector[i][0]);
+//                newColor.g += (colorDisplacementVector[i][1]);
+//                newColor.b += (colorDisplacementVector[i][2]);
+//                for (int j = 0 ; j < h ; j++){
+//                    tempColors[i][j] =  newColor * inputVec[i][j];
+//                    tempGradient[i][j] = newColor;
+//                }
+//            }
+//            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+//            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
+//        }
+//        else if(indexIn.get().size() == h){
+//            for(int j = 0 ; j < h ; j++){
+//                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
+//                newColor.r += (colorDisplacementVector[j][0]);
+//                newColor.g += (colorDisplacementVector[j][1]);
+//                newColor.b += (colorDisplacementVector[j][2]);
+//                for (int i = 0 ; i < w ; i++){
+//                    tempColors[i][j] =  newColor * inputVec[i][j];
+//                    tempGradient[i][j] = newColor;
+//                }
+//            }
+//            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
+//            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
+//        }
     }
 }
 
 void colorApplier::colorDisplacementChanged(float &f){
-    if(oldColorDisplacement != f){
-        for(auto &randDisplacement : colorDisplacementVector){
-            randDisplacement = {ofRandom(-f, f), ofRandom(-f, f), ofRandom(-f, f)};
-        }
+//    if(oldColorDisplacement != f){
+//        for(auto &randDisplacement : colorDisplacementVector){
+//            randDisplacement = {ofRandom(-f, f), ofRandom(-f, f), ofRandom(-f, f)};
+//        }
+//    }
+//    oldColorDisplacement = f;
+}
+
+void colorApplier::computeNewColorDisplacement(float f){
+    ofPixels pix;
+    pix.allocate(colorDisplacementTexture.getWidth(), colorDisplacementTexture.getHeight(), 1);
+    for(int i = 0; i < pix.size(); i++){
+        pix[i] = ofRandom(-f, f);
     }
-    oldColorDisplacement = f;
+    colorDisplacementTexture.loadData(pix);
 }
 
 void colorApplier::colorListener(ofColor &c){

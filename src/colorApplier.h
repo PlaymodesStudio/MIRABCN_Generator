@@ -24,8 +24,9 @@ public:
     
     
 private:
-    void applyColor(vector<vector<float>> &inputVec);
+    void applyColor(ofTexture* &inputTex);
     void colorDisplacementChanged(float &f);
+    void computeNewColorDisplacement(float f);
     
     void colorListener(ofColor &c);
     void colorSliderListener(int &i);
@@ -47,15 +48,15 @@ private:
 //    ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
     //in and outs
-    ofParameter<vector<float>>          indexIn;
-    ofParameter<vector<vector<float>>>  grayScaleIn;
-    ofParameter<vector<vector<ofColor>>>    gradientPreview;
-    ofParameter<vector<vector<ofColor>>> colorizedValues;
+    ofParameter<vector<float>>          indexInX;
+    ofParameter<vector<float>>          indexInY;
+    ofParameter<ofTexture*>  grayScaleIn;
+    ofParameter<ofTexture*>  gradientPreview;
+    ofParameter<ofTexture*>  colorizedValues;
     
-    
-    vector<vector<ofColor>> tempColors;
-    vector<vector<ofColor>> tempGradient;
-    vector<vector<float>> colorDisplacementVector;
+    ofFbo outputFbo;
+    ofFbo gradientFbo;
+    ofTexture colorDisplacementTexture;
     
     bool colorIsChanging;
     ofImage imageTexture;
