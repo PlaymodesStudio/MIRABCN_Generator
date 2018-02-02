@@ -841,6 +841,19 @@ void parametersControl::savePreset(string presetName, string bank){
                     ofStringReplace(noSpaces, " ", "_");
                     xml.addValue(noSpaces, groupParam->getGroup(j).getInt(1).get());
                 }
+                else if(absParam.type() == typeid(ofParameter<vector<float>>).name()){
+                    //Cast it
+                    ofParameter<vector<float>> castedParam = absParam.cast<vector<float>>();
+                    //ofParameter<float> castToCheckSerializable = absParam.cast<float>();
+                    
+                    //Replace blank spaces with underscore
+                    string noSpaces = castedParam.getName();
+                    ofStringReplace(noSpaces, " ", "_");
+                    
+                    //add the value of that parameter into xml
+                    //if(castToCheckSerializable.isSerializable())
+                        xml.addValue(noSpaces, castedParam.get()[0]);
+                }
                 else if(absParam.getName() == "ReindexGrid"){
                     ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
                     string matrixInfo;
@@ -1030,6 +1043,19 @@ void parametersControl::loadPreset(string presetName, string bank){
                             ofStringReplace(noSpaces, " ", "_");
                             if(xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master"))
                                 groupParam->getGroup(j).getInt(1) = xml.getValue(noSpaces, groupParam->getGroup(j).getInt(1));
+                        }
+                        else if(absParam.type() == typeid(ofParameter<vector<float>>).name()){
+                            //Cast it
+                            ofParameter<vector<float>> castedParam = absParam.cast<vector<float>>();
+                            //ofParameter<float> castToCheckSerializable = absParam.cast<float>();
+                            
+                            //Replace blank spaces with underscore
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            
+                            //get the value of that parameter
+                            if(xml.exists(noSpaces))
+                                castedParam = vector<float>(1, xml.getFloatValue(noSpaces));
                         }
                         else if(absParam.getName() == "ReindexGrid"){
                             ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
