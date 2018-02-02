@@ -6,7 +6,6 @@
 //uniform vec2 size;
 uniform float phase;
 uniform float time;
-uniform int width;
 uniform sampler2D randomInfo;
 
 
@@ -104,6 +103,16 @@ float random (in vec2 _st) {
                  43758.5453123);
 }
 
+highp float rrrand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+
 float map(float value, float istart, float istop, float ostart, float ostop) {
     return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
@@ -113,11 +122,13 @@ void main(){
     //we grab the x and y and store them in an int
     int xVal = int(gl_FragCoord.x);
     int yVal = int(gl_FragCoord.y);
+    int width = textureSize(randomInfo, 0).x;
     
     float xTex = (float(xVal)+0.5) / float(textureSize(randomInfo, 0).x);
     float yTex = (float(yVal)+0.5) / float(textureSize(randomInfo, 0).y);
     
-    float value = texture(randomInfo, vec2(xTex, yTex)).r;
+    vec4 r_info = texture(randomInfo, vec2(xTex, yTex));
+    float value = r_info.r;
     
     float randomAdditionParam = texelFetch(randomAddition, xVal).r + texelFetch(randomAddition, yVal + width).r;
     float scaleParam = texelFetch(scale, xVal).r * texelFetch(scale, yVal + width).r;
@@ -130,7 +141,7 @@ void main(){
     
     //random Add
     if(randomAdditionParam != 0){
-        value = value + randomAdditionParam*random(vec2(xVal+time+phase, yVal+time/2 +  phase/2));
+        value = value + randomAdditionParam*rrrand(vec2((xVal) + time, (yVal) + time));
     }
     
     value = clamp(value, 0.0, 1.0);

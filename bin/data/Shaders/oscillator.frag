@@ -4,7 +4,6 @@
 //uniform vec2 size;
 uniform float phase;
 uniform float time;
-uniform int width;
 uniform sampler2D randomInfo;
 
 //Indexs
@@ -120,7 +119,7 @@ void main(){
 	//we grab the x and y and store them in an int
 	int xVal = int(gl_FragCoord.x);
 	int yVal = int(gl_FragCoord.y);
-    
+    int width = textureSize(randomInfo, 0).x;
     
     
     //Compute parameters of current coord;
@@ -134,12 +133,22 @@ void main(){
     
     
     //randon Info
-    float xTex = (float(xVal)+0.5) / float(textureSize(randomInfo, 0).x);
-    float yTex = (float(yVal)+0.5) / float(textureSize(randomInfo, 0).y);
+    double xTex = (double(xVal)+0.5) / double(textureSize(randomInfo, 0).x);
+    double yTex = (double(yVal)+0.5) / double(textureSize(randomInfo, 0).y);
 
     vec4 r_info = texture(randomInfo, vec2(xTex, yTex));
     float oldValue = r_info.r;
     float oldPhasor = r_info.g;
+//    float pastNewRandom = r_info.b;
+//    int pastNewRandomInt = int(pastNewRandom * 512.0);
+//
+//
+//    int pastRandomInt = pastNewRandomInt >> 8;
+//    int newRandomInt = (pastNewRandomInt & 0xFF);
+    
+//    float pastRandom = float(pastRandomInt) / 256.0;
+//    float newRandom = float(newRandomInt) / 256.0;
+    
     float pastRandom = r_info.b;
     float newRandom = r_info.a;
     
@@ -203,7 +212,7 @@ void main(){
         val2 = linPhase;
     }
     if(waveformParam > 5 && waveformParam < 7){ //Random
-        if(linPhase < oldPhasor){
+        if(linPhase < (oldPhasor - 0.1)){
             val1 = rrrand(vec2((xVal) + time, (yVal) + time));
         }
         else{
@@ -211,9 +220,9 @@ void main(){
         }
     }
     if(waveformParam > 6 && waveformParam <= 7){
-        if(linPhase < oldPhasor){
+        if(linPhase < (oldPhasor - 0.1)){
             pastRandom = newRandom;
-            newRandom = snoise(vec2((xVal) + time, (yVal) + time));
+            newRandom = rrrand(vec2((xVal) + time, (yVal) + time));
             val2 = pastRandom;
         }
         else{
@@ -230,10 +239,10 @@ void main(){
         val = val1 * waveInterp + val2 * (1-waveInterp);
     }
     
-//    
-//
-//
-        // oldPhasor[xVal][yVal] = linPhase;
-//
+//    pastRandomInt = int(pastRandom * 256.0);
+//    newRandomInt = int(newRandom * 256.0);
+//    pastNewRandomInt = (pastRandomInt << 8) | newRandomInt;
+//    pastNewRandom = float(pastNewRandomInt) / 512.0;
+    
     out_color = vec4(val, linPhase, pastRandom, newRandom);
 }

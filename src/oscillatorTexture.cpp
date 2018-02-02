@@ -15,14 +15,22 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     width = xSize;
     height = ySize;
     
-    fbo.allocate(width, height, GL_RGBA);
+    fbo.allocate(width, height, GL_RGBA32F);
+    fbo.begin();
+    ofClear(255, 255, 255, 0);
+    fbo.end();
     fboBuffer.allocate(width, height, GL_RGBA16);
     fboBuffer.begin();
-    ofDrawRectangle(0, 0, width, height);
+    ofClear(255, 255, 255, 0);
     fboBuffer.end();
+    fbo.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
     
     randomInfoTexture.allocate(width, height, GL_RGBA32F);
-    
+    randomInfoFbo.allocate(width, height, GL_RGBA32F);
+    randomInfoFbo.begin();
+    ofClear(255, 255, 255, 0);
+    randomInfoFbo.end();
+
     
     parameters->setName("oscillatorTexture " + ofToString(bankId));
     parameters->add(reloadShaderParam.set("Reload Shader", false));
@@ -240,7 +248,6 @@ void oscillatorTexture::parameterChanged(ofAbstractParameter &p){
 void oscillatorTexture::reloadShader(bool &b){
     shaderOscillator.load("Shaders/oscillator.vert", "Shaders/oscillator.frag");
     shaderOscillator.begin();
-    shaderOscillator.setUniform1i("width", width);
     shaderOscillator.setUniformTexture("xIndexs", xIndexTexture, 0);
     shaderOscillator.setUniformTexture("yIndexs", yIndexTexture, 1);
     shaderOscillator.setUniformTexture("phaseOffset", phaseOffsetTexture, 2);
@@ -251,7 +258,6 @@ void oscillatorTexture::reloadShader(bool &b){
     
     shaderScaling.load("Shaders/scaling.vert", "Shaders/scaling.frag");
     shaderScaling.begin();
-    shaderScaling.setUniform1f("width", width);
     shaderScaling.setUniformTexture("randomAddition", randomAdditionTexture, 6);
     shaderScaling.setUniformTexture("scale", scaleTexture, 7);
     shaderScaling.setUniformTexture("offset", offsetTexture, 8);
@@ -266,7 +272,10 @@ void oscillatorTexture::reloadShader(bool &b){
 ofTexture& oscillatorTexture::computeBank(float phasor){
 
     ofPushStyle();
-    ofSetColor(255);
+    ofSetColor(255, 255);
+    fboBuffer.begin();
+    ofClear(255, 255, 255, 255);
+    fboBuffer.end();
     fboBuffer.begin();
     shaderOscillator.begin();
     shaderOscillator.setUniform1f("phase", phasor);
@@ -276,7 +285,11 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     shaderOscillator.end();
     fboBuffer.end();
     
-    randomInfoTexture = fboBuffer.getTexture();
+    randomInfoFbo.begin();
+    ofClear(0, 0, 0, 255);
+    fboBuffer.draw(0,0);
+    randomInfoFbo.end();
+    randomInfoTexture = randomInfoFbo.getTexture();
     
     fbo.begin();
     shaderScaling.begin();
@@ -289,7 +302,6 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     shaderScaling.end();
     fbo.end();
     ofPopStyle();
-
     
     return fbo.getTexture();
 }
