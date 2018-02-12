@@ -146,9 +146,9 @@ void colorApplier::applyColor(ofTexture* &inputTex){
 //                newColor.g += (colorDisplacementPixels[(i*w)+j+1]);
 //                newColor.b += (colorDisplacementPixels[(i*w)+j+2]);
                 
-                newColor.r *= (float)inputPixels[(j*h*3)+(i*3)]/255.0;
-                newColor.g *= (float)inputPixels[(j*h*3)+(i*3)+1]/255.0;
-                newColor.b *= (float)inputPixels[(j*h*3)+(i*3)+2]/255.0;
+                newColor *= (float)inputPixels.getLine(j).getPixel((i)).getColor().getBrightness() / 255.0;// [(j*h*3)+(i*3)]/255.0;
+//                newColor.g *= (float)inputPixels[(j*h*3)+(i*3)+1]/255.0;
+//                newColor.b *= (float)inputPixels[(j*h*3)+(i*3)+2]/255.0;
                 
                 ofSetColor(newColor);
                 ofDrawRectangle(i, j, 1, 1);
