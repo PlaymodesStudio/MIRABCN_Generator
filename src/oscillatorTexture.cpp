@@ -8,6 +8,7 @@
 
 #include "oscillatorTexture.h"
 #include "parametersControl.h"
+#include <random>
 
 oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint pos){
     parameters = new ofParameterGroup();
@@ -33,41 +34,12 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
 
     
     parameters->setName("oscillatorTexture " + ofToString(bankId));
+    
     parameters->add(reloadShaderParam.set("Reload Shader", false));
     reloadShaderParam.addListener(this, &oscillatorTexture::reloadShader);
     
-    indexers.push_back(new baseIndexer(xSize));
-    indexers.push_back(new baseIndexer(ySize));
-    
-    
-    for(int i = 0; i < indexers.size(); i++){
-        string dimensionStr = " ";
-        int dimensionSize = 0;
-        if(i == 0){
-            dimensionStr = "X";
-            dimensionSize = xSize;
-        }else if(i == 1){
-            dimensionStr = "Y";
-            dimensionSize = ySize;
-        }
-        
-        ofParameter<string> strlbl;
-        parameters->add(strlbl.set(dimensionStr + " Dim_label", " "));
-        
-        parameters->add(indexers[i]->numWaves_Param.set("Num Waves " + dimensionStr, 1, 0, dimensionSize));
-        parameters->add(indexers[i]->indexInvert_Param.set("Index Invert " + dimensionStr, 0, 0, 1));
-        parameters->add(indexers[i]->symmetry_Param.set("Symmetry " + dimensionStr, 0, 0, 10));
-        parameters->add(indexers[i]->indexRand_Param.set("Index Random " + dimensionStr, 0, 0, 1));
-        parameters->add(indexers[i]->indexOffset_Param.set("Index Offset " + dimensionStr, 0, -dimensionSize/2, dimensionSize/2));
-        parameters->add(indexers[i]->indexQuant_Param.set("Index Quantization " + dimensionStr, dimensionSize, 1, dimensionSize));
-        parameters->add(indexers[i]->combination_Param.set("Index Combination " + dimensionStr, 0, 0, 1));
-        parameters->add(indexers[i]->modulo_Param.set("Index Modulo " + dimensionStr, dimensionSize, 1, dimensionSize));
-    }
-    
-    parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
-    
-//    parameters->add(phaseOffset[0].set("Phase Offset X", {0}, {0}, {1}));
-//    parameters->add(phaseOffset[1].set("Phase Offset Y", {0}, {0}, {1}));
+//    ofParameter<string> strlbl;
+//    parameters->add(strlbl.set(dimensionStr + " Dim_label", " "));
     
     auto setAndBindXYParamsVecFloat = [this](ofParameter<vector<float>> *p, string name, float val, float min, float max) -> void{
         parameters->add(p[0].set(name + " X", vector<float>(1, val), vector<float>(1, min), vector<float>(1, max)));
@@ -78,6 +50,23 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
         parameters->add(p[0].set(name + " X", vector<int>(1, val), vector<int>(1, min), vector<int>(1, max)));
         parameters->add(p[1].set(name + " Y", vector<int>(1, val), vector<int>(1, min), vector<int>(1, max)));
     };
+    
+    parameters->add(phasorIn.set("Phasor In", 0, 0, 1));
+    
+    parameters->add(indexNumWaves[0].set("Num Waves X", vector<float>(1, 1), vector<float>(1, 0), vector<float>(1, width)));
+    parameters->add(indexNumWaves[1].set("Num Waves Y", vector<float>(1, 1), vector<float>(1, 0), vector<float>(1, height)));
+    setAndBindXYParamsVecFloat(indexInvert, "Index Invert", 1, -1, 1);
+    parameters->add(indexSymmetry[0].set("Symmetry X", vector<int>(1, 0), vector<int>(1, 0), vector<int>(1, width/2)));
+    parameters->add(indexSymmetry[1].set("Symmetry Y", vector<int>(1, 0), vector<int>(1, 0), vector<int>(1, height/2)));
+    setAndBindXYParamsVecFloat(indexRandom, "Index Random", 0, 0, 1);
+    parameters->add(indexOffset[0].set("Index Offset X", vector<float>(1, 0), vector<float>(1, -width/2), vector<float>(1, width/2)));
+    parameters->add(indexOffset[1].set("Index Offset Y", vector<float>(1, 0), vector<float>(1, -height/2), vector<float>(1, height/2)));
+    parameters->add(indexQuantization[0].set("Index Quatization X", vector<int>(1, width), vector<int>(1, 1), vector<int>(1, width)));
+    parameters->add(indexQuantization[1].set("Index Quatization Y", vector<int>(1, height), vector<int>(1, 1), vector<int>(1, height)));
+    setAndBindXYParamsVecFloat(indexCombination, "Index Combination", 0, 0, 1);
+    parameters->add(indexModulo[0].set("Index Modulo X", vector<int>(1, width), vector<int>(1, 1), vector<int>(1, width)));
+    parameters->add(indexModulo[1].set("Index Modulo Y", vector<int>(1, height), vector<int>(1, 1), vector<int>(1, height)));
+
     
     setAndBindXYParamsVecFloat(phaseOffset, "Phase Offset", 0, 0, 1);
     setAndBindXYParamsVecFloat(randomAddition, "Rnd Add", 0, -.5, .5);
@@ -92,16 +81,7 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     setAndBindXYParamsVecFloat(invert, "Invert", 0, 0, 1);
     setAndBindXYParamsVecFloat(waveform, "WaveForm", 0, 0, 7);
     
-//    parameters->add(randomAdd_Param.set("Random Addition", 0, -.5, .5));
-//    parameters->add(scale_Param.set("Scale", 1, 0, 2));
-//    parameters->add(offset_Param.set("Offset", 0, -1, 1));
-//    parameters->add(pow_Param.set("Pow", 0, -40, 40));
-//    parameters->add(biPow_Param.set("Bi Pow", 0, -40, 40));
-//    parameters->add(quant_Param.set("Quantization", 255, 1, 255));
-//    parameters->add(pulseWidth_Param.set("Pulse Width", 1, 0, 1));
-//    parameters->add(skew_Param.set("Skew", 0, -1, 1));
-//    parameters->add(amplitude_Param.set("Fader", 1, 0, 1));
-//    parameters->add(invert_Param.set("Invert", 0, 0, 1));
+
     ofParameterGroup waveDropDown;
     waveDropDown.setName("Wave Select");
     ofParameter<string> tempStrParam("Options", "sin-|-cos-|-tri-|-square-|-saw-|-inverted saw-|-rand1-|-rand2");
@@ -116,17 +96,68 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     //TBOs
     
-    //xIndex
-    xIndexBuffer.allocate();
-    xIndexBuffer.bind(GL_TEXTURE_BUFFER);
-    xIndexBuffer.setData(indexers[0]->getIndexs(), GL_STREAM_DRAW);
-    xIndexTexture.allocateAsBufferTexture(xIndexBuffer, GL_R32F);
+    //NumWaves
+    indexNumWavesBuffer.allocate();
+    indexNumWavesBuffer.bind(GL_TEXTURE_BUFFER);
+    indexNumWavesBuffer.setData(vector<float>(width + height, indexNumWaves[0].get()[0]), GL_STREAM_DRAW);
+    indexNumWavesTexture.allocateAsBufferTexture(indexNumWavesBuffer, GL_R32F);
     
-    //yIndex
-    yIndexBuffer.allocate();
-    yIndexBuffer.bind(GL_TEXTURE_BUFFER);
-    yIndexBuffer.setData(indexers[1]->getIndexs(), GL_STREAM_DRAW);
-    yIndexTexture.allocateAsBufferTexture(yIndexBuffer, GL_R32F);
+    //Invert
+    indexInvertBuffer.allocate();
+    indexInvertBuffer.bind(GL_TEXTURE_BUFFER);
+    indexInvertBuffer.setData(vector<float>(width + height, indexInvert[0].get()[0]), GL_STREAM_DRAW);
+    indexInvertTexture.allocateAsBufferTexture(indexInvertBuffer, GL_R32F);
+    
+    //Symmetry
+    indexSymmetryBuffer.allocate();
+    indexSymmetryBuffer.bind(GL_TEXTURE_BUFFER);
+    indexSymmetryBuffer.setData(vector<int>(width + height, indexSymmetry[0].get()[0]), GL_STREAM_DRAW);
+    indexSymmetryTexture.allocateAsBufferTexture(indexSymmetryBuffer, GL_R32UI);
+    
+    //Random
+    indexRandomBuffer.allocate();
+    indexRandomBuffer.bind(GL_TEXTURE_BUFFER);
+    indexRandomBuffer.setData(vector<float>(width + height, indexRandom[0].get()[0]), GL_STREAM_DRAW);
+    indexRandomTexture.allocateAsBufferTexture(indexRandomBuffer, GL_R32F);
+    
+    //Offset
+    indexOffsetBuffer.allocate();
+    indexOffsetBuffer.bind(GL_TEXTURE_BUFFER);
+    indexOffsetBuffer.setData(vector<float>(width + height, indexOffset[0].get()[0]), GL_STREAM_DRAW);
+    indexOffsetTexture.allocateAsBufferTexture(indexOffsetBuffer, GL_R32F);
+    
+    //Quantization
+    vector<int> xQuantVec(width, indexQuantization[0].get()[0]);
+    vector<int> yQuantVec(height, indexQuantization[1].get()[0]);
+    xQuantVec.insert(xQuantVec.end(), yQuantVec.begin(), yQuantVec.end());
+    indexQuantizationBuffer.allocate();
+    indexQuantizationBuffer.bind(GL_TEXTURE_BUFFER);
+    indexQuantizationBuffer.setData(xQuantVec, GL_STREAM_DRAW);
+    indexQuantizationTexture.allocateAsBufferTexture(indexQuantizationBuffer, GL_R32UI);
+    
+    //Combination
+    indexCombinationBuffer.allocate();
+    indexCombinationBuffer.bind(GL_TEXTURE_BUFFER);
+    indexCombinationBuffer.setData(vector<float>(width + height, indexCombination[0].get()[0]), GL_STREAM_DRAW);
+    indexCombinationTexture.allocateAsBufferTexture(indexCombinationBuffer, GL_R32F);
+    
+    //Modulo
+    vector<int> xModVec(width, indexModulo[0].get()[0]);
+    vector<int> yModtVec(height, indexModulo[1].get()[0]);
+    xModVec.insert(xModVec.end(), yModtVec.begin(), yModtVec.end());
+    indexModuloBuffer.allocate();
+    indexModuloBuffer.bind(GL_TEXTURE_BUFFER);
+    indexModuloBuffer.setData(xModVec, GL_STREAM_DRAW);
+    indexModuloTexture.allocateAsBufferTexture(indexModuloBuffer, GL_R32UI);
+    
+    
+    
+    //IndexRandomValues
+    indexRandomValuesBuffer.allocate();
+    indexRandomValuesBuffer.bind(GL_TEXTURE_BUFFER);
+    indexRandomValuesBuffer.setData(newRandomValuesVector(), GL_STREAM_DRAW);
+    indexRandomValuesTexture.allocateAsBufferTexture(indexRandomValuesBuffer, GL_R32F);
+    
     
     
     //Phase offset
@@ -209,6 +240,23 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     
     phasorIn.addListener(this, &oscillatorTexture::newPhasorIn);
     
+    indexNumWaves[0].addListener(this, &oscillatorTexture::indexNumWavesListener);
+    indexNumWaves[1].addListener(this, &oscillatorTexture::indexNumWavesListener);
+    indexInvert[0].addListener(this, &oscillatorTexture::indexInvertListener);
+    indexInvert[1].addListener(this, &oscillatorTexture::indexInvertListener);
+    indexSymmetry[0].addListener(this, &oscillatorTexture::indexSymmetryListener);
+    indexSymmetry[1].addListener(this, &oscillatorTexture::indexSymmetryListener);
+    indexRandom[0].addListener(this, &oscillatorTexture::indexRandomListener);
+    indexRandom[1].addListener(this, &oscillatorTexture::indexRandomListener);
+    indexOffset[0].addListener(this, &oscillatorTexture::indexOffsetListener);
+    indexOffset[1].addListener(this, &oscillatorTexture::indexOffsetListener);
+    indexQuantization[0].addListener(this, &oscillatorTexture::indexQuantizationListener);
+    indexQuantization[1].addListener(this, &oscillatorTexture::indexQuantizationListener);
+    indexCombination[0].addListener(this, &oscillatorTexture::indexCombinationListener);
+    indexCombination[1].addListener(this, &oscillatorTexture::indexCombinationListener);
+    indexModulo[0].addListener(this, &oscillatorTexture::indexModuloListener);
+    indexModulo[1].addListener(this, &oscillatorTexture::indexModuloListener);
+    
     phaseOffset[0].addListener(this, &oscillatorTexture::phaseOffsetListener);
     phaseOffset[1].addListener(this, &oscillatorTexture::phaseOffsetListener);
     randomAddition[0].addListener(this, &oscillatorTexture::randomAdditionListener);
@@ -248,24 +296,33 @@ void oscillatorTexture::parameterChanged(ofAbstractParameter &p){
 void oscillatorTexture::reloadShader(bool &b){
     shaderOscillator.load("Shaders/oscillator.vert", "Shaders/oscillator.frag");
     shaderOscillator.begin();
-    shaderOscillator.setUniformTexture("xIndexs", xIndexTexture, 0);
-    shaderOscillator.setUniformTexture("yIndexs", yIndexTexture, 1);
-    shaderOscillator.setUniformTexture("phaseOffset", phaseOffsetTexture, 2);
-    shaderOscillator.setUniformTexture("pulseWidth", pulseWidthTexture, 3);
-    shaderOscillator.setUniformTexture("skew", skewTexture, 4);
-    shaderOscillator.setUniformTexture("waveform", waveformTexture, 5);
+    
+    shaderOscillator.setUniformTexture("indexNumWaves", indexNumWavesTexture, 0);
+    shaderOscillator.setUniformTexture("indexInvert", indexInvertTexture, 1);
+    shaderOscillator.setUniformTexture("indexSymmetry", indexSymmetryTexture, 2);
+    shaderOscillator.setUniformTexture("indexRandom", indexRandomTexture, 3);
+    shaderOscillator.setUniformTexture("indexOffset", indexOffsetTexture, 4);
+    shaderOscillator.setUniformTexture("indexQuantization", indexQuantizationTexture, 5);
+    shaderOscillator.setUniformTexture("indexCombination", indexCombinationTexture, 6);
+    shaderOscillator.setUniformTexture("indexModulo", indexModuloTexture, 7);
+    shaderOscillator.setUniformTexture("indexRandomValues", indexRandomValuesTexture, 8);
+    
+    shaderOscillator.setUniformTexture("phaseOffset", phaseOffsetTexture, 9);
+    shaderOscillator.setUniformTexture("pulseWidth", pulseWidthTexture, 10);
+    shaderOscillator.setUniformTexture("skew", skewTexture, 11);
+    shaderOscillator.setUniformTexture("waveform", waveformTexture, 12);
     shaderOscillator.end();
     
     shaderScaling.load("Shaders/scaling.vert", "Shaders/scaling.frag");
     shaderScaling.begin();
-    shaderScaling.setUniformTexture("randomAddition", randomAdditionTexture, 6);
-    shaderScaling.setUniformTexture("scale", scaleTexture, 7);
-    shaderScaling.setUniformTexture("offset", offsetTexture, 8);
-    shaderScaling.setUniformTexture("pow_", powTexture, 9);
-    shaderScaling.setUniformTexture("bipow", bipowTexture, 10);
-    shaderScaling.setUniformTexture("quantization", quantizationTexture, 11);
-    shaderScaling.setUniformTexture("fader", faderTexture, 12);
-    shaderScaling.setUniformTexture("invert_", invertTexture, 13);
+    shaderScaling.setUniformTexture("randomAddition", randomAdditionTexture, 13);
+    shaderScaling.setUniformTexture("scale", scaleTexture, 14);
+    shaderScaling.setUniformTexture("offset", offsetTexture, 15);
+    shaderScaling.setUniformTexture("pow_", powTexture, 16);
+    shaderScaling.setUniformTexture("bipow", bipowTexture, 17);
+    shaderScaling.setUniformTexture("quantization", quantizationTexture, 18);
+    shaderScaling.setUniformTexture("fader", faderTexture, 19);
+    shaderScaling.setUniformTexture("invert_", invertTexture, 20);
     shaderScaling.end();
 }
 
@@ -280,7 +337,7 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     shaderOscillator.begin();
     shaderOscillator.setUniform1f("phase", phasor);
     shaderOscillator.setUniform1f("time", ofGetElapsedTimef());
-    shaderOscillator.setUniformTexture("randomInfo", randomInfoTexture, 14);
+    shaderOscillator.setUniformTexture("randomInfo", randomInfoTexture, 21);
     ofDrawRectangle(0, 0, width, height);
     shaderOscillator.end();
     fboBuffer.end();
@@ -295,7 +352,7 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     shaderScaling.begin();
     shaderScaling.setUniform1f("phase", phasor);
     shaderScaling.setUniform1f("time", ofGetElapsedTimef());
-    shaderScaling.setUniformTexture("randomInfo", randomInfoTexture, 15);
+    shaderScaling.setUniformTexture("randomInfo", randomInfoTexture, 22);
 //    ofSetColor(ofColor::brown);
     ofDrawRectangle(0, 0, width, height);
 //    fboBuffer.draw(0,0, width, height);
@@ -307,16 +364,175 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
 }
 
 void oscillatorTexture::newPhasorIn(float &f){
-    if(indexers[0]->areNewIndexs()){
-        xIndexBuffer.updateData(0, indexers[0]->getIndexs());
-    }
-    if(indexers[1]->areNewIndexs()){
-        yIndexBuffer.updateData(0, indexers[1]->getIndexs());
-    }
+//    if(indexers[0]->areNewIndexs()){
+//        xIndexBuffer.updateData(0, indexers[0]->getIndexs());
+//    }
+//    if(indexers[1]->areNewIndexs()){
+//        yIndexBuffer.updateData(0, indexers[1]->getIndexs());
+//    }
     parameters->get("Oscillator Out").cast<ofTexture*>() = &computeBank(f);
 }
 
-#pragma mark PHASE OFFSET
+
+vector<float> oscillatorTexture::newRandomValuesVector(){
+    vector<float> randomValuesVecX(width, 0);
+    vector<float> randomValuesVecY(height, 0);
+    for(int i = 0; i < randomValuesVecX.size(); i++){
+        randomValuesVecX[i] = (int)-randomValuesVecX.size()/2 + i;
+    }
+    for(int i = 0; i < randomValuesVecY.size(); i++){
+        randomValuesVecY[i] = (int)-randomValuesVecY.size()/2 + i;
+    }
+    
+    mt19937 g(static_cast<uint32_t>(time(0)));
+    shuffle(randomValuesVecX.begin(), randomValuesVecX.end(), g);
+    shuffle(randomValuesVecY.begin(), randomValuesVecY.end(), g);
+    
+    randomValuesVecX.insert(randomValuesVecX.end(), randomValuesVecY.begin(), randomValuesVecY.end());
+    
+    return randomValuesVecX;
+}
+
+
+#pragma mark Index Listeners
+
+void oscillatorTexture::indexNumWavesListener(vector<float> &vf){
+    if(&vf == &indexNumWaves[0].get()){
+        if(vf.size() == 1){
+            indexNumWavesBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            indexNumWavesBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &indexNumWaves[1].get()){
+        if(vf.size() == 1){
+            indexNumWavesBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            indexNumWavesBuffer.updateData(width*4, vf);
+        }
+    }
+}
+
+void oscillatorTexture::indexInvertListener(vector<float> &vf){
+    if(&vf == &indexInvert[0].get()){
+        if(vf.size() == 1){
+            indexInvertBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            indexInvertBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &indexInvert[1].get()){
+        if(vf.size() == 1){
+            indexInvertBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            indexInvertBuffer.updateData(width*4, vf);
+        }
+    }
+}
+
+void oscillatorTexture::indexSymmetryListener(vector<int> &vi){
+    if(&vi == &indexSymmetry[0].get()){
+        if(vi.size() == 1){
+            indexSymmetryBuffer.updateData(0, vector<int>(width, vi[0]));
+        }else if(vi.size() == width){
+            indexSymmetryBuffer.updateData(0, vi);
+        }
+    }
+    if(&vi == &indexSymmetry[1].get()){
+        if(vi.size() == 1){
+            indexSymmetryBuffer.updateData(width*4, vector<int>(height, vi[0]));
+        }else if(vi.size() == height){
+            indexSymmetryBuffer.updateData(width*4, vi);
+        }
+    }
+}
+
+void oscillatorTexture::indexRandomListener(vector<float> &vf){
+    if(&vf == &indexRandom[0].get()){
+        if(vf.size() == 1){
+            indexRandomBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            indexRandomBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &indexRandom[1].get()){
+        if(vf.size() == 1){
+            indexRandomBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            indexRandomBuffer.updateData(width*4, vf);
+        }
+    }
+}
+
+void oscillatorTexture::indexOffsetListener(vector<float> &vf){
+    if(&vf == &indexOffset[0].get()){
+        if(vf.size() == 1){
+            indexOffsetBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            indexOffsetBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &indexOffset[1].get()){
+        if(vf.size() == 1){
+            indexOffsetBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            indexOffsetBuffer.updateData(width*4, vf);
+        }
+    }
+}
+
+void oscillatorTexture::indexQuantizationListener(vector<int> &vi){
+    if(&vi == &indexQuantization[0].get()){
+        if(vi.size() == 1){
+            indexQuantizationBuffer.updateData(0, vector<int>(width, vi[0]));
+        }else if(vi.size() == width){
+            indexQuantizationBuffer.updateData(0, vi);
+        }
+    }
+    if(&vi == &indexQuantization[1].get()){
+        if(vi.size() == 1){
+            indexQuantizationBuffer.updateData(width*4, vector<int>(height, vi[0]));
+        }else if(vi.size() == height){
+            indexQuantizationBuffer.updateData(width*4, vi);
+        }
+    }
+}
+
+void oscillatorTexture::indexCombinationListener(vector<float> &vf){
+    if(&vf == &indexCombination[0].get()){
+        if(vf.size() == 1){
+            indexCombinationBuffer.updateData(0, vector<float>(width, vf[0]));
+        }else if(vf.size() == width){
+            indexCombinationBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &indexCombination[1].get()){
+        if(vf.size() == 1){
+            indexCombinationBuffer.updateData(width*4, vector<float>(height, vf[0]));
+        }else if(vf.size() == height){
+            indexCombinationBuffer.updateData(width*4, vf);
+        }
+    }
+}
+
+void oscillatorTexture::indexModuloListener(vector<int> &vi){
+    if(&vi == &indexModulo[0].get()){
+        if(vi.size() == 1){
+            indexModuloBuffer.updateData(0, vector<int>(width, vi[0]));
+        }else if(vi.size() == width){
+            indexModuloBuffer.updateData(0, vi);
+        }
+    }
+    if(&vi == &indexModulo[1].get()){
+        if(vi.size() == 1){
+            indexModuloBuffer.updateData(width*4, vector<int>(height, vi[0]));
+        }else if(vi.size() == height){
+            indexModuloBuffer.updateData(width*4, vi);
+        }
+    }
+}
+
+#pragma mark Oscillator listeners
 
 void oscillatorTexture::phaseOffsetListener(vector<float> &vf){
     if(&vf == &phaseOffset[0].get()){
@@ -421,19 +637,19 @@ void oscillatorTexture::bipowListener(vector<float> &vf){
     }
 }
 
-void oscillatorTexture::quantizationListener(vector<int> &vf){
-    if(&vf == &quantization[0].get()){
-        if(vf.size() == 1){
-            quantizationBuffer.updateData(0, vector<int>(width, vf[0]));
-        }else if(vf.size() == width){
-            quantizationBuffer.updateData(0, vf);
+void oscillatorTexture::quantizationListener(vector<int> &vi){
+    if(&vi == &quantization[0].get()){
+        if(vi.size() == 1){
+            quantizationBuffer.updateData(0, vector<int>(width, vi[0]));
+        }else if(vi.size() == width){
+            quantizationBuffer.updateData(0, vi);
         }
     }
-    if(&vf == &quantization[1].get()){
-        if(vf.size() == 1){
-            quantizationBuffer.updateData(width*4, vector<int>(height, vf[0]));
-        }else if(vf.size() == height){
-            quantizationBuffer.updateData(width*4, vf);
+    if(&vi == &quantization[1].get()){
+        if(vi.size() == 1){
+            quantizationBuffer.updateData(width*4, vector<int>(height, vi[0]));
+        }else if(vi.size() == height){
+            quantizationBuffer.updateData(width*4, vi);
         }
     }
 }

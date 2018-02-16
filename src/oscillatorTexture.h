@@ -19,10 +19,22 @@ public:
     
     ofTexture&  computeBank(float phasor);
 private:
+    vector<float> newRandomValuesVector();
+    
+    
     void parameterChanged(ofAbstractParameter &p);
     void reloadShader(bool &b);
     
     void newPhasorIn(float &f);
+    
+    void indexNumWavesListener(vector<float> &vf);
+    void indexInvertListener(vector<float> &vf);
+    void indexSymmetryListener(vector<int> &vi);
+    void indexRandomListener(vector<float> &vf);
+    void indexOffsetListener(vector<float> &vf);
+    void indexQuantizationListener(vector<int> &vi);
+    void indexCombinationListener(vector<float> &vf);
+    void indexModuloListener(vector<int> &vi);
     
     void phaseOffsetListener(vector<float> &vf);
     void randomAdditionListener(vector<float> &vf);
@@ -30,7 +42,7 @@ private:
     void offsetListener(vector<float> &vf);
     void powListener(vector<float> &vf);
     void bipowListener(vector<float> &vf);
-    void quantizationListener(vector<int> &vf);
+    void quantizationListener(vector<int> &vi);
     void pulseWidthListener(vector<float> &vf);
     void skewListener(vector<float> &vf);
     void faderListener(vector<float> &vf);
@@ -55,13 +67,23 @@ private:
     
     ofParameter<bool>       reloadShaderParam;
     ofParameter<float>    phasorIn;
+    
+    ofParameter<vector<float>>   indexNumWaves[2];
+    ofParameter<vector<float>>   indexInvert[2];
+    ofParameter<vector<int>>   indexSymmetry[2];
+    ofParameter<vector<float>>   indexRandom[2];
+    ofParameter<vector<float>>   indexOffset[2];
+    ofParameter<vector<int>>   indexQuantization[2];
+    ofParameter<vector<float>>   indexCombination[2];
+    ofParameter<vector<int>>   indexModulo[2];
+    
     ofParameter<vector<float>>   phaseOffset[2];
     ofParameter<vector<float>>   randomAddition[2];
     ofParameter<vector<float>>   scale[2];
     ofParameter<vector<float>>   offset[2];
     ofParameter<vector<float>>   pow[2];
     ofParameter<vector<float>>   bipow[2];
-    ofParameter<vector<int>>   quantization[2];
+    ofParameter<vector<int>>     quantization[2];
     ofParameter<vector<float>>   pulseWidth[2];
     ofParameter<vector<float>>   skew[2];
     ofParameter<vector<float>>   fader[2];
@@ -85,13 +107,48 @@ private:
     ofFbo       randomInfoFbo;
     
     //TBOs
-    //xIndex
-    ofTexture               xIndexTexture;
-    ofBufferObject          xIndexBuffer;
     
-    //yIndex
-    ofTexture               yIndexTexture;
-    ofBufferObject          yIndexBuffer;
+    
+    //INDEX PARAMETERS
+    
+    //Num Waves
+    ofTexture               indexNumWavesTexture;
+    ofBufferObject          indexNumWavesBuffer;
+    
+    //Invert
+    ofTexture               indexInvertTexture;
+    ofBufferObject          indexInvertBuffer;
+    
+    //Symmetry
+    ofTexture               indexSymmetryTexture;
+    ofBufferObject          indexSymmetryBuffer;
+    
+    //Random
+    ofTexture               indexRandomTexture;
+    ofBufferObject          indexRandomBuffer;
+    
+    //Offset
+    ofTexture               indexOffsetTexture;
+    ofBufferObject          indexOffsetBuffer;
+    
+    //Index Quantization
+    ofTexture               indexQuantizationTexture;
+    ofBufferObject          indexQuantizationBuffer;
+    
+    //Index Combination
+    ofTexture               indexCombinationTexture;
+    ofBufferObject          indexCombinationBuffer;
+    
+    //Index Modulo
+    ofTexture               indexModuloTexture;
+    ofBufferObject          indexModuloBuffer;
+    
+    //Index Modulo
+    ofTexture               indexRandomValuesTexture;
+    ofBufferObject          indexRandomValuesBuffer;
+    
+    
+    //OSCILLATOR PARAMETERS
     
     //Phase Offset
     ofTexture               phaseOffsetTexture;
