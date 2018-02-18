@@ -43,6 +43,5 @@ void main(){
     
     vec3 finalColor = ((color2 * modulationValue) + (color1 * (1-modulationValue))) * r_info.r;
     
-//    out_color = vec4(xModulationValue, modulationValue, modulationValue, 1.0);
     out_color = vec4(finalColor, 1.0);
 }

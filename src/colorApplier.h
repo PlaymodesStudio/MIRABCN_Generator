@@ -57,7 +57,7 @@ private:
     ofParameter<ofTexture*>  colorizedValues;
     
     ofFbo outputFbo;
-    ofFbo gradientFbo;
+    ofFbo previewFbo;
     ofTexture colorDisplacementTexture;
     
     bool colorIsChanging;
@@ -68,8 +68,9 @@ private:
     int width = 1;
     int height = 1;
     
-    ofShader shader;
-    ofFbo fbo;
+    ofShader outputShader;
+    ofShader previewShader;
+    ofFbo whiteFbo;
     
     //TBOs
     ofTexture               modulationInfoTexture;

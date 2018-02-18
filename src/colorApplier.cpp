@@ -78,10 +78,15 @@ colorApplier::colorApplier(int _id){
 }
 
 void colorApplier::reloadShader(bool &b){
-    shader.load("Shaders/color.vert", "Shaders/color.frag");
-    shader.begin();
-    shader.setUniformTexture("modulationInfo", modulationInfoTexture, 23);
-    shader.end();
+    outputShader.load("Shaders/color.vert", "Shaders/color.frag");
+    outputShader.begin();
+    outputShader.setUniformTexture("modulationInfo", modulationInfoTexture, 23);
+    outputShader.end();
+    
+    previewShader.load("Shaders/color.vert", "Shaders/color.frag");
+    previewShader.begin();
+    previewShader.setUniformTexture("modulationInfo", modulationInfoTexture, 24);
+    previewShader.end();
 }
 
 void colorApplier::applyColor(ofTexture* &inputTex){
@@ -89,24 +94,38 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     height = inputTex->getHeight();
     if(outputFbo.getWidth() != width || outputFbo.getHeight() != height || !outputFbo.isAllocated()){
         outputFbo.allocate(width, height, GL_RGB);
-        gradientFbo.allocate(width, height, GL_RGB);
-        
-        cout<<"reallocating"<<endl;
+        previewFbo.allocate(width, height, GL_RGB);
+        whiteFbo.allocate(width, height, GL_RGB);
+        whiteFbo.begin();
+        ofSetColor(255, 255, 255);
+        ofDrawRectangle(0, 0, width, height);
+        whiteFbo.end();
         modulationInfoBuffer.setData(vector<float>(width+height, -1), GL_STREAM_DRAW);
     }
     
 
     outputFbo.begin();
-    shader.begin();
-    shader.setUniform1i("width", width);
-    shader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
-    shader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
-    shader.setUniformTexture("inputTexture", *inputTex, 24);
+    outputShader.begin();
+    outputShader.setUniform1i("width", width);
+    outputShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
+    outputShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
+    outputShader.setUniformTexture("inputTexture", *inputTex, 25);
     inputTex->draw(0, 0);
-    shader.end();
+    outputShader.end();
     outputFbo.end();
     parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
-//    parameters->get("Gradient Preview").cast<ofTexture*>() = &gradientFbo.getTexture();
+    
+    
+    previewFbo.begin();
+    previewShader.begin();
+    previewShader.setUniform1i("width", width);
+    previewShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
+    previewShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
+    previewShader.setUniformTexture("inputTexture", whiteFbo.getTexture(), 26);
+    inputTex->draw(0, 0);
+    previewShader.end();
+    previewFbo.end();
+    parameters->get("Gradient Preview").cast<ofTexture*>() = &previewFbo.getTexture();
 }
 
 void colorApplier::colorDisplacementChanged(float &f){
