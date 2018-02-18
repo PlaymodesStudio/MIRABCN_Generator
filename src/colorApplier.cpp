@@ -12,7 +12,7 @@
 colorApplier::colorApplier(int _id){
     parameters = new ofParameterGroup;
     parameters->setName("colorApplier " + ofToString(_id));
-    parameters->add(bypass.set("Bypass", false));
+    parameters->add(reloadShaderParam.set("Reload Shader", false));
     parameters->add(colorPickerParam[0].set("Color 1", ofColor::white));
     parameters->add(colorRParam[0].set("Color 1 R", 255, 0, 255));
     parameters->add(colorGParam[0].set("Color 1 G", 255, 0, 255));
@@ -31,8 +31,9 @@ colorApplier::colorApplier(int _id){
     
     parameters->add(imageTextureFile.set("Img Tex File", ""));
     
-    parameters->add(indexInX.set("Indexs", {0}, {0}, {1}));
-    parameters->add(indexInY.set("Indexs Y", {0}, {0}, {1}));
+    parameters->add(modulationInfo[0].set("Mod in X", vector<float>(1, 0), vector<float>(1, 0), vector<float>(1, 1)));
+    parameters->add(modulationInfo[1].set("Mod in Y", vector<float>(1, 0), vector<float>(1, 0), vector<float>(1, 1)));
+    
     parameters->add(grayScaleIn.set("Input", nullptr));
     parameters->add(gradientPreview.set("Gradient Preview", nullptr));
     parameters->add(colorizedValues.set("Output", nullptr));
@@ -54,6 +55,7 @@ colorApplier::colorApplier(int _id){
     
     //colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
     grayScaleIn.addListener(this, &colorApplier::applyColor);
+    reloadShaderParam.addListener(this, &colorApplier::reloadShader);
     
     imageTextureFile.addListener(this, &colorApplier::imageFileChangedListener);
     isImageLoaded = false;
@@ -61,140 +63,50 @@ colorApplier::colorApplier(int _id){
     colorIsChanging = false;
     
     oldColorDisplacement = colorDisplacement;
+    
+    modulationInfoBuffer.allocate();
+    modulationInfoBuffer.bind(GL_TEXTURE_BUFFER);
+    modulationInfoBuffer.setData(vector<float>(1, -1), GL_STREAM_DRAW);
+    modulationInfoTexture.allocateAsBufferTexture(modulationInfoBuffer, GL_R32F);
+    
+    
+    bool sillyBool = true;
+    reloadShader(sillyBool);
+    
+    modulationInfo[0].addListener(this, &colorApplier::modulationInfoListener);
+    modulationInfo[1].addListener(this, &colorApplier::modulationInfoListener);
+}
+
+void colorApplier::reloadShader(bool &b){
+    shader.load("Shaders/color.vert", "Shaders/color.frag");
+    shader.begin();
+    shader.setUniformTexture("modulationInfo", modulationInfoTexture, 23);
+    shader.end();
 }
 
 void colorApplier::applyColor(ofTexture* &inputTex){
-    int w = inputTex->getWidth();
-    int h = inputTex->getHeight();
-    if(outputFbo.getWidth() != w || outputFbo.getHeight() != h || !outputFbo.isAllocated()){
-        outputFbo.allocate(w, h, GL_RGB);
-        gradientFbo.allocate(w, h, GL_RGB);
+    width = inputTex->getWidth();
+    height = inputTex->getHeight();
+    if(outputFbo.getWidth() != width || outputFbo.getHeight() != height || !outputFbo.isAllocated()){
+        outputFbo.allocate(width, height, GL_RGB);
+        gradientFbo.allocate(width, height, GL_RGB);
+        
+        cout<<"reallocating"<<endl;
+        modulationInfoBuffer.setData(vector<float>(width+height, -1), GL_STREAM_DRAW);
     }
-    if(bypass){
-//        if(isImageLoaded){
-//            if(imageTexture.getWidth() == h && imageTexture.getHeight() == w){
-//                imageTexture.rotate90(1);
-//            }
-//            if(imageTexture.getWidth() == w && imageTexture.getHeight() == h){
-////                for(int i = 0 ; i < w ; i++){
-////                    for (int j = 0 ; j < h ; j++){
-////                        tempColors[i][j] =  imageTexture.getColor(i, j) * inputVec[i][j];
-////                        tempGradient[i][j] = imageTexture.getColor(i, j);
-////                    }
-////                }
-////                ofPixels imagePix = imageTexture.getPixels();
-////                ofPixels inputPix;
-////                inputPix.allocate(imageTexture.getWidth(), imageTexture.getHeight(), 3);
-////                inputTex->readToPixels(inputPix);
-////                for(int i = 0; i < imgePix.size(); i++){
-////                    tempColors = imageTexture.getTexture() * *inputTex;
-////                }
-//                //gradientFbo = imageTexture.getTexture();
-//            }else{
-//                isImageLoaded = false;
-//            }
-//        }
-//        else
-        {
-            outputFbo.begin();
-            ofClear(255,255,255,0);
-            ofSetColor(colorPickerParam[0].get());
-            inputTex->draw(0,0);
-            outputFbo.end();
-            
-            gradientFbo.begin();
-            ofClear(255,255,255,0);
-            ofSetColor(colorPickerParam[0].get());
-            ofDrawRectangle(0, 0, w, h);
-            gradientFbo.end();
-        }
-        parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
-        parameters->get("Gradient Preview").cast<ofTexture*>() = &gradientFbo.getTexture();
-    }
-    else{
-//        if(colorDisplacementTexture.getWidth() != w || colorDisplacementTexture.getHeight() != h || !colorDisplacementTexture.isAllocated()){
-//            colorDisplacementTexture.allocate(w, h, GL_R);
-//            computeNewColorDisplacement(colorDisplacement);
-//        }
-//
-//        ofPixels colorDisplacementPixels;
-//        colorDisplacementPixels.allocate(w, h, 1);
-//        colorDisplacementTexture.readToPixels(colorDisplacementPixels);
-        
-        
-        bool validXIndex = false;
-        bool validYIndex = false;
-        if(indexInX.get().size() == w) validXIndex = true;
-        if(indexInY.get().size() == h) validYIndex = true;
-            
-        ofPixels inputPixels;
-        inputPixels.allocate(w, h, 3);
-        inputTex->readToPixels(inputPixels);
-        outputFbo.begin();
-        for(int i = 0; i < w; i++){
-            for(int j = 0; j < h; j++){
-                float indexMix = 0;
-                if(validXIndex && validYIndex){
-                    indexMix = (indexInX.get()[i] + indexInY.get()[j]) / 2;
-                }else if(validYIndex){
-                    indexMix = indexInY.get()[j];
-                }else if(validXIndex){
-                    indexMix = indexInX.get()[i];
-                }
-                ofFloatColor newColor = (colorPickerParam[0].get()*indexMix)+(colorPickerParam[1].get()*(1-indexMix));
-//                newColor.r += (colorDisplacementPixels[(i*w)+j]);
-//                newColor.g += (colorDisplacementPixels[(i*w)+j+1]);
-//                newColor.b += (colorDisplacementPixels[(i*w)+j+2]);
-                
-                newColor *= (float)inputPixels.getLine(j).getPixel((i)).getColor().getBrightness() / 255.0;// [(j*h*3)+(i*3)]/255.0;
-//                newColor.g *= (float)inputPixels[(j*h*3)+(i*3)+1]/255.0;
-//                newColor.b *= (float)inputPixels[(j*h*3)+(i*3)+2]/255.0;
-                
-                ofSetColor(newColor);
-                ofDrawRectangle(i, j, 1, 1);
-                
-                //                    pix[(i*w*3)+(j*3)] = newColor.r + (colorDisplacementPixels[(i*w*3)+(j*3)]);
-                //                    pix[(i*w*3)+(j*3)+1] = newColor.g + (colorDisplacementPixels[(i*w*3)+(j*3)+1]);
-                //                    pix[(i*w*3)+(j*3)+2] = newColor.b + (colorDisplacementPixels[(i*w*3)+(j*3)+2]);
-            }
-        }
-        outputFbo.end();
-        
-        
-        
-        parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
-        //            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
-        
-        
-//        if(indexIn.get().size() == w){
-//            for(int i = 0 ; i < w ; i++){
-//                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[i])+(colorPickerParam[1].get()*(1-indexIn.get()[i]));
-//                newColor.r += (colorDisplacementVector[i][0]);
-//                newColor.g += (colorDisplacementVector[i][1]);
-//                newColor.b += (colorDisplacementVector[i][2]);
-//                for (int j = 0 ; j < h ; j++){
-//                    tempColors[i][j] =  newColor * inputVec[i][j];
-//                    tempGradient[i][j] = newColor;
-//                }
-//            }
-//            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
-//            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
-//        }
-//        else if(indexIn.get().size() == h){
-//            for(int j = 0 ; j < h ; j++){
-//                ofFloatColor newColor = (colorPickerParam[0].get()*indexIn.get()[j])+(colorPickerParam[1].get()*(1-indexIn.get()[j]));
-//                newColor.r += (colorDisplacementVector[j][0]);
-//                newColor.g += (colorDisplacementVector[j][1]);
-//                newColor.b += (colorDisplacementVector[j][2]);
-//                for (int i = 0 ; i < w ; i++){
-//                    tempColors[i][j] =  newColor * inputVec[i][j];
-//                    tempGradient[i][j] = newColor;
-//                }
-//            }
-//            parameters->get("Output").cast<vector<vector<ofColor>>>() = tempColors;
-//            parameters->get("Gradient Preview").cast<vector<vector<ofColor>>>() = tempGradient;
-//        }
-    }
+    
+
+    outputFbo.begin();
+    shader.begin();
+    shader.setUniform1i("width", width);
+    shader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
+    shader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
+    shader.setUniformTexture("inputTexture", *inputTex, 24);
+    inputTex->draw(0, 0);
+    shader.end();
+    outputFbo.end();
+    parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
+//    parameters->get("Gradient Preview").cast<ofTexture*>() = &gradientFbo.getTexture();
 }
 
 void colorApplier::colorDisplacementChanged(float &f){
@@ -258,3 +170,21 @@ void colorApplier::imageFileChangedListener(string &s){
     if(s != "")
         isImageLoaded = imageTexture.load("colorTextures/" + s);
 }
+
+void colorApplier::modulationInfoListener(vector<float> &vf){
+    if(&vf == &modulationInfo[0].get()){
+        if(vf.size() == 1){
+            modulationInfoBuffer.updateData(0, vector<float>(width, -1));
+        }else if(vf.size() == width){
+            modulationInfoBuffer.updateData(0, vf);
+        }
+    }
+    if(&vf == &modulationInfo[1].get()){
+        if(vf.size() == 1){
+            modulationInfoBuffer.updateData(width*4, vector<float>(height, -1));
+        }else if(vf.size() == height){
+            modulationInfoBuffer.updateData(width*4, vf);
+        }
+    }
+}
+

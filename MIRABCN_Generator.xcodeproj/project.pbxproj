@@ -235,6 +235,7 @@
 		9F3588C61F710DAB00614338 /* vectorOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vectorOperations.h; sourceTree = "<group>"; };
 		9F4BAEAB1F755C6700423CFD /* textureUnifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = textureUnifier.h; sourceTree = "<group>"; };
 		9F4BAEAC1F755C6700423CFD /* textureUnifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textureUnifier.cpp; sourceTree = "<group>"; };
+		9F4F58A720375928001D1F35 /* color.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = color.frag; path = bin/data/Shaders/color.frag; sourceTree = "<group>"; };
 		9F5D44971F28BA8000D1D841 /* audioEngineController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioEngineController.cpp; sourceTree = "<group>"; };
 		9F5D44981F28BA8000D1D841 /* audioEngineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioEngineController.h; sourceTree = "<group>"; };
 		9F7986DC4EB05E75FCE2C777 /* ofxOscSender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxOscSender.h; path = ../../../addons/ofxOsc/src/ofxOscSender.h; sourceTree = SOURCE_ROOT; };
@@ -722,6 +723,7 @@
 				9FEB984620231A2500A83C7A /* oscillator.frag */,
 				9FEB984420231A2400A83C7A /* scaling.frag */,
 				9FEB984920232EA100A83C7A /* scaling.vert */,
+				9F4F58A720375928001D1F35 /* color.frag */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
@@ -742,7 +744,6 @@
 				9FBCE1871F2F923B00E7E5B1 /* vectorMapper.h */,
 				9FBCE1831F2F88B900E7E5B1 /* mapper.cpp */,
 				9FBCE1841F2F88B900E7E5B1 /* mapper.h */,
-				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				DFA3E55C9C2F77434B1C7B21 /* baseIndexer.cpp */,
@@ -771,6 +772,7 @@
 				D913CC25FFC9D2786960A78D /* oscillatorBank.h */,
 				36FD97AE1B3ACB1B60422D67 /* oscillatorBankGroup.cpp */,
 				CA5E93CD5FAEB2F3794F1A69 /* oscillatorBankGroup.h */,
+				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				087D8883A39116874A1FC5E8 /* parametersControl.cpp */,
 				403CE90DAC5E9DE5F17A4208 /* parametersControl.h */,
 				B1C695924411304E7DB8FC7B /* phasorClass.cpp */,

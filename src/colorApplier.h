@@ -24,6 +24,9 @@ public:
     
     
 private:
+    void reloadShader(bool &b);
+    
+    void modulationInfoListener(vector<float> &vf);
     void applyColor(ofTexture* &inputTex);
     void colorDisplacementChanged(float &f);
     void computeNewColorDisplacement(float f);
@@ -35,7 +38,7 @@ private:
     void imageFileChangedListener(string &s);
     
     ofParameterGroup*        parameters;
-    ofParameter<bool>       bypass;
+    ofParameter<bool>       reloadShaderParam;
     ofParameter<ofColor>    colorPickerParam[2];
     ofParameter<int>        colorRParam[2];
     ofParameter<int>        colorGParam[2];
@@ -48,8 +51,7 @@ private:
 //    ofParameter<int>        randomizeTypeColorParam; //Select the rand way: in change preset, in phasor triggered...
     
     //in and outs
-    ofParameter<vector<float>>          indexInX;
-    ofParameter<vector<float>>          indexInY;
+    ofParameter<vector<float>>          modulationInfo[2];
     ofParameter<ofTexture*>  grayScaleIn;
     ofParameter<ofTexture*>  gradientPreview;
     ofParameter<ofTexture*>  colorizedValues;
@@ -62,6 +64,16 @@ private:
     ofImage imageTexture;
     bool isImageLoaded;
     float oldColorDisplacement;
+    
+    int width = 1;
+    int height = 1;
+    
+    ofShader shader;
+    ofFbo fbo;
+    
+    //TBOs
+    ofTexture               modulationInfoTexture;
+    ofBufferObject          modulationInfoBuffer;
 };
 
 #endif /* colorApplier_h */
