@@ -2,11 +2,13 @@
 #define M_PI 3.1415926535897932384626433832795
 
 uniform int width;
+uniform int useImage;
 
 //uniform vec2 size;
 uniform vec3 color1;
 uniform vec3 color2;
 uniform sampler2D inputTexture;
+uniform sampler2D inputImage;
 
 //ModulationInfo
 uniform samplerBuffer modulationInfo;
@@ -15,7 +17,6 @@ uniform samplerBuffer modulationInfo;
 out vec4 out_color;
 
 void main(){
-    
     //we grab the x and y and store them in an int
     int xVal = int(gl_FragCoord.x);
     int yVal = int(gl_FragCoord.y);
@@ -41,7 +42,14 @@ void main(){
         modulationValue = (xModulationValue + yModulationValue)/2;
     }
     
-    vec3 finalColor = ((color2 * modulationValue) + (color1 * (1-modulationValue))) * r_info.r;
+    vec3 firstColor = vec3(0,0,0);
+    if(useImage == 1){
+        firstColor = texture(inputImage, vec2(xTex, yTex)).rgb;
+    }
+    else{
+        firstColor = color1;
+    }
+    vec3 finalColor = ((color2 * modulationValue) + (firstColor * (1-modulationValue))) * r_info.r;
     
     out_color = vec4(finalColor, 1.0);
 }

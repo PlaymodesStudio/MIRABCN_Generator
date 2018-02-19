@@ -103,13 +103,30 @@ void colorApplier::applyColor(ofTexture* &inputTex){
         modulationInfoBuffer.setData(vector<float>(width+height, -1), GL_STREAM_DRAW);
     }
     
+    
+    if(isImageLoaded){
+        if(imageTexture.getWidth() == height && imageTexture.getHeight() == width){
+            imageTexture.rotate90(1);
+        }
+        else if(imageTexture.getWidth() == width && imageTexture.getHeight() == height){
+            
+        }
+        else{
+            isImageLoaded = false;
+        }
+    }
+    
 
     outputFbo.begin();
     outputShader.begin();
     outputShader.setUniform1i("width", width);
+    outputShader.setUniform1i("useImage", isImageLoaded);
     outputShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
     outputShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
     outputShader.setUniformTexture("inputTexture", *inputTex, 25);
+    if(isImageLoaded)
+        outputShader.setUniformTexture("inputImage", imageTexture.getTexture(), 26);
+    
     inputTex->draw(0, 0);
     outputShader.end();
     outputFbo.end();
@@ -119,9 +136,13 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     previewFbo.begin();
     previewShader.begin();
     previewShader.setUniform1i("width", width);
+    outputShader.setUniform1i("useImage", isImageLoaded);
     previewShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
     previewShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
-    previewShader.setUniformTexture("inputTexture", whiteFbo.getTexture(), 26);
+    previewShader.setUniformTexture("inputTexture", whiteFbo.getTexture(), 27);
+    if(isImageLoaded)
+        outputShader.setUniformTexture("inputImage", imageTexture.getTexture(), 28);
+
     inputTex->draw(0, 0);
     previewShader.end();
     previewFbo.end();

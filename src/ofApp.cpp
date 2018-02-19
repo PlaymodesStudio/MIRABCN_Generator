@@ -130,7 +130,7 @@ void ofApp::setup(){
                 new speakerPowerCalculator(speakerPowerCalculatorSize);
             }
             
-            new oscillatorTexture(1,25,40);
+            new oscillatorTexture(1,1920,1080);
             
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize, previewGrid);
 //            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
