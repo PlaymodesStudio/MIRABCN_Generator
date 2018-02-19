@@ -69,7 +69,7 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
 
     
     setAndBindXYParamsVecFloat(phaseOffset, "Phase Offset", 0, 0, 1);
-    setAndBindXYParamsVecFloat(randomAddition, "Rnd Add", 0, -.5, .5);
+    setAndBindXYParamsVecFloat(randomAddition, "Rnd Add", 0, -1, 1);
     setAndBindXYParamsVecFloat(scale, "Scale", 1, 0, 2);
     setAndBindXYParamsVecFloat(offset, "Offset", 0, -1, 1);
     setAndBindXYParamsVecFloat(pow, "Pow", 0, -40, 40);
