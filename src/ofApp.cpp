@@ -68,9 +68,8 @@ void ofApp::setup(){
             int numSyphonServers = xml.getIntValue("SyphonSenders");
             for(int i = 0; i < numSyphonServers; i++){
                 bool invert = xml.getBoolValue("SyphonSender"+ ofToString(i+1) + "InvertTexture");
-                string grayName = xml.getValue("SyphonSender"+ ofToString(i+1) + "GrayName");
-                string colorName = xml.getValue("SyphonSender"+ ofToString(i+1) + "ColorName");
-                senderModules.push_back(new senderManager(i+1, invert, grayName, colorName));
+                string syphonName = xml.getValue("SyphonSender"+ ofToString(i+1) + "Name");
+                senderModules.push_back(new senderManager(i+1, invert, syphonName));
             }
             
             auto mainPos = ofSplitString(xml.getValue("MainWindowPos"), "_");

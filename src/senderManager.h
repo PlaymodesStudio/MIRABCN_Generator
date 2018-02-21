@@ -17,7 +17,7 @@
 class senderManager{
 public:
     
-    senderManager(int _id, bool _invert = false, string _grayscaleName = "Gen_Grayscale", string _colorName = "Gen_Color");
+    senderManager(int _id, bool _invert = false, string _colorName = "Gen_Color");
     ~senderManager(){};
     
     void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo, ofFbo &grayscaleFbo, ofFbo &colorFbo){};
@@ -26,8 +26,7 @@ public:
     void send(vector<vector<float>> &greyscaleInfo, vector<vector<ofColor>> &colorInfo);
     void send(vector<vector<float>> &greyscaleInfo);
     
-    void setGrayName(string name){grayscaleSyphonName = name;};
-    void setColorName(string name){colorSyphonName = name;};
+    void setname(string name){syphonName = name;};
     
     //listeres
     void enableOscListener(bool &b);
@@ -40,8 +39,7 @@ private:
     void sendGrayScale(vector<vector<float>> &info);
     void sendColor(ofTexture *&info);
     
-    ofxSyphonServer*    grayscaleSyphonServer;
-    ofxSyphonServer*    colorSyphonServer;
+    ofxSyphonServer*   syphonServer;
     
     ofxOscSender*       oscSender;
     
@@ -49,16 +47,14 @@ private:
     ofParameter<bool>   enableOsc;
     ofParameter<bool>   enableSyphon;
     
-    ofParameter<string> grayscaleSyphonName;
-    ofParameter<string> colorSyphonName;
+    ofParameter<string> syphonName;
     
     ofParameter<string> oscHost;
     ofParameter<string> oscPort;
     
     ofParameter<float>  masterFader;
     
-    ofParameter<vector<vector<float>>>  grayScaleIn;
-    ofParameter<ofTexture*>    colorIn;
+    ofParameter<ofTexture*>    textureIn;
     
     bool invert;
     
