@@ -46,8 +46,10 @@ void textureUnifier::computeOutput(ofTexture* &in){
         ofClear(0, 0, 0);
         int currentLine = spacing;
         for(auto t : inputs){
-            t.get()->draw(0, currentLine);
-            currentLine += t.get()->getHeight() + spacing;
+            if(t != nullptr){
+                t.get()->draw(0, currentLine);
+                currentLine += t.get()->getHeight() + spacing;
+            }
         }
         outputFbo.end();
         
