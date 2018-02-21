@@ -18,7 +18,7 @@ void ofApp::setup(){
     if(ofSplitString(result.getPath(), ".").back() != "generator"){
         ofExit();
     }
-
+    
     lastOpenedPath = result.getPath();
     
     ofBackground(0);
@@ -44,7 +44,8 @@ void ofApp::setup(){
             for(int i = 0 ; i < numBankGroups; i++){
                 int groupWidth = xml.getIntValue("BankGroup" + ofToString(i+1) + "Width");
                 int groupHeight = xml.getIntValue("BankGroup" + ofToString(i+1) + "Height");
-                oscBankGroups.push_back(new oscillatorBankGroup(groupHeight, groupWidth, oscBankGroups.size()+1));
+                new oscillatorTexture(i+1, groupWidth, groupHeight);
+                //oscBankGroups.push_back(new oscillatorBankGroup(groupHeight, groupWidth, oscBankGroups.size()+1));
             }
             
             float bpm = xml.getFloatValue("BPM");
@@ -130,7 +131,7 @@ void ofApp::setup(){
                 new speakerPowerCalculator(speakerPowerCalculatorSize);
             }
             
-            new oscillatorTexture(1,1920,1080);
+            
             
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize, previewGrid);
 //            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));

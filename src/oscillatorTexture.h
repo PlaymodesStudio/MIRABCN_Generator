@@ -11,6 +11,7 @@
 
 #include "baseIndexer.h"
 #include "baseOscillator.h"
+#include "sharedResources.h"
 
 class oscillatorTexture{
 public:
@@ -95,6 +96,10 @@ private:
 
     
     ofParameter<ofTexture*>      oscillatorOut;
+
+    sharedResources* resources;
+    uint randomInfoOscillatorShaderTextureLocation;
+    uint randomInfoScalingShaderTextureLocation;
 
     
     int width, height;

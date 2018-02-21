@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "baseIndexer.h"
 #include "parametersControl.h"
+#include "sharedResources.h"
 
 class colorApplier{
     
@@ -67,6 +68,12 @@ private:
     
     int width = 1;
     int height = 1;
+    
+    sharedResources* resources;
+    uint infoTextureOutputShaderTextureLocation;
+    uint imageTextureOutputShaderTextureLocation;
+    uint infoTexturePreviewShaderTextureLocation;
+    uint imageTexturePreviewShaderTextureLocation;
     
     ofShader outputShader;
     ofShader previewShader;

@@ -11,6 +11,8 @@
 #include <random>
 
 oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint pos){
+    resources = &sharedResources::getInstance();
+    
     parameters = new ofParameterGroup();
     
     width = xSize;
@@ -297,37 +299,39 @@ void oscillatorTexture::reloadShader(bool &b){
     shaderOscillator.load("Shaders/oscillator.vert", "Shaders/oscillator.frag");
     shaderOscillator.begin();
     
-    shaderOscillator.setUniformTexture("indexNumWaves", indexNumWavesTexture, 0);
-    shaderOscillator.setUniformTexture("indexInvert", indexInvertTexture, 1);
-    shaderOscillator.setUniformTexture("indexSymmetry", indexSymmetryTexture, 2);
-    shaderOscillator.setUniformTexture("indexRandom", indexRandomTexture, 3);
-    shaderOscillator.setUniformTexture("indexOffset", indexOffsetTexture, 4);
-    shaderOscillator.setUniformTexture("indexQuantization", indexQuantizationTexture, 5);
-    shaderOscillator.setUniformTexture("indexCombination", indexCombinationTexture, 6);
-    shaderOscillator.setUniformTexture("indexModulo", indexModuloTexture, 7);
-    shaderOscillator.setUniformTexture("indexRandomValues", indexRandomValuesTexture, 8);
+    shaderOscillator.setUniformTexture("indexNumWaves", indexNumWavesTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexInvert", indexInvertTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexSymmetry", indexSymmetryTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexRandom", indexRandomTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexOffset", indexOffsetTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexQuantization", indexQuantizationTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexCombination", indexCombinationTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexModulo", indexModuloTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("indexRandomValues", indexRandomValuesTexture, resources->getNextAvailableShaderTextureLocation());
     
-    shaderOscillator.setUniformTexture("phaseOffset", phaseOffsetTexture, 9);
-    shaderOscillator.setUniformTexture("pulseWidth", pulseWidthTexture, 10);
-    shaderOscillator.setUniformTexture("skew", skewTexture, 11);
-    shaderOscillator.setUniformTexture("waveform", waveformTexture, 12);
+    shaderOscillator.setUniformTexture("phaseOffset", phaseOffsetTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("pulseWidth", pulseWidthTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("skew", skewTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderOscillator.setUniformTexture("waveform", waveformTexture, resources->getNextAvailableShaderTextureLocation());
     shaderOscillator.end();
     
     shaderScaling.load("Shaders/scaling.vert", "Shaders/scaling.frag");
     shaderScaling.begin();
-    shaderScaling.setUniformTexture("randomAddition", randomAdditionTexture, 13);
-    shaderScaling.setUniformTexture("scale", scaleTexture, 14);
-    shaderScaling.setUniformTexture("offset", offsetTexture, 15);
-    shaderScaling.setUniformTexture("pow_", powTexture, 16);
-    shaderScaling.setUniformTexture("bipow", bipowTexture, 17);
-    shaderScaling.setUniformTexture("quantization", quantizationTexture, 18);
-    shaderScaling.setUniformTexture("fader", faderTexture, 19);
-    shaderScaling.setUniformTexture("invert_", invertTexture, 20);
+    shaderScaling.setUniformTexture("randomAddition", randomAdditionTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("scale", scaleTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("offset", offsetTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("pow_", powTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("bipow", bipowTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("quantization", quantizationTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("fader", faderTexture, resources->getNextAvailableShaderTextureLocation());
+    shaderScaling.setUniformTexture("invert_", invertTexture, resources->getNextAvailableShaderTextureLocation());
     shaderScaling.end();
+    
+    randomInfoOscillatorShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
+    randomInfoScalingShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
 }
 
 ofTexture& oscillatorTexture::computeBank(float phasor){
-
     ofPushStyle();
     ofSetColor(255, 255);
     fboBuffer.begin();
@@ -337,7 +341,7 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     shaderOscillator.begin();
     shaderOscillator.setUniform1f("phase", phasor);
     shaderOscillator.setUniform1f("time", ofGetElapsedTimef());
-    shaderOscillator.setUniformTexture("randomInfo", randomInfoTexture, 21);
+    shaderOscillator.setUniformTexture("randomInfo", randomInfoTexture, randomInfoOscillatorShaderTextureLocation);
     ofDrawRectangle(0, 0, width, height);
     shaderOscillator.end();
     fboBuffer.end();
@@ -352,10 +356,8 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     shaderScaling.begin();
     shaderScaling.setUniform1f("phase", phasor);
     shaderScaling.setUniform1f("time", ofGetElapsedTimef());
-    shaderScaling.setUniformTexture("randomInfo", randomInfoTexture, 22);
-//    ofSetColor(ofColor::brown);
+    shaderScaling.setUniformTexture("randomInfo", randomInfoTexture, randomInfoScalingShaderTextureLocation);
     ofDrawRectangle(0, 0, width, height);
-//    fboBuffer.draw(0,0, width, height);
     shaderScaling.end();
     fbo.end();
     ofPopStyle();
@@ -364,12 +366,6 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
 }
 
 void oscillatorTexture::newPhasorIn(float &f){
-//    if(indexers[0]->areNewIndexs()){
-//        xIndexBuffer.updateData(0, indexers[0]->getIndexs());
-//    }
-//    if(indexers[1]->areNewIndexs()){
-//        yIndexBuffer.updateData(0, indexers[1]->getIndexs());
-//    }
     parameters->get("Oscillator Out").cast<ofTexture*>() = &computeBank(f);
 }
 
@@ -448,6 +444,9 @@ void oscillatorTexture::indexSymmetryListener(vector<int> &vi){
 }
 
 void oscillatorTexture::indexRandomListener(vector<float> &vf){
+    if(accumulate(vf.begin(), vf.end(), 0.0) == 0.0){
+        indexRandomValuesBuffer.updateData(0, newRandomValuesVector());
+    }
     if(&vf == &indexRandom[0].get()){
         if(vf.size() == 1){
             indexRandomBuffer.updateData(0, vector<float>(width, vf[0]));

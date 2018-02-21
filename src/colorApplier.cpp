@@ -10,6 +10,8 @@
 #include "sharedResources.h"
 
 colorApplier::colorApplier(int _id){
+    resources = &sharedResources::getInstance();
+    
     parameters = new ofParameterGroup;
     parameters->setName("colorApplier " + ofToString(_id));
     parameters->add(reloadShaderParam.set("Reload Shader", false));
@@ -75,18 +77,24 @@ colorApplier::colorApplier(int _id){
     
     modulationInfo[0].addListener(this, &colorApplier::modulationInfoListener);
     modulationInfo[1].addListener(this, &colorApplier::modulationInfoListener);
+
 }
 
 void colorApplier::reloadShader(bool &b){
     outputShader.load("Shaders/color.vert", "Shaders/color.frag");
     outputShader.begin();
-    outputShader.setUniformTexture("modulationInfo", modulationInfoTexture, 23);
+    outputShader.setUniformTexture("modulationInfo", modulationInfoTexture, resources->getNextAvailableShaderTextureLocation());
     outputShader.end();
     
     previewShader.load("Shaders/color.vert", "Shaders/color.frag");
     previewShader.begin();
-    previewShader.setUniformTexture("modulationInfo", modulationInfoTexture, 24);
+    previewShader.setUniformTexture("modulationInfo", modulationInfoTexture, resources->getNextAvailableShaderTextureLocation());
     previewShader.end();
+    
+    infoTextureOutputShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
+    imageTextureOutputShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
+    infoTexturePreviewShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
+    imageTexturePreviewShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
 }
 
 void colorApplier::applyColor(ofTexture* &inputTex){
@@ -123,10 +131,10 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     outputShader.setUniform1i("useImage", isImageLoaded);
     outputShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
     outputShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
-    outputShader.setUniformTexture("inputTexture", *inputTex, 25);
+    outputShader.setUniformTexture("inputTexture", *inputTex, infoTextureOutputShaderTextureLocation);
     if(isImageLoaded)
-        outputShader.setUniformTexture("inputImage", imageTexture.getTexture(), 26);
-    
+        outputShader.setUniformTexture("inputImage", imageTexture.getTexture(), imageTextureOutputShaderTextureLocation);
+
     inputTex->draw(0, 0);
     outputShader.end();
     outputFbo.end();
@@ -139,9 +147,9 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     outputShader.setUniform1i("useImage", isImageLoaded);
     previewShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
     previewShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
-    previewShader.setUniformTexture("inputTexture", whiteFbo.getTexture(), 27);
+    previewShader.setUniformTexture("inputTexture", whiteFbo.getTexture(), infoTexturePreviewShaderTextureLocation);
     if(isImageLoaded)
-        outputShader.setUniformTexture("inputImage", imageTexture.getTexture(), 28);
+        outputShader.setUniformTexture("inputImage", imageTexture.getTexture(), imageTexturePreviewShaderTextureLocation);
 
     inputTex->draw(0, 0);
     previewShader.end();

@@ -14,25 +14,16 @@
 class sharedResources{
 public:
     
-//    void createDropdownAndStringInput(string name, vector<string> options, ofParameter<string> textInput, ofParameter<int> dropDownSelector){
-//        ofParameterGroup tempDropdown;
-//        tempDropdown.setName(name + " Select");
-//        string  tempStr;
-//        ofParameter<string> tempStrParam("Options");
-//        for(auto opt : options)
-//            tempStr += opt + "-|-";
-//        
-//        tempStr.erase(tempStr.end()-3, tempStr.end());
-//        tempStrParam.set(tempStr);
-//        
-//        
-//        tempDropdown.add(tempStrParam);
-//        tempDropdown.add(dropDownSelector.set(name +" Select", 0, 0, options.size()));
-//        parameters.add(tempDropdown);
-//        ofParameter<string> label("INSERT "+name+"_label", " ");
-//        parameters.add(label);
-//        parameters.add(textInput.set(name, options[0]));
-//    }
+    sharedResources(){
+        lastShaderTexturePositionUsed = -1;
+    }
+    ~sharedResources(){};
+    
+    static sharedResources &getInstance()
+    {
+        static sharedResources instance;
+        return instance;
+    }
     
     static void addDropdownToParameterGroupFromParameters(ofParameterGroup* parameterGroup, string name, vector<string> options, ofParameter<int> dropdownSelector){
         ofParameterGroup tempDropdown;
@@ -49,6 +40,13 @@ public:
         tempDropdown.add(dropdownSelector.set(name +" Select", 0, 0, options.size()));
         parameterGroup->add(tempDropdown);
     }
+    
+    int getNextAvailableShaderTextureLocation(){
+        return ++lastShaderTexturePositionUsed;
+    }
+    
+private:
+    uint lastShaderTexturePositionUsed = -1;
 };
 
 
