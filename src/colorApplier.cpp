@@ -57,7 +57,7 @@ colorApplier::colorApplier(int _id){
     
     //colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
     grayScaleIn.addListener(this, &colorApplier::applyColor);
-    reloadShaderParam.addListener(this, &colorApplier::reloadShader);
+//    reloadShaderParam.addListener(this, &colorApplier::reloadShader);
     
     imageTextureFile.addListener(this, &colorApplier::imageFileChangedListener);
     isImageLoaded = false;

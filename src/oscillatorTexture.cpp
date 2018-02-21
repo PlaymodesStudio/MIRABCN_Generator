@@ -38,7 +38,7 @@ oscillatorTexture::oscillatorTexture(int bankId, int xSize, int ySize, ofPoint p
     parameters->setName("oscillatorTexture " + ofToString(bankId));
     
     parameters->add(reloadShaderParam.set("Reload Shader", false));
-    reloadShaderParam.addListener(this, &oscillatorTexture::reloadShader);
+//    reloadShaderParam.addListener(this, &oscillatorTexture::reloadShader);
     
 //    ofParameter<string> strlbl;
 //    parameters->add(strlbl.set(dimensionStr + " Dim_label", " "));
