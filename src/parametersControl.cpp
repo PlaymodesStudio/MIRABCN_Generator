@@ -376,6 +376,13 @@ void parametersControl::update(ofEventArgs &args){
                 connection.setValue(parameterVal);
             }
         }
+        for (auto &connection : midiVecFloatConnections){
+            if(connection.isListening())
+                connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
+            else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
+                connection.setValue(parameterVal);
+            }
+        }
         
         midiMessages.pop_front();
     }
@@ -435,12 +442,62 @@ void parametersControl::draw(ofEventArgs &args){
         ofSetColor(ofColor::black);
         ofDrawBitmapStringHighlight("MIDI LEARN", ofPoint(ofGetWidth() - 100, ofGetHeight() - 10));
         ofPopStyle();
-        
+        for(int i = 0; i < midiIntConnections.size(); i++){
+            if(!midiIntConnections[i].isListening()){
+                for(int j = 0; j < datGuis.size(); j++){
+                    if(datGuis[j]->getHeader()->getName() == midiIntConnections[i].getParameter()->getFirstParent().getName()){
+                        ofxDatGuiSlider* slider = datGuis[j]->getSlider(midiIntConnections[i].getParameter()->getName());
+                        ofPushStyle();
+                        ofPushMatrix();
+                        ofMultMatrix(transformMatrix);
+                        ofSetColor(ofColor::red,50);
+                        ofDrawRectangle(slider->getX()-20, slider->getY(), slider->getWidth()+40, slider->getHeight());
+                        ofPopStyle();
+                        ofPopMatrix();
+                        break;
+                    }
+                }
+            }
+        }
         for(int i = 0; i < midiFloatConnections.size(); i++){
             if(!midiFloatConnections[i].isListening()){
                 for(int j = 0; j < datGuis.size(); j++){
                     if(datGuis[j]->getHeader()->getName() == midiFloatConnections[i].getParameter()->getFirstParent().getName()){
                         ofxDatGuiSlider* slider = datGuis[j]->getSlider(midiFloatConnections[i].getParameter()->getName());
+                        ofPushStyle();
+                        ofPushMatrix();
+                        ofMultMatrix(transformMatrix);
+                        ofSetColor(ofColor::red,50);
+                        ofDrawRectangle(slider->getX()-20, slider->getY(), slider->getWidth()+40, slider->getHeight());
+                        ofPopStyle();
+                        ofPopMatrix();
+                        break;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < midiBoolConnections.size(); i++){
+            if(!midiBoolConnections[i].isListening()){
+                for(int j = 0; j < datGuis.size(); j++){
+                    if(datGuis[j]->getHeader()->getName() == midiBoolConnections[i].getParameter()->getFirstParent().getName()){
+                        ofxDatGuiToggle* toggle = datGuis[j]->getToggle(midiBoolConnections[i].getParameter()->getName());
+                        ofPushStyle();
+                        ofPushMatrix();
+                        ofMultMatrix(transformMatrix);
+                        ofSetColor(ofColor::red,50);
+                        ofDrawRectangle(toggle->getX()-20, toggle->getY(), toggle->getWidth()+40, toggle->getHeight());
+                        ofPopStyle();
+                        ofPopMatrix();
+                        break;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < midiVecFloatConnections.size(); i++){
+            if(!midiVecFloatConnections[i].isListening()){
+                for(int j = 0; j < datGuis.size(); j++){
+                    if(datGuis[j]->getHeader()->getName() == midiVecFloatConnections[i].getParameter()->getFirstParent().getName()){
+                        ofxDatGuiMultiSlider* slider = datGuis[j]->getMultiSlider(midiVecFloatConnections[i].getParameter()->getName());
                         ofPushStyle();
                         ofPushMatrix();
                         ofMultMatrix(transformMatrix);
@@ -1347,6 +1404,20 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                         }
                         if(!erasedConnection)
                             midiIntConnections.push_back(midiConnection<int>(&intParameter));
+                    }
+                    else if(parameter.type() == typeid(ofParameter<vector<float>>).name()){
+                        bool erasedConnection = false;
+                        if(ofGetKeyPressed(OF_KEY_SHIFT)){
+                            for(int j = 0 ; j < midiVecFloatConnections.size(); j++){
+                                if(midiVecFloatConnections[j].getParameter() == &parameter){
+                                    erasedConnection = true;
+                                    midiVecFloatConnections.erase(midiVecFloatConnections.begin()+j);
+                                    return;
+                                }
+                            }
+                        }
+                        if(!erasedConnection)
+                            midiVecFloatConnections.push_back(midiConnection<vector<float>>(&parameter.cast<vector<float>>()));
                     }
                     else
                         ofLog() << "Cannot midi to parameter " << parameter.getName();

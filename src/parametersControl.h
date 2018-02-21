@@ -346,6 +346,7 @@ private:
     vector<midiConnection<int>>         midiIntConnections;
     vector<midiConnection<float>>       midiFloatConnections;
     vector<midiConnection<bool>>        midiBoolConnections;
+    vector<midiConnection<vector<float>>>    midiVecFloatConnections;
     bool    midiListenActive;
     
     bool    commandPressed = false;

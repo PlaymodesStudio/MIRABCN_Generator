@@ -32,43 +32,52 @@ public:
     }
     
     int sendValue(){
-        int toMidiVal = 0;
-        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
-            int range = bindedParameter->getMax()-bindedParameter->getMin();
-            //TODO: Review, map is from 0 127 not 0 1;
-            if(range < 128)
-                toMidiVal = ofMap(*bindedParameter, bindedParameter->getMin(), bindedParameter->getMax(), 0, ((int)(128/(range))*range));
-            else
-                toMidiVal = ofMap(*bindedParameter, bindedParameter->getMin(), bindedParameter->getMax(), 0, range/ceil((float)range/(float)128));
-            
-        }
-        else if(bindedParameter->type() == typeid(ofParameter<float>).name()){
-            toMidiVal = ofMap(*bindedParameter, bindedParameter->getMin(), bindedParameter->getMax(), 0, 127);
-        }
-        else if(bindedParameter->type() == typeid(ofParameter<bool>).name()){
-            if(!toggle)
-                toMidiVal = (bindedParameter == 0)? 0 : 127;
-        }
-        return toMidiVal;
+//        int toMidiVal = 0;
+//        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
+//            int range = bindedParameter->getMax()-bindedParameter->getMin();
+//            //TODO: Review, map is from 0 127 not 0 1;
+//            if(range < 128)
+//                toMidiVal = ofMap(*bindedParameter, bindedParameter->getMin(), bindedParameter->getMax(), 0, ((int)(128/(range))*range));
+//            else
+//                toMidiVal = ofMap(*bindedParameter, bindedParameter->getMin(), bindedParameter->getMax(), 0, range/ceil((float)range/(float)128));
+//            
+//        }
+//        else if(bindedParameter->type() == typeid(ofParameter<float>).name()){
+//            toMidiVal = ofMap(*bindedParameter, bindedParameter->getMin(), bindedParameter->getMax(), 0, 127);
+//        }
+//        else if(bindedParameter->type() == typeid(ofParameter<bool>).name()){
+//            if(!toggle)
+//                toMidiVal = (bindedParameter == 0)? 0 : 127;
+//        }
+//        else if(bindedParameter->type() == typeid(ofParameter<vector<float>>).name()){
+//                toMidiVal = ofMap(bindedParameter->get()[0], bindedParameter->getMin().get()[0], bindedParameter->getMax().get()[0], 0, 127);
+//        }
+//        
+//        return toMidiVal;
     }
     void setValue(int midiValue){
-        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
-            int range = bindedParameter->getMax()-bindedParameter->getMin();
-            if(range < 128)
-                *bindedParameter = ofMap(midiValue, 0, ((int)(128/(range))*range), bindedParameter->getMin(), bindedParameter->getMax(), true);
-            else
-                *bindedParameter = ofMap(midiValue, 0, range/ceil((float)range/(float)128), bindedParameter->getMin(), bindedParameter->getMax(), true);
-            
-        }
-        else if(bindedParameter->type() == typeid(ofParameter<float>).name()){
-            *bindedParameter = (ofMap(midiValue, 0, 127, bindedParameter->getMin(), bindedParameter->getMax(), true));
-        }
-        else if(bindedParameter->type() == typeid(ofParameter<bool>).name()){
-            if(toggle && midiValue == 127)
-                *bindedParameter = !*bindedParameter;
-            else if(!toggle)
-                *bindedParameter = (midiValue == 0)? false : true;
-        }
+//        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
+//            int range = bindedParameter->getMax()-bindedParameter->getMin();
+//            if(range < 128)
+//                *bindedParameter = ofMap(midiValue, 0, ((int)(128/(range))*range), bindedParameter->getMin(), bindedParameter->getMax(), true);
+//            else
+//                *bindedParameter = ofMap(midiValue, 0, range/ceil((float)range/(float)128), bindedParameter->getMin(), bindedParameter->getMax(), true);
+//            
+//        }
+//        else if(bindedParameter->type() == typeid(ofParameter<float>).name()){
+//            *bindedParameter = (ofMap(midiValue, 0, 127, bindedParameter->getMin(), bindedParameter->getMax(), true));
+//        }
+//        else if(bindedParameter->type() == typeid(ofParameter<bool>).name()){
+//            if(toggle && midiValue == 127)
+//                *bindedParameter = !*bindedParameter;
+//            else if(!toggle)
+//                *bindedParameter = (midiValue == 0)? false : true;
+//        }
+//        else if(bindedParameter->type() == typeid(ofParameter<vector<float>>).name()){
+//            vector<float> vecFloat;
+//            vecFloat = ofMap(midiValue, 0, 127, bindedParameter->getMin().get()[0], bindedParameter->getMax().get()[0], true);
+//            bindedParameter->set(vecFloat);
+//        }
     }
     
     ofParameter<T>* getParameter(){return bindedParameter;};

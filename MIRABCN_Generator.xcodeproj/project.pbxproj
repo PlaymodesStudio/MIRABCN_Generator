@@ -52,6 +52,7 @@
 		99F9413A08923B8F81AC69ED /* bufferLoggerChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D54B0D218CD6FA617A7BD18 /* bufferLoggerChannel.cpp */; };
 		9BD777923C7E370A961526AC /* envelopeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4655B54F461ED6D3FD64F179 /* envelopeGenerator.cpp */; };
 		9C7B8B4D99CDFC508E76CC3A /* ofxAubioOnset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A90A4B17BBB4CB627CA22C4 /* ofxAubioOnset.cpp */; };
+		9F0A6726203DB0A800867CE7 /* midiConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0A6725203DB0A800867CE7 /* midiConnection.cpp */; };
 		9F0EB9001F9770D0009E0847 /* bankDimensionCombinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */; };
 		9F135F4B1F6142AE007E3736 /* audioAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */; };
 		9F27872A1FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F2787281FBC5D8A00DD0AD0 /* bidimensionalOscillatorBank.cpp */; };
@@ -219,6 +220,7 @@
 		9BF3AA0D4FAA89D0F8A0E545 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = OscReceivedElements.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscReceivedElements.cpp; sourceTree = SOURCE_ROOT; };
 		9D2C29B96659EBB7A0C5672F /* ofxAubioPitch.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAubioPitch.h; path = ../../../addons/ofxAubio/src/ofxAubioPitch.h; sourceTree = SOURCE_ROOT; };
 		9E034FA57FE251AC33904E82 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui_PM/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
+		9F0A6725203DB0A800867CE7 /* midiConnection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = midiConnection.cpp; sourceTree = "<group>"; };
 		9F0EB8FE1F9770D0009E0847 /* bankDimensionCombinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bankDimensionCombinator.cpp; sourceTree = "<group>"; };
 		9F0EB8FF1F9770D0009E0847 /* bankDimensionCombinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bankDimensionCombinator.h; sourceTree = "<group>"; };
 		9F135F491F6142AE007E3736 /* audioAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioAnalyzer.cpp; sourceTree = "<group>"; };
@@ -766,6 +768,7 @@
 				93873127F6C0FCF3F7EDFBB1 /* masterControl.cpp */,
 				3A2359C4932DABDFF2F439E4 /* masterControl.h */,
 				7FB00DC33B077105CC4C2876 /* midiConnection.h */,
+				9F0A6725203DB0A800867CE7 /* midiConnection.cpp */,
 				382A46E8952EBD382834A5A4 /* midiGateIn.cpp */,
 				C3B9337D482EAB38599A5E65 /* midiGateIn.h */,
 				FA0612510B66021B5C9BF765 /* oscillatorBank.cpp */,
@@ -1017,6 +1020,7 @@
 				8E3135847B3FB438E44CFCA0 /* waveScope.cpp in Sources */,
 				9F30E37F1F60210F00F2ABAC /* vectorGetter.cpp in Sources */,
 				479DCA850DD8BB469A777AD4 /* ofxAubioBeat.cpp in Sources */,
+				9F0A6726203DB0A800867CE7 /* midiConnection.cpp in Sources */,
 				C60077973A257D8F44947E2E /* ofxAubioBlock.cpp in Sources */,
 				9F9ABA3B1F7C0771007F22EB /* speakerPowerCalculator.cpp in Sources */,
 				67383740F5CC47ED5F955A76 /* ofxAubioMelBands.cpp in Sources */,
