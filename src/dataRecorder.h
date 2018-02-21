@@ -18,7 +18,7 @@ public:
     
 private:
     void phasorInListener(float &f);
-    void inputListener(vector<vector<ofColor>> &info);
+    void inputListener(ofTexture* &info);
     void recordListener(bool &b);
     
     ofParameterGroup*   parameters;
@@ -27,7 +27,7 @@ private:
     ofParameter<bool>   autoRecLoop;
     ofParameter<bool>   invert;
     ofParameter<string> filename;
-    ofParameter<vector<vector<ofColor>>>    input;
+    ofParameter<ofTexture*>    input;
     
     float oldPhasor;
     int frameCounter;

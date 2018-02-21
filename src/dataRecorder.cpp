@@ -18,7 +18,7 @@ dataRecorder::dataRecorder(){
     parameters->add(autoRecLoop.set("Auto Rec Loop", false));
     parameters->add(invert.set("Invert", true));
     parameters->add(filename.set("Filename", "recTest"));
-    parameters->add(input.set("Input", {{}}));
+    parameters->add(input.set("Input", nullptr));
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green);
     
@@ -38,39 +38,17 @@ void dataRecorder::phasorInListener(float &f){
     oldPhasor = f;
 }
 
-void dataRecorder::inputListener(vector<vector<ofColor> > &info){
+void dataRecorder::inputListener(ofTexture* &info){
     if(record){
-        int w = info.size();
-        int h = info[0].size();
         ofImage img;
         if(invert){
-            unsigned char *data = new unsigned char[w * h*3];
-            for(int i = 0 ; i < h ; i++){
-                for ( int j = 0; j < w ; j++){
-                    data[(i*3)+h*3*j] = info[j][i].r;
-                    data[(i*3)+(h*3*j)+1] = info[j][i].g;
-                    data[(i*3)+(h*3*j)+2] = info[j][i].b;
-                }
-            }
-//            const unsigned char *constData = data;
-            img.setFromPixels(data, h, w, OF_IMAGE_COLOR);
-            delete [] data;
+
         }else{
-            unsigned char *data = new unsigned char[w * h*3];
-            for(int i = 0 ; i < w ; i++){
-                for ( int j = 0; j < h ; j++){
-                    data[(i*3)+w*3*j] = info[i][j].r;
-                    data[(i*3)+(w*3*j)+1] = info[i][j].g;
-                    data[(i*3)+(w*3*j)+2] = info[i][j].b;
-                }
-            }
-            img.setFromPixels(data, w, h, OF_IMAGE_COLOR);
-            delete [] data;
+            info->readToPixels(img.getPixels());
         }
         img.save("recordings/" + filename.get() +  "_" + initRecordingTimestamp + "/" + filename.get() + "_" + ofToString(frameCounter, 4, '0') + ".png");
         frameCounter++;
     }
-    
 }
 
 void dataRecorder::recordListener(bool &b){
