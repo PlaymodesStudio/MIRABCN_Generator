@@ -47,9 +47,11 @@ float phasorClass::getPhasor(){
 }
 
 void phasorClass::resetPhasor(bool &reset){
-    phasor = 0;
-    phasorMod = ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);;
-    resetPhase_Param = false;
+    if(reset){
+        phasor = 0;
+        phasorMod = ofMap(initPhase_Param, minVal_Param, maxVal_Param, 0, 1, true);;
+        resetPhase_Param = false;
+    }
 }
 
 void phasorClass::audioIn(float * input, int bufferSize, int nChannels){
