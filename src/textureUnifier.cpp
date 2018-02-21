@@ -9,7 +9,9 @@
 #include "textureUnifier.h"
 #include "parametersControl.h"
 
-textureUnifier::textureUnifier(int numInputs){
+textureUnifier::textureUnifier(int numInputs, int _spacing){
+    spacing = _spacing;
+
     parameters = new ofParameterGroup();
     parameters->setName("textureUnifier");
     
@@ -26,11 +28,11 @@ textureUnifier::textureUnifier(int numInputs){
 
 void textureUnifier::computeOutput(ofTexture* &in){
     if(&in == &inputs[triggerTextureIndex].get()){
-        int totalHeight = 1;
+        int totalHeight = spacing;
         int maxWidth = 0;
         for(auto t : inputs){
             if(t != nullptr){
-                totalHeight += t.get()->getHeight() + 1;
+                totalHeight += t.get()->getHeight() + spacing;
                 if(t.get()->getWidth() > maxWidth){
                     maxWidth = t.get()->getWidth();
                 }
@@ -42,10 +44,10 @@ void textureUnifier::computeOutput(ofTexture* &in){
         
         outputFbo.begin();
         ofClear(0, 0, 0);
-        int currentLine = 1;
+        int currentLine = spacing;
         for(auto t : inputs){
             t.get()->draw(0, currentLine);
-            currentLine += t.get()->getHeight() + 1;
+            currentLine += t.get()->getHeight() + spacing;
         }
         outputFbo.end();
         

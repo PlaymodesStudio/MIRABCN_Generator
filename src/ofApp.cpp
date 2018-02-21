@@ -108,9 +108,10 @@ void ofApp::setup(){
                 soundStream.setup(this, 0, 2, 44100, 512, 4);
             }
             
-            int unifierNum = xml.getIntValue("TextureUnifier");
+            int unifierNum = xml.getIntValue("TextureUnifierNumber");
+            int unifierSpacing = xml.getIntValue("TextureUnifierSpacing");
             if(unifierNum > 0){
-                new textureUnifier(unifierNum);
+                new textureUnifier(unifierNum, unifierSpacing);
             }
             if(xml.getBoolValue("DataRecorder")){
                 new dataRecorder();

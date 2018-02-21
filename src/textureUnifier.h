@@ -13,7 +13,7 @@
 
 class textureUnifier{
 public:
-    textureUnifier(int numInputs);
+    textureUnifier(int numInputs, int _spacing);
     ~textureUnifier(){};
     
     
@@ -26,6 +26,7 @@ private:
     ofParameter<ofTexture*>    output;
     
     ofFbo outputFbo;
+    int spacing;
 };
 
 #endif /* textureUnifier_h */

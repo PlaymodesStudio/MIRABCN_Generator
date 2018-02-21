@@ -1,0 +1,30 @@
+<CONFIGFILE>
+  <GeneratorConfig>
+    <Name>Twitter</Name>
+    <BankGroupsNum>2</BankGroupsNum>
+    <BankGroup1Width>25</BankGroup1Width>
+    <BankGroup1Height>40</BankGroup1Height>
+    <BankGroup2Width>25</BankGroup2Width>
+    <BankGroup2Height>25</BankGroup2Height>
+    <BPMSync>0</BPMSync>
+    <BPM>123.75</BPM>
+    <FrameRate>60</FrameRate>
+    <Color>2</Color>
+    <GroupScopes>7</GroupScopes>
+    <GroupColorScopes>0</GroupColorScopes>
+    <BankScopes>4</BankScopes>
+    <GridScope>0</GridScope>
+    <SyphonSenders>1</SyphonSenders>
+    <SyphonSender1Name>Generator</SyphonSender1Name>
+    <AudioControls>0</AudioControls>
+    <OscInput>0</OscInput>
+    <AudioAnalyzer>2</AudioAnalyzer>
+    <TextureUnifierNumber>2</TextureUnifierNumber>
+    <TextureUnifierSpacing>0</TextureUnifierSpacing>
+    <DataRecorder>0</DataRecorder>
+    <MainWindowPos>-1918_-1918</MainWindowPos>
+    <MainWindowSize>1918_1035</MainWindowSize>
+    <PrevWindowPos>0_45</PrevWindowPos>
+    <PrevWindowSize>278_1001</PrevWindowSize>
+	</GeneratorConfig>
+</CONFIGFILE>
