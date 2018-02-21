@@ -16,44 +16,39 @@ textureUnifier::textureUnifier(int numInputs){
     parameters->add(triggerTextureIndex.set("Trigger Index", 0, 0, numInputs - 1));
     inputs.resize(numInputs);
     for(int i = 0; i < inputs.size() ; i++){
-        parameters->add(inputs[i].set("Input " + ofToString(i), {{}}));
+        parameters->add(inputs[i].set("Input " + ofToString(i), nullptr));
         inputs[i].addListener(this, &textureUnifier::computeOutput);
     }
-    parameters->add(output.set("Output", {{}}));
+    parameters->add(output.set("Output", nullptr));
     
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::darkMagenta);
 }
 
-void textureUnifier::computeOutput(vector<vector<ofColor> > &in){
-    if(&in == &inputs[triggerTextureIndex].get()){;
-        
-        vector<vector<ofColor>> outInfo;
-        int width = 0;
-        for (int i = 0; i < inputs.size(); i++){
-            if(inputs[i].get()[0].size() > width) width = inputs[i].get()[0].size();
-        }
-        int height = 1;
-        for (int i = 0; i < inputs.size(); i++){
-            height += inputs[i].get().size()+1;
-        }
-        outInfo.resize(height, vector<ofColor>(width, ofColor::black));
-        
-        
-        
-        int currentLine = 1;
-        
-        for (int i = 0; i < inputs.size(); i++){
-            for(int j = 0; j < inputs[i].get().size(); j++){
-                for(int k = 0; k < inputs[i].get()[j].size(); k++){
-                    outInfo[currentLine][k] =  inputs[i].get()[j][k];
+void textureUnifier::computeOutput(ofTexture* &in){
+    if(&in == &inputs[triggerTextureIndex].get()){
+        int totalHeight = 1;
+        int maxWidth = 0;
+        for(auto t : inputs){
+            if(t != nullptr){
+                totalHeight += t.get()->getHeight() + 1;
+                if(t.get()->getWidth() > maxWidth){
+                    maxWidth = t.get()->getWidth();
                 }
-                currentLine++;
             }
-            currentLine++;
+        }
+        if(outputFbo.getHeight() != totalHeight || outputFbo.getWidth() != maxWidth || !outputFbo.isAllocated()){
+            outputFbo.allocate(maxWidth, totalHeight);
         }
         
-
+        outputFbo.begin();
+        ofClear(0, 0, 0);
+        int currentLine = 1;
+        for(auto t : inputs){
+            t.get()->draw(0, currentLine);
+            currentLine += t.get()->getHeight() + 1;
+        }
+        outputFbo.end();
         
-        parameters->get("Output").cast<vector<vector<ofColor>>>() = outInfo;
+        parameters->get("Output").cast<ofTexture*>() = &outputFbo.getTexture();
     }
 }

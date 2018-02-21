@@ -18,12 +18,14 @@ public:
     
     
 private:
-    void computeOutput(vector<vector<ofColor>> &in);
+    void computeOutput(ofTexture* &in);
     
     ofParameterGroup *parameters;
     ofParameter<int>    triggerTextureIndex;
-    vector<ofParameter<vector<vector<ofColor>>>>    inputs;
-    ofParameter<vector<vector<ofColor>>>    output;
+    vector<ofParameter<ofTexture*>>    inputs;
+    ofParameter<ofTexture*>    output;
+    
+    ofFbo outputFbo;
 };
 
 #endif /* textureUnifier_h */
