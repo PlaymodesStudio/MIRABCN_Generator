@@ -23,7 +23,7 @@ void ofApp::setup(){
     
     ofBackground(0);
     logBuffer = make_shared<bufferLoggerChannel>();
-    //ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
+    ofSetLoggerChannel((shared_ptr<ofBaseLoggerChannel>)logBuffer);
     
     //Set the FrameRate to be 40, that is the frame rate of artnet
     ofSetFrameRate(60);
@@ -117,14 +117,6 @@ void ofApp::setup(){
                 new dataRecorder();
             }
             
-//            if(xml.getBoolValue("bankDimensionCombinator")){
-//                new bankDimensionCombinator();
-//            }
-//            
-//            if(xml.getBoolValue("subDimensionCombinator")){
-//                new subDimensionCombinator();
-//            }
-            
             
             int speakerPowerCalculatorSize = xml.getIntValue("SpeakerPowerCalculator");
             if(speakerPowerCalculatorSize > 0){
@@ -134,13 +126,11 @@ void ofApp::setup(){
             
             
             preview = new waveScope(logBuffer, previewGroupSize, previewColorSize, previewBankSize, previewGrid);
-//            converters.push_back(new typeConverter<vector<float>, vector<vector<float>>>(1, ofPoint(700,500)));
+            
             //Create main gui, and add listeners when all guis are created
             paramsControl->setup();
             paramsControl->setGlobalBPM(bpm);
             
-//            new bidimensionalOscillatorBank(0, 4, 4);
-
             
             configured = true;
             

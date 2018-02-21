@@ -226,7 +226,7 @@ void waveScope::draw(){
     
     while(logBuffer->getSize()*lineHeigh > debugRectangle.getHeight()) logBuffer->eraseLastLine();
     
-    for (int i = 0; i < logBuffer->getSize(); i=i+10){
+    for (int i = 0; i < logBuffer->getSize(); i=i+1){
         string line = logBuffer->getLine(i);
         ofDrawBitmapString(line, debugRectangle.x, debugRectangle.y + (lineHeigh*(i+1)));
     }
