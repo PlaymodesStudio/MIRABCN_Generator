@@ -31,7 +31,7 @@ public:
         *bindedParameter = *bindedParameter;
     }
     
-    int sendValue(){
+    int sendValue();
 //        int toMidiVal = 0;
 //        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
 //            int range = bindedParameter->getMax()-bindedParameter->getMin();
@@ -54,7 +54,7 @@ public:
 //        }
 //        
 //        return toMidiVal;
-    }
+//    }
     void setValue(int midiValue);
 //        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
 //            int range = bindedParameter->getMax()-bindedParameter->getMin();
