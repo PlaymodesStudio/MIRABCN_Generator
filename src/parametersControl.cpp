@@ -759,6 +759,28 @@ void parametersControl::saveMidiMapping(string presetName, string bank){
         xml2.setToParent();
     }
     
+    for (int i = 0; i < midiVecFloatConnections.size(); i++){
+        xml2.addChild("MidiVecFloat_" + ofToString(i));
+        xml2.setTo("MidiVecFloat_" + ofToString(i));
+        xml2.addValue("SourceGroup", midiVecFloatConnections[i].getParameter()->getFirstParent().getName());
+        xml2.addValue("SourceName", midiVecFloatConnections[i].getParameter()->getName());
+        xml2.addValue("MidiDevice", midiVecFloatConnections[i].getDevice());
+        xml2.addValue("MidiChannel", ofToString(midiVecFloatConnections[i].getChannel()));
+        xml2.addValue("MidiControl", ofToString(midiVecFloatConnections[i].getControl()));
+        xml2.setToParent();
+    }
+    
+    for (int i = 0; i < midiVecIntConnections.size(); i++){
+        xml2.addChild("MidiVecInt_" + ofToString(i));
+        xml2.setTo("MidiVecInt_" + ofToString(i));
+        xml2.addValue("SourceGroup", midiVecIntConnections[i].getParameter()->getFirstParent().getName());
+        xml2.addValue("SourceName", midiVecIntConnections[i].getParameter()->getName());
+        xml2.addValue("MidiDevice", midiVecIntConnections[i].getDevice());
+        xml2.addValue("MidiChannel", ofToString(midiVecIntConnections[i].getChannel()));
+        xml2.addValue("MidiControl", ofToString(midiVecIntConnections[i].getControl()));
+        xml2.setToParent();
+    }
+    
     xml2.save("Presets/" + bank + "/.midi/" + presetName + "_midimap.xml");
 }
 
@@ -771,6 +793,7 @@ void parametersControl::loadMidiMapping(string presetName, string bank){
     if(!xml.load("Presets/" + bank + "/.midi/" + presetName + "_midimap.xml"))
         return;
     
+    midiIntConnections.clear();
     int i = 0;
     while(xml.exists("MidiInt_" + ofToString(i))){
         xml.setTo("MidiInt_" + ofToString(i));
@@ -788,6 +811,8 @@ void parametersControl::loadMidiMapping(string presetName, string bank){
         xml.setToParent();
         i++;
     }
+    
+    midiFloatConnections.clear();
     i = 0;
     while(xml.exists("MidiFloat_" + ofToString(i))){
         xml.setTo("MidiFloat_" + ofToString(i));
@@ -801,6 +826,8 @@ void parametersControl::loadMidiMapping(string presetName, string bank){
         xml.setToParent();
         i++;
     }
+    
+    midiBoolConnections.clear();
     i = 0;
     while(xml.exists("MidiBool_" + ofToString(i))){
         xml.setTo("MidiBool_" + ofToString(i));
@@ -811,6 +838,34 @@ void parametersControl::loadMidiMapping(string presetName, string bank){
         midiBoolConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
         midiBoolConnections.back().setToggle(xml.getBoolValue("MidiToggleMode"));
         
+        xml.setToParent();
+        i++;
+    }
+    
+    midiVecFloatConnections.clear();
+    i = 0;
+    while(xml.exists("MidiVecFloat_" + ofToString(i))){
+        xml.setTo("MidiVecFloat_" + ofToString(i));
+        for(auto &paramGroup : parameterGroups){
+            if(paramGroup->getName() == xml.getValue("SourceGroup")){
+                midiVecFloatConnections.push_back(midiConnection<vector<float>>(&paramGroup->get(xml.getValue("SourceName")).cast<vector<float>>()));
+                midiVecFloatConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+            }
+        }
+        xml.setToParent();
+        i++;
+    }
+    
+    midiVecIntConnections.clear();
+    i = 0;
+    while(xml.exists("MidiVecInt_" + ofToString(i))){
+        xml.setTo("MidiVecInt_" + ofToString(i));
+        for(auto &paramGroup : parameterGroups){
+            if(paramGroup->getName() == xml.getValue("SourceGroup")){
+                midiVecIntConnections.push_back(midiConnection<vector<int>>(&paramGroup->get(xml.getValue("SourceName")).cast<vector<int>>()));
+                midiVecIntConnections.back().assignMidiControl(xml.getValue("MidiDevice"), xml.getIntValue("MidiChannel"), xml.getIntValue("MidiControl"));
+            }
+        }
         xml.setToParent();
         i++;
     }
@@ -1003,6 +1058,10 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     if(!xml.load("Presets/" + bank + "/" + presetName + ".xml"))
         return;
+    
+    loadMidiMapping(presetName, bank);
+    
+    xml.load("Presets/" + bank + "/" + presetName + ".xml");
     
     vector<pair<string, ofPoint>> modulesToCreate;
     
@@ -1256,7 +1315,6 @@ void parametersControl::loadPreset(string presetName, string bank){
     
     
     ofLog()<<"Load " << presetName;
-    loadMidiMapping(presetName, bank);
     
     ofxOscMessage m;
     m.setAddress("presetLoad");
