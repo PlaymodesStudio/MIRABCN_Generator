@@ -1094,7 +1094,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             
                             //get the value of that parameter if it's not bpm, we don't want to lose sync
                             if(castedParam.getName() != "BPM" && xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master") && castedParam.getName() != "Output" && castedParam.getName() != "Input" && castedParam.getName() != "Phasor Monitor" && !ofStringTimesInString(groupParam->getName(), "Amplitude"))
-                                castedParam = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
+                                groupParam->getFloat(absParam.getName()) = ofMap(xml.getFloatValue(noSpaces), 0, 1, castedParam.getMin(), castedParam.getMax(), true);
                         }
                         else if(absParam.type() == typeid(ofParameter<int>).name()){
                             ofParameter<int> castedParam = absParam.cast<int>();
@@ -1108,14 +1108,14 @@ void parametersControl::loadPreset(string presetName, string bank){
                             string noSpaces = castedParam.getName();
                             ofStringReplace(noSpaces, " ", "_");
                             if(xml.exists(noSpaces) && noSpaces != "Manual_Reindex" && !ofStringTimesInString(groupParam->getName(), "master"))
-                                castedParam = xml.getValue(noSpaces, castedParam.get());
+                                groupParam->getBool(absParam.getName()) = xml.getValue(noSpaces, castedParam.get());
                         }
                         else if(absParam.type() == typeid(ofParameter<string>).name()){
                             ofParameter<string> castedParam = absParam.cast<string>();
                             string noSpaces = castedParam.getName();
                             ofStringReplace(noSpaces, " ", "_");
                             if(moduleName != "audioControls" && xml.exists(noSpaces) && !ofStringTimesInString(groupParam->getName(), "master")){
-                                castedParam.set(xml.getValue(noSpaces, castedParam.get()));
+                                groupParam->getString(absParam.getName()) = xml.getValue(noSpaces, castedParam.get());
                             }
                         }
                         else if(absParam.type() == typeid(ofParameter<ofColor>).name()){
@@ -1150,7 +1150,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             
                             //get the value of that parameter
                             if(xml.exists(noSpaces))
-                                castedParam = vector<float>(1, xml.getFloatValue(noSpaces));
+                                groupParam->get(absParam.getName()).cast<vector<float>>() = vector<float>(1, xml.getFloatValue(noSpaces));
                         }
                         else if(absParam.type() == typeid(ofParameter<vector<int>>).name()){
                             //Cast it
@@ -1163,7 +1163,7 @@ void parametersControl::loadPreset(string presetName, string bank){
                             
                             //get the value of that parameter
                             if(xml.exists(noSpaces))
-                                castedParam = vector<int>(1, xml.getIntValue(noSpaces));
+                                groupParam->get(absParam.getName()).cast<vector<int>>() = vector<int>(1, xml.getIntValue(noSpaces));
                         }
                         else if(absParam.getName() == "ReindexGrid"){
                             ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
