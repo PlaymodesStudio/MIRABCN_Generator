@@ -55,7 +55,7 @@ public:
 //        
 //        return toMidiVal;
     }
-    void setValue(int midiValue){
+    void setValue(int midiValue);
 //        if(bindedParameter->type() == typeid(ofParameter<int>).name()){
 //            int range = bindedParameter->getMax()-bindedParameter->getMin();
 //            if(range < 128)
@@ -78,8 +78,8 @@ public:
 //            vecFloat = ofMap(midiValue, 0, 127, bindedParameter->getMin().get()[0], bindedParameter->getMax().get()[0], true);
 //            bindedParameter->set(vecFloat);
 //        }
-    }
-    
+//    }
+
     ofParameter<T>* getParameter(){return bindedParameter;};
     bool isListening(){return midiListenMode;};
     string getDevice(){return midiDevice;};

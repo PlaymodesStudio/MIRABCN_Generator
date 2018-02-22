@@ -373,10 +373,18 @@ void parametersControl::update(ofEventArgs &args){
             if(connection.isListening())
                 connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
             else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
+                if(connection.getParameter()->getName() == "Reset Phase") parameterVal = 127;
                 connection.setValue(parameterVal);
             }
         }
         for (auto &connection : midiVecFloatConnections){
+            if(connection.isListening())
+                connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
+            else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
+                connection.setValue(parameterVal);
+            }
+        }
+        for (auto &connection : midiVecIntConnections){
             if(connection.isListening())
                 connection.assignMidiControl(parameterPort, parameterChan, parameterNum);
             else if(connection.getDevice() == parameterPort && connection.getChannel() == parameterChan && connection.getControl() == parameterNum){
@@ -498,6 +506,23 @@ void parametersControl::draw(ofEventArgs &args){
                 for(int j = 0; j < datGuis.size(); j++){
                     if(datGuis[j]->getHeader()->getName() == midiVecFloatConnections[i].getParameter()->getFirstParent().getName()){
                         ofxDatGuiMultiSlider* slider = datGuis[j]->getMultiSlider(midiVecFloatConnections[i].getParameter()->getName());
+                        ofPushStyle();
+                        ofPushMatrix();
+                        ofMultMatrix(transformMatrix);
+                        ofSetColor(ofColor::red,50);
+                        ofDrawRectangle(slider->getX()-20, slider->getY(), slider->getWidth()+40, slider->getHeight());
+                        ofPopStyle();
+                        ofPopMatrix();
+                        break;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < midiVecIntConnections.size(); i++){
+            if(!midiVecIntConnections[i].isListening()){
+                for(int j = 0; j < datGuis.size(); j++){
+                    if(datGuis[j]->getHeader()->getName() == midiVecIntConnections[i].getParameter()->getFirstParent().getName()){
+                        ofxDatGuiMultiSlider* slider = datGuis[j]->getMultiSlider(midiVecIntConnections[i].getParameter()->getName());
                         ofPushStyle();
                         ofPushMatrix();
                         ofMultMatrix(transformMatrix);
@@ -1419,6 +1444,20 @@ void parametersControl::onGuiRightClickEvent(ofxDatGuiRightClickEvent e){
                         if(!erasedConnection)
                             midiVecFloatConnections.push_back(midiConnection<vector<float>>(&parameter.cast<vector<float>>()));
                     }
+                    else if(parameter.type() == typeid(ofParameter<vector<int>>).name()){
+                        bool erasedConnection = false;
+                        if(ofGetKeyPressed(OF_KEY_SHIFT)){
+                            for(int j = 0 ; j < midiVecIntConnections.size(); j++){
+                                if(midiVecIntConnections[j].getParameter() == &parameter){
+                                    erasedConnection = true;
+                                    midiVecIntConnections.erase(midiVecIntConnections.begin()+j);
+                                    return;
+                                }
+                            }
+                        }
+                        if(!erasedConnection)
+                            midiVecIntConnections.push_back(midiConnection<vector<int>>(&parameter.cast<vector<int>>()));
+                    }
                     else
                         ofLog() << "Cannot midi to parameter " << parameter.getName();
                 }
@@ -1804,6 +1843,28 @@ void parametersControl::listenerFunction(ofAbstractParameter& e){
         for(auto validConnection : validConnections)
             setFromNormalizedValue(validConnection->getSinkParameter(), ofMap(normalizedVal, 0, 1, validConnection->getMin(), validConnection->getMax()));
     }else{
+        if(e.type() == typeid(ofParameter<vector<float>>).name()){
+            for(auto &midiConnection : midiVecFloatConnections){
+                ofAbstractParameter* possibleSource = midiConnection.getParameter();
+                if(possibleSource == &e && !midiConnection.isListening()){
+                    for(auto &mOut : midiOut){
+                        if(mOut.getName() == midiConnection.getDevice())
+                            mOut.sendControlChange(midiConnection.getChannel(), midiConnection.getControl(), midiConnection.sendValue());
+                    }
+                }
+            }
+        }
+        else if(e.type() == typeid(ofParameter<vector<int>>).name()){
+            for(auto &midiConnection : midiVecIntConnections){
+                ofAbstractParameter* possibleSource = midiConnection.getParameter();
+                if(possibleSource == &e && !midiConnection.isListening()){
+                    for(auto &mOut : midiOut){
+                        if(mOut.getName() == midiConnection.getDevice())
+                            mOut.sendControlChange(midiConnection.getChannel(), midiConnection.getControl(), midiConnection.sendValue());
+                    }
+                }
+            }
+        }
         for(auto &validConnection : validConnections)
             setFromSameTypeValue(validConnection);
     }

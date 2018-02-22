@@ -64,4 +64,24 @@ void midiConnection<vector<float>>::setValue(int midiValue){
     bindedParameter->set(vecFloat);
 }
 
+template<>
+int midiConnection<vector<int>>::sendValue(){
+    int toMidiVal = 0;
+    int range = bindedParameter->getMax()[0]-bindedParameter->getMin()[0];
+    //TODO: Review, map is from 0 127 not 0 1;
+    if(range < 128)
+        toMidiVal = ofMap(bindedParameter->get()[0], bindedParameter->getMin()[0], bindedParameter->getMax()[0], 0, ((int)(128/(range))*range));
+    else
+        toMidiVal = ofMap(bindedParameter->get()[0], bindedParameter->getMin()[0], bindedParameter->getMax()[0], 0, range/ceil((float)range/(float)128));
+    return toMidiVal;
+}
+
+template<>
+void midiConnection<vector<int>>::setValue(int midiValue){
+    vector<int> vecFloat;
+    vecFloat.resize(1);
+    vecFloat[0] = ofMap(midiValue, 0, 127, bindedParameter->getMin()[0], bindedParameter->getMax()[0], true);
+    bindedParameter->set(vecFloat);
+}
+
 
