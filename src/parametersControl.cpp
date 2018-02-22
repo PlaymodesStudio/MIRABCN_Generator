@@ -936,6 +936,19 @@ void parametersControl::savePreset(string presetName, string bank){
                     //if(castToCheckSerializable.isSerializable())
                         xml.addValue(noSpaces, castedParam.get()[0]);
                 }
+                else if(absParam.type() == typeid(ofParameter<vector<int>>).name()){
+                    //Cast it
+                    ofParameter<vector<int>> castedParam = absParam.cast<vector<int>>();
+                    //ofParameter<float> castToCheckSerializable = absParam.cast<float>();
+                    
+                    //Replace blank spaces with underscore
+                    string noSpaces = castedParam.getName();
+                    ofStringReplace(noSpaces, " ", "_");
+                    
+                    //add the value of that parameter into xml
+                    //if(castToCheckSerializable.isSerializable())
+                    xml.addValue(noSpaces, castedParam.get()[0]);
+                }
                 else if(absParam.getName() == "ReindexGrid"){
                     ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
                     string matrixInfo;
@@ -1138,6 +1151,19 @@ void parametersControl::loadPreset(string presetName, string bank){
                             //get the value of that parameter
                             if(xml.exists(noSpaces))
                                 castedParam = vector<float>(1, xml.getFloatValue(noSpaces));
+                        }
+                        else if(absParam.type() == typeid(ofParameter<vector<int>>).name()){
+                            //Cast it
+                            ofParameter<vector<int>> castedParam = absParam.cast<vector<int>>();
+                            //ofParameter<float> castToCheckSerializable = absParam.cast<float>();
+                            
+                            //Replace blank spaces with underscore
+                            string noSpaces = castedParam.getName();
+                            ofStringReplace(noSpaces, " ", "_");
+                            
+                            //get the value of that parameter
+                            if(xml.exists(noSpaces))
+                                castedParam = vector<int>(1, xml.getIntValue(noSpaces));
                         }
                         else if(absParam.getName() == "ReindexGrid"){
                             ofParameter<vector<vector<bool>>> castedParam = absParam.cast<vector<vector<bool>>>();
