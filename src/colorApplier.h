@@ -26,6 +26,7 @@ public:
     
 private:
     void reloadShader(bool &b);
+    vector<ofVec3f> computeNewColorDisplacementVector(float parameter);
     
     void modulationInfoListener(vector<float> &vf);
     void applyColor(ofTexture* &inputTex);
@@ -59,7 +60,7 @@ private:
     
     ofFbo outputFbo;
     ofFbo previewFbo;
-    ofTexture colorDisplacementTexture;
+//    ofTexture colorDisplacementTexture;
     
     bool colorIsChanging;
     ofImage imageTexture;
@@ -82,6 +83,12 @@ private:
     //TBOs
     ofTexture               modulationInfoTexture;
     ofBufferObject          modulationInfoBuffer;
+    
+    //TBOs
+    ofTexture               colorDisplacementTexture;
+    ofBufferObject          colorDisplacementBuffer;
+    
+    
 };
 
 #endif /* colorApplier_h */

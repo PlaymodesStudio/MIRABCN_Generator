@@ -23,8 +23,8 @@ envelopeGenerator::envelopeGenerator(int id, ofPoint pos){
     parametersControl::addDropdownToParameterGroupFromParameter(parameters, "Decay Ease", easeFuncs, decayCurve);
     parametersControl::addDropdownToParameterGroupFromParameter(parameters, "Release Ease", easeFuncs, releaseCurve);
     
-    parameters->add(gateIn.set("Gate In", {0}));
-    parameters->add(output.set("Output", {0}));
+    parameters->add(gateIn.set("Gate In", {0}, {0}, {1}));
+    parameters->add(output.set("Output", {0}, {0}, {1}));
     oldGateIn = {0};
     parametersControl::getInstance().createGuiFromParams(parameters, ofColor::cyan, pos);
     

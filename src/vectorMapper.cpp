@@ -15,12 +15,12 @@ vectorMapper::vectorMapper(int index, ofPoint pos)
     parameters = new ofParameterGroup;
     parameters->setName("vectorMapper " + ofToString(index));
   
-    parameters->add(Input.set("Input", {0}));
+    parameters->add(Input.set("Input", {0}, {0}, {1}));
     parameters->add(MinInput.set("MinInput", 0, 0.0, 1.0));
     parameters->add(MaxInput.set("MaxInput", 1.0, 0.0, 1.0));
     parameters->add(MinOutput.set("MinOutput", 0, 0.0, 1.0));
     parameters->add(MaxOutput.set("MaxOutput", 1.0, 0.0, 1.0));
-    parameters->add(Output.set("Output", {0}));
+    parameters->add(Output.set("Output", {0}, {0}, {1}));
 
     
     Input.addListener(this, &vectorMapper::recalculate);

@@ -17,7 +17,7 @@ manualOscillatorBank::manualOscillatorBank(int nOscillators, int _bankId, ofPoin
     parameters->add(manualInput.set("Manual In", 0, 0, 1));
     parameters->add(damping.set("Damping", 0, 0, 1));
     parameters->add(dampingPow.set("Damping Pow", 0, -40, 40));
-    parameters->add(output.set("Output", {}));
+    parameters->add(output.set("Output", {0}, {0}, {1}));
     
     phasorIn.addListener(this, &manualOscillatorBank::computeValues);
     manualInput.addListener(this, &manualOscillatorBank::manualInputChanged);

@@ -59,7 +59,7 @@ public:
         
         parameters->add(input.set("Input",{}));
         parameters->add(smoothing.set("Smoothing", 0.5, 0, 1));
-        parameters->add(output.set("Output", {}));
+        parameters->add(output.set("Output", {0}, {0}, {1}));
         
         parametersControl::getInstance().createGuiFromParams(parameters, ofColor::green, pos);
         

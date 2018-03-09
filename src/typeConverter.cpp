@@ -47,3 +47,15 @@ void typeConverter<vector<float>, float>::sourceListener(vector<float> &s){
     float toSend = s[0];
     parameters->get("Dest").cast<float>() = toSend;
 };
+
+template<>
+void typeConverter<vector<float>, float>::setAndAddParameters(){
+    parameters->add(source.set("Source", {0}, {0}, {1}));
+    parameters->add(dest.set("Dest", 0, 0, 1));
+}
+
+template<>
+void typeConverter<float, vector<float>>::setAndAddParameters(){
+    parameters->add(source.set("Source", 0, 0, 1));
+    parameters->add(dest.set("Dest", {0}, {0}, {1}));
+}

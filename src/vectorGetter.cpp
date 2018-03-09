@@ -13,7 +13,7 @@ vectorGetter::vectorGetter(int id, ofPoint pos){
     parameters = new ofParameterGroup();
     parameters->setName("vectorGetter " + ofToString(id));
     
-    parameters->add(input.set("Input", {}));
+    parameters->add(input.set("Input", {0}, {0}, {1}));
     parameters->add(index.set("Index", "0"));
     parameters->add(output.set("Output", 0));
     

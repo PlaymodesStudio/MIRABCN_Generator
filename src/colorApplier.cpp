@@ -55,7 +55,7 @@ colorApplier::colorApplier(int _id){
     colorHParam[0].addListener(this, &colorApplier::colorHueListener);
     colorHParam[1].addListener(this, &colorApplier::colorHueListener);
     
-    //colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
+    colorDisplacement.addListener(this, &colorApplier::colorDisplacementChanged);
     grayScaleIn.addListener(this, &colorApplier::applyColor);
 //    reloadShaderParam.addListener(this, &colorApplier::reloadShader);
     
@@ -72,6 +72,11 @@ colorApplier::colorApplier(int _id){
     modulationInfoTexture.allocateAsBufferTexture(modulationInfoBuffer, GL_R32F);
     
     
+    colorDisplacementBuffer.allocate();
+    colorDisplacementBuffer.bind(GL_TEXTURE_BUFFER);
+    colorDisplacementBuffer.setData(vector<ofVec3f>(1, ofVec3f(-1, -1, -1)), GL_STREAM_DRAW);
+    colorDisplacementTexture.allocateAsBufferTexture(colorDisplacementBuffer, GL_RGB32F);
+    
     bool sillyBool = true;
     reloadShader(sillyBool);
     
@@ -84,11 +89,13 @@ void colorApplier::reloadShader(bool &b){
     outputShader.load("Shaders/color.vert", "Shaders/color.frag");
     outputShader.begin();
     outputShader.setUniformTexture("modulationInfo", modulationInfoTexture, resources->getNextAvailableShaderTextureLocation());
+    outputShader.setUniformTexture("displacementInfo", colorDisplacementTexture, resources->getNextAvailableShaderTextureLocation());
     outputShader.end();
     
     previewShader.load("Shaders/color.vert", "Shaders/color.frag");
     previewShader.begin();
     previewShader.setUniformTexture("modulationInfo", modulationInfoTexture, resources->getNextAvailableShaderTextureLocation());
+    outputShader.setUniformTexture("displacementInfo", colorDisplacementTexture, resources->getNextAvailableShaderTextureLocation());
     previewShader.end();
     
     infoTextureOutputShaderTextureLocation = resources->getNextAvailableShaderTextureLocation();
@@ -109,6 +116,7 @@ void colorApplier::applyColor(ofTexture* &inputTex){
         ofDrawRectangle(0, 0, width, height);
         whiteFbo.end();
         modulationInfoBuffer.setData(vector<float>(width+height, -1), GL_STREAM_DRAW);
+        colorDisplacementBuffer.setData(computeNewColorDisplacementVector(colorDisplacement),  GL_STREAM_DRAW);
     }
     
     
@@ -128,6 +136,7 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     outputFbo.begin();
     outputShader.begin();
     outputShader.setUniform1i("width", width);
+    outputShader.setUniform1f("displacement", colorDisplacement);
     outputShader.setUniform1i("useImage", isImageLoaded);
     outputShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
     outputShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
@@ -144,6 +153,7 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     previewFbo.begin();
     previewShader.begin();
     previewShader.setUniform1i("width", width);
+    outputShader.setUniform1f("displacement", colorDisplacement);
     outputShader.setUniform1i("useImage", isImageLoaded);
     previewShader.setUniform3f("color1", colorPickerParam[0]->r/255., colorPickerParam[0]->g/255., colorPickerParam[0]->b/255.);
     previewShader.setUniform3f("color2", colorPickerParam[1]->r/255., colorPickerParam[1]->g/255., colorPickerParam[1]->b/255.);
@@ -157,13 +167,20 @@ void colorApplier::applyColor(ofTexture* &inputTex){
     parameters->get("Gradient Preview").cast<ofTexture*>() = &previewFbo.getTexture();
 }
 
+vector<ofVec3f> colorApplier::computeNewColorDisplacementVector(float f){
+    vector<ofVec3f> tempVec;
+    tempVec.resize(width+height);
+    for(auto &randDisplacement : tempVec){
+        randDisplacement = ofVec3f(ofRandom(-f, f), ofRandom(-f, f), ofRandom(-f, f));
+    }
+    return tempVec;
+}
+
 void colorApplier::colorDisplacementChanged(float &f){
-//    if(oldColorDisplacement != f){
-//        for(auto &randDisplacement : colorDisplacementVector){
-//            randDisplacement = {ofRandom(-f, f), ofRandom(-f, f), ofRandom(-f, f)};
-//        }
-//    }
-//    oldColorDisplacement = f;
+    if(oldColorDisplacement != f){
+        colorDisplacementBuffer.updateData(0, computeNewColorDisplacementVector(f));
+    }
+    oldColorDisplacement = f;
 }
 
 void colorApplier::computeNewColorDisplacement(float f){

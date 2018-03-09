@@ -335,7 +335,7 @@ ofTexture& oscillatorTexture::computeBank(float phasor){
     ofPushStyle();
     ofSetColor(255, 255);
     fboBuffer.begin();
-    ofClear(255, 255, 255, 255);
+    ofClear(0, 0, 0, 255);
     fboBuffer.end();
     fboBuffer.begin();
     shaderOscillator.begin();

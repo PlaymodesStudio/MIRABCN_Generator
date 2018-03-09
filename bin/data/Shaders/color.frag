@@ -2,6 +2,7 @@
 #define M_PI 3.1415926535897932384626433832795
 
 uniform int width;
+uniform float displacement;
 uniform int useImage;
 
 //uniform vec2 size;
@@ -12,6 +13,7 @@ uniform sampler2D inputImage;
 
 //ModulationInfo
 uniform samplerBuffer modulationInfo;
+uniform samplerBuffer displacementInfo;
 
 
 out vec4 out_color;
@@ -29,6 +31,9 @@ void main(){
     float xModulationValue = texelFetch(modulationInfo, xVal).r;
     float yModulationValue = texelFetch(modulationInfo, yVal + width).r;
     
+    vec3 xDisplacementValue = texelFetch(displacementInfo, xVal).rgb;
+    vec3 yDisplacementValue = texelFetch(displacementInfo, yVal + width).rgb;
+    vec3 displacementValue = (xDisplacementValue + yDisplacementValue)/2;
     
     float modulationValue;
     
@@ -49,7 +54,7 @@ void main(){
     else{
         firstColor = color1;
     }
-    vec3 finalColor = ((color2 * modulationValue) + (firstColor * (1-modulationValue))) * r_info.r;
-    
+    vec3 finalColor = (((color2 * modulationValue) + (firstColor * (1-modulationValue))) + displacementValue)  * r_info.r;
+        
     out_color = vec4(finalColor, 1.0);
 }

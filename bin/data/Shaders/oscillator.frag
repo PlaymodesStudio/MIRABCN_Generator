@@ -281,7 +281,7 @@ void main(){
 //    float newRandom = float(newRandomInt) / 256.0;
     
     float pastRandom = r_info.b;
-    float newRandom = r_info.a;
+    float newRandom = r_info.b;
     
     
     
@@ -354,7 +354,8 @@ void main(){
             val2 = pastRandom;
         }
         else{
-            val2 = pastRandom*(1-linPhase) + newRandom*linPhase;
+            val2 = (pastRandom*(1-linPhase)) + (newRandom*linPhase);
+//            val2 = pastRandom;
         }
     }
     
@@ -372,5 +373,5 @@ void main(){
 //    pastNewRandomInt = (pastRandomInt << 8) | newRandomInt;
 //    pastNewRandom = float(pastNewRandomInt) / 512.0;
     
-    out_color = vec4(val, linPhase, pastRandom, newRandom);
+    out_color = vec4(val, linPhase, newRandom, 1.0);
 }
